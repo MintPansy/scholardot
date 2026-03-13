@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e:*)",
+      "Bash(dir:*)",
+      "Bash(copy:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)"
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+// Footer.tsx
+import Link from "next/link";
+import Image from "next/image";
+import styles from "./Footer.module.css";
+
+export default function Footer() {
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.container}>
+        {/* 1줄: 로고 */}
+        <div className={styles.logoSection}>
+          <Image
+            src="/footerLogo.svg"
+            alt="Paperdot"
+            width={120}
+            height={40}
+            className={styles.logoImage}
+          />
+        </div>
+
+        {/* 2줄: 링크 | 저작권 | 이메일 */}
+        <div className={styles.contentSection}>
+          <div className={styles.linkGroup}>
+            <Link
+              href="https://www.notion.so/2f4eb2f40de7802f8539e4762234b41d?source=copy_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.link}
+              prefetch={false}>
+              개인정보처리방침
+            </Link>
+            <span className={styles.divider}>|</span>
+            <Link
+              href="https://www.notion.so/2fbeb2f40de780c5b996fc19312ca446?source=copy_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.link}
+              prefetch={false}>
+              이용약관
+            </Link>
+          </div>
+
+          <div className={styles.copyrightSection}>
+            <p className={styles.copyright}>
+              © {new Date().getFullYear()} paperdot. All rights reserved.
+            </p>
+          </div>
+
+          <div className={styles.emailSection}>
+            <a href="contact.paperdot@gmail.com" className={styles.email}>
+              문의: contact.paperdot@gmail.com
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

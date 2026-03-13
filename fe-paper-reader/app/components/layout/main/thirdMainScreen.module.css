@@ -1,0 +1,133 @@
+.container {
+  width: 100%;
+  background-color: #fff;
+  overflow: hidden;
+  padding: 120px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 36px;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.contentLeftBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 120px;
+  gap: 20px;
+}
+
+.contentRightCenter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 120px;
+  gap: 20px;
+}
+
+.title {
+  color: #21232a;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.64px;
+}
+
+.description {
+  color: #4b4d55;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.36px;
+}
+
+.contentRight {
+  position: relative;
+  width: 572px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.contentRightImage {
+  object-fit: cover;
+}
+
+.contentRightCenter {
+  display: flex;
+  width: 572px;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* ========== 데스크톱 반응형 (웹 전용) ========== */
+@media (max-width: 1440px) {
+  .container {
+    padding: 80px 0;
+  }
+  .content {
+    max-width: 85%;
+    padding: 0 24px;
+  }
+  .title {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 1280px) {
+  .container {
+    padding: 80px 0;
+    gap: 48px;
+  }
+  .content {
+    padding: 0 12px;
+    display: flex;
+  }
+  .contentLeftBox,
+  .contentRightCenter {
+    width: 50%;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+  .description {
+    font-size: 1rem;
+  }
+  .contentRight {
+    width: 45%;
+    border: 1px solid var(--Gray-200, #dee3eb);
+  }
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 60px 0;
+  }
+  .content {
+    max-width: 92%;
+  }
+  .contentLeftBox,
+  .contentRightCenter {
+    width: 48%;
+  }
+  .title {
+    font-size: 1.375rem;
+  }
+  .description {
+    font-size: 0.9375rem;
+  }
+  .contentRight,
+  .contentRightCenter {
+    width: 48%;
+  }
+}

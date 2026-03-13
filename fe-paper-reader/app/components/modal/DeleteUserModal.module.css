@@ -1,0 +1,265 @@
+.deleteModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.deleteModalContent {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.customSelectValueText {
+  color: #575d64;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.28px;
+}
+
+.customOptions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #dee3eb;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.customOption {
+  color: #21232a;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 150%;
+  letter-spacing: -0.02em;
+  padding: 13px 16px;
+  border-bottom: 1px solid #dee3eb;
+  cursor: pointer;
+  &:hover {
+    background-color: #f0f4fa;
+  }
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* 타이틀 */
+.deleteModalTitle {
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 150%;
+  letter-spacing: -0.02em;
+  color: #21232a;
+  margin: 0 0 12px 0;
+  /* 여백 축소 */
+}
+
+/* 본문 메시지 */
+.deleteModalMessage {
+  font-size: 16px;
+  font-weight: 400;
+  color: #4b4d55;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  /* 여백 축소 */
+}
+
+/* 체크박스 */
+.agreeCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 32px 0;
+}
+
+.checkboxInput {
+  width: 19.5px;
+  height: 19.5px;
+  cursor: pointer;
+  accent-color: #4787ff;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+/* 이유 선택 섹션 */
+.deleteReasonSection {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.deleteReasonLabel {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+/* 커스텀 드롭다운 ── 색상 #DEE3EB 통일 + 연결 강화 */
+.selectWrapper {
+  position: relative;
+  width: 390px;
+  margin-top: 0;
+}
+
+.customSelectValue {
+  padding: 16px;
+  border: 1px solid #dee3eb;
+  border-radius: 8px;
+  display: flex;
+  text-align: center;
+  cursor: pointer;
+  line-height: 150%;
+  font-weight: 400;
+  font-size: 14px;
+  color: #575d64;
+  background-color: #ffffff;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.customSelectValueHidden {
+  padding: 16px;
+  border: 1px solid #dee3eb;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  display: flex;
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  color: #575d64;
+  background-color: #ffffff;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.customSelectValue.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dropdownIcon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.customSelectValue.open .dropdownIcon {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.deleteModalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.deleteModalCancelBtn {
+  padding: 12px 32px;
+  border: 1px solid #dee3eb;
+  background-color: #ffffff;
+  color: #21232a;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.deleteModalCancelBtn:hover {
+  background-color: #f5f5f5;
+}
+
+.deleteModalConfirmBtn {
+  background-color: #4787ff;
+  color: white;
+  padding: 12px 32px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  cursor: pointer;
+}
+
+.deleteModalConfirmBtn:hover {
+  background-color: #3370e0;
+}
+
+.deleteModalConfirmBtnDisabled {
+  background: #f0f4fa;
+  color: #c7cdd4;
+  padding: 12px 32px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  cursor: not-allowed;
+}
+
+.customReasonWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.customReasonTextarea {
+  display: flex;
+  padding: 16px;
+  height: 96px;
+  align-items: flex-start;
+  align-self: stretch;
+  border-radius: 8px;
+  border: 1px solid #dee3eb;
+  background: #fff;
+}
+
+.charCountWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+}
+
+.charCountCurrent {
+  color: #407ae6;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.26px;
+}
+
+.charCountMax {
+  color: #4b4d55;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.26px;
+}

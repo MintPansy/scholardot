@@ -1,0 +1,201 @@
+/* ========== 1. 기본 설정 ========== */
+.section {
+  background-color: #f0f4fa;
+  padding: 80px 40px;
+  position: relative;
+}
+
+/* ========== 2. 헤더 ========== */
+.header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+
+.mainTitle {
+  font-size: 36px;
+  font-weight: 700;
+  color: #21232a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+/* 타임라인 컨테이너 */
+.timelineContainer {
+  max-width: 80%;
+  height: 578px;
+  margin: 0 auto;
+  border-radius: 20px;
+  background: #ffffff;
+  padding: 40px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+/* 점선 - STEP에 더 가깝게 (top 값 줄임) */
+.timelineContainer::before {
+  content: "";
+  position: absolute;
+  top: 100px;
+  left: 60px;
+  right: 60px;
+  height: 2px;
+  border-top: 2px dashed #d1d5db;
+}
+
+/* 굵은 점 - STEP 바로 아래 + 점선 위에 딱 */
+.stepDotCircle {
+  position: absolute;
+  left: 20px;
+  top: 53px;
+  width: 16px;
+  height: 16px;
+  background: #474952;
+  border-radius: 50%;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* STEP 라벨 - 점선과 가까워지도록 margin-bottom 줄임 */
+.stepLabel {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  text-transform: capitalize;
+  color: #21232a;
+  margin: 0 0 8px 0;
+  text-align: left;
+  position: relative;
+  z-index: 4;
+}
+
+.stepItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.mainIllustrationWrapper {
+  width: 90%;
+  height: 100%;
+  position: absolute;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  margin-block: 20px;
+}
+
+/* 실제 이미지 스타일 */
+.mainIllustration {
+  position: absolute;
+  top: 135px;
+  left: 0;
+  right: 0;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* 설명 텍스트 */
+.descriptionCard {
+  width: 90%;
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  right: 0;
+  min-height: 48px;
+}
+
+.stepDescription {
+  color: #4b4d55;
+  white-space: pre-line;
+  width: 90%;
+  margin: 0 auto;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* 새 클래스 — SVG 자체 스타일 */
+.stepSvg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* ========== 데스크톱 반응형 (웹 전용) ========== */
+@media (max-width: 1440px) {
+  .section {
+    padding: 64px 32px;
+  }
+  .header {
+    margin-bottom: 64px;
+  }
+  .mainTitle {
+    font-size: 32px;
+  }
+  .timelineContainer {
+    max-width: 85%;
+    height: 520px;
+    padding: 32px;
+  }
+  .timelineContainer::before {
+    left: 48px;
+    right: 48px;
+    top: 90px;
+  }
+  .stepLabel {
+    font-size: 18px;
+  }
+  .mainIllustration {
+    top: 120px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .section {
+    padding: 48px 24px;
+  }
+  .timelineContainer {
+    max-width: 90%;
+  }
+  .timelineContainer::before {
+    left: 36px;
+    right: 36px;
+    top: 80px;
+  }
+  .stepDotCircle {
+    left: 16px;
+    top: 48px;
+    width: 14px;
+    height: 14px;
+  }
+  .stepLabel {
+    font-size: 16px;
+  }
+  .mainIllustrationWrapper {
+    width: 95%;
+  }
+  .mainIllustration {
+    top: 100px;
+  }
+  .descriptionCard {
+    bottom: -16px;
+    min-height: 44px;
+  }
+  .stepDescription {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .section {
+    padding: 40px 20px;
+  }
+  .timelineContainer {
+    max-width: 95%;
+  }
+}

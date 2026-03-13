@@ -1,0 +1,145 @@
+/* 전체 footer */
+.footer {
+  background-color: white;
+  padding: 32px 24px;
+}
+
+/* 컨테이너 */
+.container {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+/* 모든 텍스트 공통 스타일 (상속) */
+.contentSection,
+.contentSection * {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: -2%;
+  text-transform: capitalize;
+}
+
+/* 로고 섹션 */
+/* 로고 섹션 */
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 28px;
+  padding: 10px 0;
+  /* padding-top: 10px + padding-bottom: 10px */
+  border-bottom: none;
+  gap: 8px;
+  /* gap: 8px */
+  width: 100%;
+}
+
+/* 로고 이미지 */
+.logoImage {
+  width: 212px;
+  height: 80px;
+}
+
+/* 콘텐츠 섹션 */
+.contentSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #6b7280;
+}
+
+/* 링크 그룹 */
+.linkGroup {
+  display: flex;
+  gap: 24px;
+  order: 1;
+}
+
+.link,
+.email {
+  word-break: break-all;
+  color: #737a82;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.26px;
+  text-decoration: none;
+}
+
+.link:hover,
+.email:hover {
+  color: #111827;
+}
+
+.divider {
+  display: none;
+  color: #d1d5db;
+}
+
+/* Copyright & Email */
+.copyrightSection {
+  text-align: center;
+  order: 3;
+}
+
+.copyright {
+  margin: 0;
+  color: #737a82;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.26px;
+}
+
+.emailSection {
+  text-align: left;
+  order: 2;
+}
+
+.email {
+  word-break: break-all;
+  color: #737a82;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.26px;
+  text-transform: none;
+}
+
+/* 📱 반응형: sm (640px 이상) */
+@media (min-width: 640px) {
+  .contentSection {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .linkGroup {
+    gap: 16px;
+    order: 1;
+  }
+
+  .divider {
+    display: inline;
+  }
+
+  .copyrightSection {
+    order: 2;
+  }
+
+  .emailSection {
+    order: 3;
+    text-align: right;
+  }
+
+  .email {
+    word-break: normal;
+  }
+
+  .copyright {
+    font-size: 14px;
+  }
+}

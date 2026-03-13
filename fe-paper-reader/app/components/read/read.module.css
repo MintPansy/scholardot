@@ -1,0 +1,725 @@
+/* ==================== 기본 스타일 ==================== */
+
+/* ==================== 컨테이너 ==================== */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+/* ==================== 헤더 ==================== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  height: 60px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* 왼쪽: 로고 */
+.headerLeft {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoImage {
+  height: 28px;
+  width: auto;
+  cursor: pointer;
+}
+
+/* 왼중앙: 왼쪽과 중앙의 정확히 한가운데 */
+.headerLeftCenter {
+  position: absolute;
+  left: 50%;
+  transform: translateX(calc(-50% - 300px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+}
+
+.sidebarToggleWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarToggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+  color: #666;
+  font-weight: 600;
+}
+
+.sidebarToggleBtn:hover {
+  border-color: #4787ff;
+  background-color: #f9f9f9;
+}
+
+.sidebarToggleBtnActive {
+  border-color: #4787ff;
+  background-color: #e8f4ff;
+  color: #4787ff;
+}
+
+/* 페이지 표시 */
+.pageIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background-color: transparent;
+  border-radius: 0;
+  border: none;
+  height: 36px;
+  padding: 0 0;
+}
+
+.pageIndicatorInput {
+  width: 24px;
+  height: 24px;
+  padding: 2px 3px;
+  border: none;
+  border-bottom: 1px solid #d0d0d0;
+  border-radius: 0;
+  background-color: transparent;
+  font-size: 16px;
+  font-weight: 400;
+  color: #333;
+  text-align: center;
+  cursor: text;
+  transition: border-color 0.2s ease;
+}
+
+.pageIndicatorInput:hover {
+  border-bottom-color: #4787ff;
+  background-color: transparent;
+}
+
+.pageIndicatorInput:focus {
+  outline: none;
+  border-bottom-color: #4787ff;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* 숫자만 입력되도록 스핀 버튼 제거 */
+.pageIndicatorInput::-webkit-outer-spin-button,
+.pageIndicatorInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pageIndicatorInput {
+  width: 24px;
+  height: 24px;
+  padding: 2px 6px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 16px;
+  font-weight: 400;
+  color: #333;
+  text-align: center;
+  cursor: text;
+  transition: border-color 0.2s ease;
+
+  line-height: 1;
+}
+
+.pageIndicatorInput:hover {
+  border-color: #4787ff;
+  background-color: #fff;
+}
+
+.pageIndicatorInput:focus {
+  outline: none;
+  border-color: #4787ff;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+/* 중앙: 파일명 (문서 제목) */
+.headerCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  flex: 0 0 auto;
+}
+
+.fileName {
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+/* 오른중앙: 오른쪽과 중앙의 정확히 한가운데 */
+.headerRightCenter {
+  position: absolute;
+  right: 50%;
+  transform: translateX(calc(50% + 300px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filterButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 182px;
+  height: 40px;
+  background-color: #e8e8e8;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.filterBtn {
+  width: 50px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background-color: #e8e8e8;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filterBtn:hover {
+  background-color: #d8d8d8;
+  color: #666;
+}
+
+.filterBtnActive {
+  border: none;
+  background-color: #ffffff;
+  color: #4787ff;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.filterBtnActive:hover {
+  background-color: #ffffff;
+}
+
+/* 오른쪽: 프로필 */
+.headerRight {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.profileMenuWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headerProfileImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  background-color: #ffffff;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.headerProfileImage:hover {
+  border-color: #4787ff;
+  box-shadow: 0 2px 8px rgba(71, 135, 255, 0.2);
+}
+
+/* 프로필 메뉴 드롭다운 */
+.profileMenuBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+.profileDropdown {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  min-width: 240px;
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.profileDropdownHeader {
+  padding: 16px;
+}
+
+.profileDropdownName {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.profileDropdownEmail {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #999;
+}
+
+.profileDropdownDivider {
+  height: 1px;
+  background-color: #f0f0f0;
+}
+
+.profileDropdownItem {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background-color: transparent;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.profileDropdownItem:hover {
+  background-color: #f9f9f9;
+  color: #4787ff;
+}
+
+.profileDropdownLogout {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background-color: transparent;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ff4757;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.profileDropdownLogout:hover {
+  background-color: #ffe0e0;
+}
+
+/* ==================== 콘텐츠 영역 ==================== */
+.contentWrapper {
+  display: flex;
+  flex: 1;
+  gap: 0;
+  padding: 0;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+/* 왼쪽 사이드바: 페이지 썸네일 */
+.sidebar {
+  width: 226px;
+  padding: 26px 12px;
+  background-color: #f0f4fa;
+  border-right: 1px solid #e0e0e0;
+  overflow-y: auto;
+  flex-shrink: 0;
+  animation: slideIn 0.3s ease;
+}
+
+/* PDF 뷰어 */
+.pdfViewer {
+  width: 50%;
+  flex-shrink: 0;
+  border-right: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pdfIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: #ffffff;
+}
+
+.pageThumbContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pageThumb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: auto;
+}
+
+.pageThumb:hover {
+  background-color: transparent;
+}
+
+.pageThumbActive {
+  border: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.pageThumbPreview {
+  width: 108px;
+  height: 140px;
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pageThumbIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  transform: scale(0.25);
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+/* 활성화된 페이지 용지에만 파란 테두리 */
+.pageThumbActive .pageThumbPreview {
+  border: 2px solid #4787ff;
+}
+
+.pageThumbNumber {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  margin-top: 6px;
+}
+
+.pageThumbActive .pageThumbNumber {
+  color: #4787ff;
+}
+
+/* 중앙: 메인 콘텐츠 */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0;
+  padding: 0;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.contentBox {
+  flex: 1;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 0;
+  overflow-y: auto;
+}
+
+.textContent {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+  white-space: normal;
+  word-break: break-word;
+  word-wrap: break-word;
+
+  margin: 0;
+  padding: 0;
+}
+
+/* 문장 단위 표시 스타일 */
+.sentencePair {
+  margin-bottom: 28px;
+  padding: 0;
+  background-color: transparent;
+  border-left: none;
+  border-radius: 0;
+}
+
+.englishSentence {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+
+  margin-bottom: 16px;
+  font-weight: 500;
+  padding: 0;
+}
+
+.koreanSentence {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #666;
+
+  font-weight: 400;
+  padding-left: 0;
+  border-left: none;
+  margin-bottom: 0;
+}
+
+/* ==================== 스크롤바 커스터마이징 ==================== */
+.contentBox::-webkit-scrollbar {
+  width: 8px;
+}
+
+.contentBox::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.contentBox::-webkit-scrollbar-thumb {
+  background-color: #d0d0d0;
+  border-radius: 4px;
+}
+
+.contentBox::-webkit-scrollbar-thumb:hover {
+  background-color: #4787ff;
+}
+
+/* Firefox 스크롤바 */
+.contentBox {
+  scrollbar-color: #d0d0d0 #f5f5f5;
+  scrollbar-width: thin;
+}
+
+/* ==================== 애니메이션 ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    width: 0;
+  }
+
+  to {
+    opacity: 1;
+    width: 226px;
+  }
+}
+
+.profileDropdown {
+  animation: fadeIn 0.2s ease;
+}
+
+/* ==================== 로그아웃 모달 ==================== */
+.logoutModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.logoutModalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.logoutModalContent {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 32px 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  z-index: 1001;
+}
+
+.logoutModalTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.logoutModalMessage {
+  font-size: 16px;
+  color: #626c71;
+  text-align: center;
+  margin: 0 0 28px 0;
+  line-height: 1.6;
+}
+
+.logoutModalButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.logoutModalCancelBtn {
+  flex: 1;
+  padding: 12px 20px;
+  border: 1px solid rgba(94, 82, 64, 0.2);
+  background-color: #f5f5f5;
+  color: #626c71;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logoutModalCancelBtn:hover {
+  background-color: #efefef;
+  border-color: rgba(94, 82, 64, 0.3);
+}
+
+.logoutModalConfirmBtn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.logoutModalConfirmBtn:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 4px 12px rgba(32, 128, 141, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ==================== 반응형 디자인 ==================== */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .pageThumbPreview {
+    width: 100px;
+    height: 130px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .contentWrapper {
+    gap: 0;
+  }
+
+  .mainContent {
+    padding: 8px;
+  }
+
+  .contentBox {
+    padding: 12px;
+  }
+
+  .textContent {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    display: none;
+  }
+
+  .contentWrapper {
+    gap: 0;
+  }
+
+  .textContent {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}

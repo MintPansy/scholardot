@@ -1,0 +1,230 @@
+.section {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 60px 36px 60px 20px;
+  min-height: calc(100vh - 60px);
+}
+
+.accountSection {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding-top: 60px;
+}
+
+.documentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.fileBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.fileBadgePdf {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.fileBadgeTxt {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.googleLogo {
+  display: flex;
+  padding: 4px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
+  background: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #dee3eb;
+}
+
+.accountTitle {
+  color: #21232a;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.64px;
+}
+
+.accountTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 32px;
+  margin-bottom: 32px;
+  padding-inline: 7.8125rem;
+}
+
+.accountProfileBar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.accountProfileImageSmall {
+  position: absolute;
+  top: 70%;
+  right: 0;
+  border: none;
+  border: 1.5px solid #fff;
+  background: #dee3eb;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.5;
+  }
+}
+
+.accountProfileImageSmallContainer {
+  width: 80px;
+  height: 80px;
+  background-color: #dee3eb;
+  border-radius: 50%;
+  position: relative;
+  border: none;
+}
+
+.accountProfileImageSmallContainer img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.cameraIcon {
+  position: absolute;
+  z-index: 100;
+}
+
+.accountProfileNameSmall {
+  color: #21232a;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.64px;
+}
+
+.accountLogoutBtnTop {
+  display: flex;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid #dee3eb;
+  background: #fff;
+  cursor: pointer;
+}
+
+.accountLogoutBtnTop:hover {
+  background-color: #f9f9f9;
+}
+
+.accountFormSection {
+  display: flex;
+  gap: 24px;
+  flex-direction: column;
+  padding-inline: 7.8125rem;
+}
+
+.accountFormRow {
+  display: flex;
+  align-items: center;
+}
+
+.accountFormLabel {
+  color: #4b4d55;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  width: 180px;
+  padding-right: 0.75rem;
+}
+
+.accountSocialLoginRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.accountSocialLoginText {
+  color: #4b4d55;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+}
+
+.accountInputContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 13.5px 16px;
+  border-radius: 8px;
+  border: 1px solid #dee3eb;
+  background: #f0f4fa;
+  width: 45%;
+}
+
+.accountInputText {
+  color: #b7b9c0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.28px;
+}
+
+.accountInput:focus {
+  outline: none;
+  border-color: #4787ff;
+  background-color: white;
+}
+
+.accountManagementSection {
+  margin-top: 150px;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 7.8125rem;
+}
+
+.deleteAccountLink {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.deleteAccountLinkText {
+  color: #8f959d;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  text-decoration-line: underline;
+  border: none;
+  background: none;
+}
+
+.deleteAccountLink:hover {
+  opacity: 0.5;
+}

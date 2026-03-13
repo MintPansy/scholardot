@@ -1,0 +1,284 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.content {
+  display: flex;
+  height: calc(100% - 61px);
+  overflow-y: auto;
+  width: 100%;
+}
+
+.sidebar {
+  width: 226px;
+  padding-top: 24px;
+  padding-inline: 12px;
+  background: #f0f4fa;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.pageList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+}
+
+.pageListItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.pageCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+  height: 140px;
+  aspect-ratio: 27/35;
+}
+
+.pageCard:hover {
+  border-color: rgba(71, 135, 255, 0.4);
+}
+
+.pageCardSelected {
+  border-color: #4787ff;
+  box-shadow: 0 0 0 1px #4787ff;
+}
+
+.pagePreview {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 4px;
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.pageThumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.pagePreviewPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #f0f4fa;
+}
+
+/* 페이지 썸네일: 각 페이지 전체 원문·번역 표시 (카드 안 스크롤) */
+.pagePreviewText {
+  width: 100%;
+  height: 100%;
+  padding: 6px 8px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #374151;
+  background: #fff;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.pagePreviewRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1;
+  overflow: visible;
+}
+
+.pagePreviewLabel {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 600;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+.pagePreviewTextSourceText,
+.pagePreviewTextText {
+  font-size: 7px;
+  font-weight: 400;
+  line-height: 1.4;
+  min-height: 0;
+  flex: 0 1 auto;
+  word-break: break-word;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.pagePreviewTextSourceText {
+  color: #374151;
+}
+
+.pagePreviewTextText {
+  color: #6b7280;
+}
+
+.pageNumber {
+  position: absolute;
+  bottom: -18%;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.26px;
+}
+
+.pageListItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.docUnitId {
+  position: relative;
+  display: flex;
+  width: calc(100% - 226px);
+  flex-direction: column;
+  gap: 48px;
+  padding-top: 36px;
+  padding-inline: 120px;
+  overflow-y: auto;
+}
+
+.pageDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  color: #8b95a8;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.26px;
+}
+
+.pageDivider::before,
+.pageDivider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #d4dbe8;
+}
+
+.docUnitIdItem {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin: -8px 0;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+}
+
+.bookmarkIcon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.bookmarkIcon:hover {
+  opacity: 0.5;
+  background-color: #d4dbe8;
+}
+
+.sourceText {
+  color: #21232a;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+}
+
+.sourceText::selection,
+.translatedText::selection {
+  background-color: rgba(255, 235, 59, 0.6);
+  color: #1a1a1a;
+}
+
+.translatedText {
+  color: #4b4d55;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  text-transform: capitalize;
+}
+
+/* 텍스트 선택 시 팝오버 모달 */
+.selectionModal {
+  position: fixed;
+  z-index: 1000;
+  width: 300px;
+  max-width: calc(100vw - 24px);
+  padding: 12px 14px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+}
+
+.selectionModalText {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+  word-break: break-word;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.selectionModalActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.selectionModalBtn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4787ff;
+  background: #f0f4fa;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.selectionModalBtn:hover {
+  background: #e0e7f0;
+}

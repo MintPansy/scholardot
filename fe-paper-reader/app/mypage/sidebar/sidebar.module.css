@@ -1,0 +1,64 @@
+.sidebar {
+  width: 15%;
+  background-color: #ffffff;
+  padding: 60px 12px;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabButtonContainer {
+  display: flex;
+}
+
+.tabButtonIcon {
+  margin-right: 16px;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding-left: 12px;
+}
+
+.tabButton {
+  display: flex;
+  width: 100%;
+  color: #575d64;
+  font-size: 1rem;
+  line-height: 150%;
+  letter-spacing: -0.32px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 300ms;
+  text-decoration: none;
+  padding: 12px 0;
+  gap: 8px;
+}
+
+.tabButtonActive {
+  border-radius: 8px;
+  background: var(--Blue-50, #edf3ff);
+}
+
+.tabButtonInactive {
+  color: #6b7280;
+}
+
+.tabButtonInactive:hover {
+  background-color: #f3f4f6;
+  color: #1a1a1a;
+}
+
+.tabButtonActive {
+  color: #4787ff;
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 20%;
+  }
+}
