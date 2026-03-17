@@ -1,3 +1,23 @@
+/* Tailwind v4 (PostCSS) — 유틸리티 사용을 위해 진입점 로드 */
+@import "tailwindcss";
+
+/* ===== PaperDot 학술 테마 (Navy + Cream + Gray) ===== */
+:root {
+  --pd-navy: #1e3a8a;
+  --pd-navy-light: #2563eb;
+  --pd-cream: #fefce8;
+  --pd-cream-bg: #fefdf3;
+  --pd-gray: #6b7280;
+  --pd-gray-light: #9ca3af;
+  --pd-gray-border: #e5e7eb;
+  --pd-white: #ffffff;
+  --pd-text: #111827;
+  --pd-text-secondary: #4b5563;
+  --pd-primary: #1e3a8a;
+  --pd-primary-hover: #1e40af;
+}
+
+/* ===== 글로벌 리셋 (기존 유지) ===== */
 html,
 body,
 div,
@@ -86,7 +106,8 @@ video {
   font: inherit;
   vertical-align: baseline;
 }
-/* HTML5 display-role reset for older browsers */
+
+/* HTML5 display-role reset for older browsers (section 제외 — Tailwind flex 사용) */
 article,
 aside,
 details,
@@ -96,23 +117,31 @@ footer,
 header,
 hgroup,
 menu,
-nav,
-section {
+nav {
   display: block;
 }
+
 html,
 body {
+  width: 100%;
   line-height: 1;
   overflow-x: hidden;
 }
+
+body {
+  font-family: roboto;
+}
+
 ol,
 ul {
   list-style: none;
 }
+
 blockquote,
 q {
   quotes: none;
 }
+
 blockquote:before,
 blockquote:after,
 q:before,
@@ -120,7 +149,27 @@ q:after {
   content: "";
   content: none;
 }
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
+}
+
+/* ===== 홈페이지: 섹션 flex + 텍스트 중앙 정렬 ===== */
+.home-page section {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-page .text-center,
+.home-page .prose,
+.home-page .card-content,
+.home-page p,
+.home-page h1,
+.home-page h2,
+.home-page h3,
+.home-page h4,
+.home-page li {
+  text-align: center !important;
 }

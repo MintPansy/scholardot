@@ -21,7 +21,7 @@
   font-size: 40px;
   line-height: 150%;
   letter-spacing: -0.02em;
-  color: #21232a;
+  color: var(--pd-text, #111827);
   text-align: center;
   margin: 0;
   white-space: pre-line;
@@ -100,7 +100,7 @@
   font-size: 24px;
   line-height: 150%;
   letter-spacing: -0.02em;
-  color: #21232a;
+  color: var(--pd-text, #111827);
   text-align: center;
   margin: 0 0 12px 0;
   white-space: pre-line;
@@ -122,7 +122,7 @@
   font-size: 16px;
   line-height: 150%;
   letter-spacing: -0.02em;
-  color: #4b4d55;
+  color: var(--pd-gray, #6b7280);
   margin-bottom: 8px;
   padding-left: 0px;
   position: relative;
@@ -142,8 +142,8 @@
 .ctaButton {
   display: block;
   width: 100%;
-  background-color: #558af0;
-  color: white;
+  background-color: var(--pd-navy, #1e3a8a);
+  color: var(--pd-cream, #fefce8);
   padding: 12px 20px;
   border-radius: 8px;
   font-weight: 600;
@@ -154,7 +154,7 @@
 }
 
 .ctaButton:hover {
-  background-color: #1d4084;
+  background-color: var(--pd-primary-hover, #1e40af);
 }
 
 /* ========== 데스크톱 반응형 (웹 전용) ========== */

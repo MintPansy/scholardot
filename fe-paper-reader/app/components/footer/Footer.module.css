@@ -20,26 +20,24 @@
   text-transform: capitalize;
 }
 
-/* 로고 섹션 */
-/* 로고 섹션 */
+/* 로고 섹션 — 고정 높이 제거해 이미지 크기에만 맞춤 */
 .logoSection {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   margin-bottom: 28px;
-  padding: 10px 0;
-  /* padding-top: 10px + padding-bottom: 10px */
+  padding: 12px 0;
   border-bottom: none;
   gap: 8px;
-  /* gap: 8px */
   width: 100%;
 }
 
-/* 로고 이미지 */
+/* 로고 이미지 — Image 컴포넌트와 동일 크기로 고정(레이아웃 시프트 방지) */
 .logoImage {
-  width: 212px;
-  height: 80px;
+  width: 350px;
+  height: 150px;
+  object-fit: contain;
 }
 
 /* 콘텐츠 섹션 */

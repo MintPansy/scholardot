@@ -29,7 +29,7 @@ export default function ReadHeader({
     <header className={styles.header}>
       <div className={styles.container}>
         <Link href={"/"} className={styles.link}>
-          <Image src="/Logo.svg" alt="Paperdot" width={106} height={40} />
+          <Image src="/newlogo.png" alt="PaperDot" width={180} height={60} />
         </Link>
         <div className={styles.readHeaderLeftControls}>
           <Button

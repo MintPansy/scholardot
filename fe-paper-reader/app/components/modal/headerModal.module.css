@@ -35,7 +35,7 @@
   letter-spacing: -0.28px;
   padding: 11.5px 16px;
   border-radius: 8px;
-  background: #4787ff;
+  background: var(--pd-navy, #1e3a8a);
   border: none;
   cursor: pointer;
   transition: all 300ms;

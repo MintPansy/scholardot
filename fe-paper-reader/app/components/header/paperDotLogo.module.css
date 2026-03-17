@@ -1,0 +1,47 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--pd-navy, #1e3a8a);
+  font-weight: 600;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.logo:visited {
+  color: var(--pd-navy, #1e3a8a);
+}
+
+.logo:hover {
+  color: var(--pd-navy-light, #2563eb);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: var(--pd-navy, #1e3a8a);
+  color: var(--pd-cream, #fefce8);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.wordmark {
+  font-weight: 600;
+}
+
+/* 푸터용: 약간 작게 */
+.logoFooter .icon {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+}
+
+.logoFooter .wordmark {
+  font-size: 1rem;
+}

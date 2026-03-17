@@ -10,11 +10,12 @@ export default function Footer() {
         {/* 1줄: 로고 */}
         <div className={styles.logoSection}>
           <Image
-            src="/footerLogo.svg"
-            alt="Paperdot"
-            width={120}
-            height={40}
+            src="/newlogo3.png"
+            alt="ScholarDot"
+            width={350}
+            height={150}
             className={styles.logoImage}
+            sizes="350px"
           />
         </div>
 
@@ -42,13 +43,13 @@ export default function Footer() {
 
           <div className={styles.copyrightSection}>
             <p className={styles.copyright}>
-              © {new Date().getFullYear()} paperdot. All rights reserved.
+              © {new Date().getFullYear()} ScholarDot. All rights reserved.
             </p>
           </div>
 
           <div className={styles.emailSection}>
-            <a href="contact.paperdot@gmail.com" className={styles.email}>
-              문의: contact.paperdot@gmail.com
+            <a href="contact.scholardot@gmail.com" className={styles.email}>
+              문의: contact.scholardot@gmail.com
             </a>
           </div>
         </div>

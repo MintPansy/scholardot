@@ -55,11 +55,11 @@
 }
 
 .headerButton {
-  background-color: #4787ff;
-  color: white;
+  background-color: var(--pd-navy, #1e3a8a);
+  color: var(--pd-cream, #fefce8);
   padding: 8px 14px;
   border-radius: 6px;
-  border: 1px solid #4787ff;
+  border: 1px solid var(--pd-navy, #1e3a8a);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;

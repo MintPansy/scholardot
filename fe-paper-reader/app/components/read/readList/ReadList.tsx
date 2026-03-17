@@ -10,35 +10,36 @@ import {
   createNote,
   type UserDocNoteItem,
 } from "@/app/api/document";
+import {
+  MOCK_TRANSLATION_PAIRS,
+  MOCK_FILE_NAME,
+  type MockTranslationPair,
+} from "@/app/data/mockTranslationData";
 
-interface TranslationPair {
-  docUnitId: number;
-  sourceText: string;
-  translatedText: string;
-}
+type TranslationPair = MockTranslationPair;
 
 /** 페이지당 문장(항목) 수 (7~8문장 단위) */
 const ITEMS_PER_PAGE = 8;
 
 export default function ReadList() {
   const [data] = useState<TranslationPair[]>(() => {
-    if (typeof window === "undefined") return [];
+    if (typeof window === "undefined") return MOCK_TRANSLATION_PAIRS;
     try {
       const stored = sessionStorage.getItem("translationPairs");
       if (stored) {
         const parsed = JSON.parse(stored) as TranslationPair[];
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch {
       /* ignore */
     }
-    return [];
+    return MOCK_TRANSLATION_PAIRS;
   });
 
   const [fileName] = useState(() => {
-    if (typeof window === "undefined") return "";
+    if (typeof window === "undefined") return MOCK_FILE_NAME;
     const stored = sessionStorage.getItem("fileName");
-    return stored?.trim() ?? "";
+    return stored?.trim() || MOCK_FILE_NAME;
   });
 
   const documentIdRef = useRef<string | null>(null);

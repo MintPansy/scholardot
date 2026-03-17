@@ -40,21 +40,18 @@
 
 .tabButtonActive {
   border-radius: 8px;
-  background: var(--Blue-50, #edf3ff);
+  background: var(--pd-cream-bg, #fefdf3);
+  color: var(--pd-navy, #1e3a8a);
+  font-weight: 600;
 }
 
 .tabButtonInactive {
-  color: #6b7280;
+  color: var(--pd-gray, #6b7280);
 }
 
 .tabButtonInactive:hover {
   background-color: #f3f4f6;
-  color: #1a1a1a;
-}
-
-.tabButtonActive {
-  color: #4787ff;
-  font-weight: 600;
+  color: var(--pd-text, #111827);
 }
 
 @media (max-width: 1024px) {

@@ -19,10 +19,10 @@ export default function LoginPage() {
     <div className={styles.container}>
       <div className={styles.content}>
         <Image
-          src="/LoginLogo.svg"
-          alt="Paperdot"
-          width={314}
-          height={110}
+          src="/newlogo.png"
+          alt="PaperDot"
+          width={420}
+          height={148}
           className={styles.logo}
         />
         <div className={styles.buttonContainer}>

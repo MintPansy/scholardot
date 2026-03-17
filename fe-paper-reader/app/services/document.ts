@@ -195,7 +195,7 @@ export const getTranslationStatus = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for future auth header
   accessToken: string
 ) => {
-  const apiUrl = "https://be-paper-dot.store";
+  const apiUrl = getApiUrl();
   const url = `${apiUrl}/api/v1/documents/${documentId}/translation-events`;
 
   return new EventSourcePolyfill(url);

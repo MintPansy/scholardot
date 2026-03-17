@@ -57,12 +57,12 @@
 }
 
 .pageCard:hover {
-  border-color: rgba(71, 135, 255, 0.4);
+  border-color: rgba(30, 58, 138, 0.4);
 }
 
 .pageCardSelected {
-  border-color: #4787ff;
-  box-shadow: 0 0 0 1px #4787ff;
+  border-color: var(--pd-navy, #1e3a8a);
+  box-shadow: 0 0 0 1px var(--pd-navy, #1e3a8a);
 }
 
 .pagePreview {
@@ -271,8 +271,8 @@
   padding: 6px 14px;
   font-size: 13px;
   font-weight: 500;
-  color: #4787ff;
-  background: #f0f4fa;
+  color: var(--pd-navy, #1e3a8a);
+  background: var(--pd-cream-bg, #fefdf3);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -280,7 +280,7 @@
 }
 
 .selectionModalBtn:hover {
-  background: #e0e7f0;
+  background: rgba(30, 58, 138, 0.12);
 }
 
 /* 검색 하이라이트 */
@@ -315,8 +315,8 @@
 
 .searchBar:focus {
   outline: none;
-  border-color: #4787ff;
-  box-shadow: 0 0 0 2px rgba(71, 135, 255, 0.2);
+  border-color: var(--pd-navy, #1e3a8a);
+  box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2);
 }
 
 /* 저장된 하이라이트가 있는 문단 */
