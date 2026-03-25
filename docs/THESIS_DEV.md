@@ -25,9 +25,9 @@
 
 ### Phase 1: 기반 정리 (1~2주)
 - [ ] **논문 주제·목표 문장** 한 줄로 정리 (예: "영어 학술 논문 PDF의 자동 한글 번역 및 병렬 읽기를 지원하는 웹 시스템 설계 및 구현")
-- [ ] **시스템 구성도** 그리기 (사용자 → FE → BE → DB/스토리지/OpenAI)
-- [ ] **API·ER 다이어그램** 정리 (Swagger + DB 스키마 스크린샷 또는 Mermaid)
-- [ ] `docs/ARCHITECTURE.md` 등에 설계 문서로 저장 → 논문 "시스템 설계" 챕터 초안
+- [x] **시스템 구성도** 그리기 (사용자 → FE → BE → DB/스토리지/OpenAI)
+- [x] **API·ER 다이어그램** 정리 (Swagger + DB 스키마 스크린샷 또는 Mermaid)
+- [x] `docs/ARCHITECTURE.md` 등에 설계 문서로 저장 → 논문 "시스템 설계" 챕터 초안
 
 ### Phase 2: 핵심 기능 완성 + 논문용 “기여점” 정리 (4~6주)
 - [ ] README의 **개발 추천 아이디어** 중 1~2개 우선 구현  
@@ -128,6 +128,42 @@
 - **백엔드 로컬 기동/빌드 오류 해결 (BE/DevOps)**
   - Docker 빌드 실패 원인(컴파일 에러) 수정: `ObjectStorageClientConfig`, `UserDocNoteService`의 문제를 최소 수정으로 해결.
   - 런타임/부팅 실패 원인인 필수 env 미설정(`JWT_SECRET`, OAuth 필수 값들)을 로컬용 더미 값으로 채워 서버가 기동되도록 처리.
+
+### 2026-03-25 (Phase 1 완료: ARCHITECTURE.md 작성 + API URL 정리)
+
+- **`docs/ARCHITECTURE.md` 전면 재작성**
+  - 기존 TODO 투성이 초안을 실제 코드 기반으로 완성.
+  - Mermaid 시스템 구성도: FE → BE → DB/S3/OpenAI 전체 흐름 다이어그램.
+  - Mermaid 시퀀스 다이어그램: PDF 업로드 → 비동기 번역 파이프라인 → 번역 쌍 조회 흐름.
+  - API 엔드포인트 전체 표 정리 (인증/문서/파이프라인/노트/LLM).
+  - DB 테이블 7개 전체 컬럼 정리 (users, social_accounts, documents, document_files, doc_units, doc_unit_translations, user_doc_notes).
+  - 기술 스택 선정 이유 1~2문장 정리 → 논문 "관련 연구" 챕터 재료.
+  - → 논문 "시스템 설계" 챕터 뼈대 완성.
+
+- **API URL 하드코딩 제거 (FE - `app/config/env.ts`)**
+  - 기존 폴백: `"https://be-paper-dot.store"` (만료된 도메인) → `"http://localhost:8080"`으로 교체.
+  - 모든 서비스 파일(services/document.ts, logout.ts, withdraw.ts, app/api/document.ts)은 이미 `getApiUrl()`을 통해 통일되어 있었음. 폴백 값만 수정.
+  - 로컬 개발 시 `.env.local` 없이도 백엔드 기본 포트로 연결됨.
+
+---
+
+### 2026-03-25 (형광펜 기능 완성)
+
+- **색상 사전 선택 UI 추가 (FE - ReadList.tsx)**
+  - 사이드바에 형광펜 색상 선택 버튼(노랑/분홍/파랑) 3개 추가.
+  - 선택된 색상에 테두리·scale 표시(`colorPickerBtnActive`)로 현재 활성 색상을 명확히 표시.
+  - 기존에 우클릭 context menu에서만 색상 변경이 가능하던 구조에서, 클릭 전 색상을 사이드바에서 사전 선택하는 방식으로 개선.
+
+- **복습 큐 → 문장 위치 점프 (FE - ReadList.tsx)**
+  - `reviewQueue`를 `Object.entries(highlightMap)`로 변경해 key(docUnitId + lang 정보) 보존.
+  - `jumpToHighlight(key)` 콜백 추가: key에서 docUnitId 추출 → data 배열에서 인덱스 조회 → itemRef 기반 smooth scroll.
+  - 복습 큐 항목에 색상 dot + hover 인터랙션 스타일 적용, 클릭 시 해당 문장으로 이동.
+
+- **완성된 형광펜 기능 전체 흐름**
+  - 사이드바에서 색상 선택 → 문장 클릭 → localStorage 즉시 반영 → 복습 큐에 dot+텍스트 표시 → 복습 큐 클릭 → 해당 문장 smooth scroll.
+  - 텍스트 선택 후 팝오버 "하이라이트" 클릭 시 BE API(`POST /notes`) 저장도 병행.
+
+---
 
 ### 2026-03-24 (추가: ScholarDot 형광펜 기능 구현 계획)
 - 형광펜 기능 구현 계획 (FE - @components/Read.tsx)

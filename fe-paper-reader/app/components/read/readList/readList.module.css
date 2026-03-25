@@ -302,6 +302,41 @@
   border: 1px solid rgba(30, 58, 138, 0.12);
 }
 
+/* 형광펜 색상 선택 */
+.colorPicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+
+.colorPickerLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.colorPickerBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.colorPickerBtn:hover {
+  transform: scale(1.2);
+}
+
+.colorPickerBtnActive {
+  border-color: #1e3a8a;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.25);
+}
+
 /* 사이드바 내 검색 + 이어읽기 */
 .sidebarSearchWrap {
   display: flex;
@@ -407,6 +442,9 @@
 }
 
 .reviewQueueItem {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
   text-align: left;
   font-size: 0.78rem;
   color: #475569;
@@ -414,6 +452,23 @@
   border-radius: 6px;
   padding: 4px 6px;
   background: #f8fafc;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.reviewQueueItem:hover {
+  background: #e2e8f0;
+  color: #1e3a8a;
+}
+
+.reviewQueueDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+  top: 1px;
 }
 
 .reviewQueueEmpty {

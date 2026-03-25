@@ -430,7 +430,23 @@ export default function ReadList({
     return () => window.clearTimeout(timer);
   }, [savedReadingPosition.pageIndex, savedReadingPosition.scrollTop]);
 
-  const reviewQueue = useMemo(() => Object.values(highlightMap), [highlightMap]);
+  const reviewQueue = useMemo(() => Object.entries(highlightMap), [highlightMap]);
+
+  const jumpToHighlight = useCallback(
+    (key: string) => {
+      const docUnitId = parseInt(key.split(":")[0], 10);
+      const idx = data.findIndex((item) => item.docUnitId === docUnitId);
+      if (idx < 0) return;
+      const el = contentScrollRef.current;
+      const ref = itemRefs.current[idx];
+      if (!el || !ref) return;
+      const containerRect = el.getBoundingClientRect();
+      const targetRect = ref.getBoundingClientRect();
+      const offset = targetRect.top - containerRect.top + el.scrollTop;
+      el.scrollTo({ top: offset, behavior: "smooth" });
+    },
+    [data]
+  );
 
   /** 검색어가 포함된 텍스트를 하이라이트된 React 노드로 반환 (캡처 그룹 사용 시 홀수 인덱스가 매치) */
   const highlightMatches = useCallback(
@@ -517,6 +533,22 @@ export default function ReadList({
                 </li>
               ))}
             </ul>
+            <div className={styles.colorPicker}>
+              <span className={styles.colorPickerLabel}>형광펜</span>
+              {(["yellow", "pink", "blue"] as HighlightColor[]).map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className={`${styles.colorPickerBtn} ${
+                    highlightColor === c ? styles.colorPickerBtnActive : ""
+                  }`}
+                  style={{ background: highlightColorToStyle(c) }}
+                  onClick={() => setHighlightColor(c)}
+                  title={c === "yellow" ? "노랑" : c === "pink" ? "분홍" : "파랑"}
+                  aria-pressed={highlightColor === c}
+                />
+              ))}
+            </div>
             <div className={styles.sidebarSearchWrap}>
               <input
                 type="search"
@@ -538,9 +570,18 @@ export default function ReadList({
             <div className={styles.reviewQueue}>
               <p className={styles.reviewQueueTitle}>복습 큐: {reviewQueue.length}개</p>
               <ul className={styles.reviewQueueList}>
-                {reviewQueue.slice(0, 8).map((entry, idx) => (
-                  <li key={`${entry.text}-${idx}`} className={styles.reviewQueueItem}>
-                    {entry.text.length > 44 ? `${entry.text.slice(0, 44)}...` : entry.text}
+                {reviewQueue.slice(0, 8).map(([key, entry]) => (
+                  <li
+                    key={key}
+                    className={styles.reviewQueueItem}
+                    onClick={() => jumpToHighlight(key)}
+                    title="클릭하면 해당 문장으로 이동"
+                  >
+                    <span
+                      className={styles.reviewQueueDot}
+                      style={{ background: highlightColorToStyle(entry.color) }}
+                    />
+                    {entry.text.length > 40 ? `${entry.text.slice(0, 40)}…` : entry.text}
                   </li>
                 ))}
                 {reviewQueue.length === 0 && (
