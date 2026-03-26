@@ -196,3 +196,48 @@
 
 - 하이라이트 미리보기/관리 영역 예약: 복습 큐 연결을 위한 데이터 연동 준비.
 
+---
+
+### 2026-03-26 (논문 읽기 UX 완성도 개선 — 버그 수정 및 DB 연동 강화)
+
+- **형광펜 색상 저장 버그 수정 (FE - ReadList.tsx)**
+  - 텍스트 선택 후 팝오버 "하이라이트" 버튼 클릭 시 항상 노란색(`#fff59d`)으로 저장되던 버그 수정.
+  - 원인: `handleSaveHighlight` 내부 `color` 필드가 `highlightColor` state를 참조하지 않고 상수로 하드코딩되어 있었음.
+  - 조치: `highlightColorToHex(color: HighlightColor): string` 헬퍼 추가 (yellow→`#fff59d`, pink→`#f472b6`, blue→`#0ea5e9`), `handleSaveHighlight`의 color 필드를 `highlightColorToHex(highlightColor)`로 교체 및 dependency array에 반영.
+
+- **메모 입력/수정 모달 구현 (FE - ReadList.tsx)**
+  - 기존 `window.prompt()` 방식 → 스타일드 모달(overlay + textarea)로 전면 교체.
+  - 신규 메모 작성: 팝오버 "메모" 버튼 클릭 → memoModal state 오픈, 기존 selectionModal 닫기.
+  - 기존 메모 수정: 문단 내 `📝 N` 배지 클릭 → 해당 메모 내용이 미리 채워진 모달 오픈.
+  - `Ctrl+Enter`로 저장, `Escape`로 닫기 단축키 지원.
+  - 모달 타이틀을 "메모 추가" / "메모 수정"으로 분기해 사용자에게 맥락 전달.
+
+- **메모 수정 API 연동 (FE + BE)**
+  - BE `PUT /api/v1/documents/{documentId}/notes/{noteId}` 엔드포인트가 이미 구현되어 있었으나 FE에서 미사용 상태였음.
+  - `app/api/document.ts`에 `updateNote()` 함수 추가 (PUT 요청).
+  - `handleSubmitMemo`에서 `memoModal.noteId` 존재 여부에 따라 `updateNote` / `createNote` 자동 분기.
+
+- **복습 큐 항목 삭제 버튼 추가 (FE - ReadList.tsx)**
+  - 복습 큐 각 항목에 `×` 삭제 버튼 추가 (hover 시에만 표시, opacity 트랜지션 적용).
+  - 버튼 클릭 시 `stopPropagation()`으로 문장 이동 이벤트와 분리.
+  - 기존에는 반드시 본문에서 우클릭 → 컨텍스트 메뉴로만 삭제 가능했던 UX 개선.
+
+- **에러 처리 UX 개선: alert → toast (FE - NewDocument.tsx)**
+  - PDF 타입 미스매치 오류(`alert("PDF 파일만 업로드 가능합니다.")`) 2곳 → `toast.error()`로 교체.
+  - 파일 업로드 실패 오류 `alert(message)` → `toast.error(message)`로 교체.
+  - `react-toastify`는 기존에 의존성 설치 및 `Layout.tsx`에 `<ToastContainer>` 배치가 완료된 상태였음.
+  - 디버그용 `console.log("translatedText", translatedText)` 제거.
+
+- **하이라이트 DB 영속화 (FE - ReadList.tsx)**
+  - 기존: 문장 클릭 하이라이트는 localStorage에만 저장 → 다른 기기 접속 / 캐시 초기화 시 전부 소실.
+  - 변경: `applyHighlight` 호출 시 localStorage 저장과 동시에 `POST /notes`(noteType: HIGHLIGHT)로 DB 저장.
+  - `removeHighlight` 시 `notesByDocUnitId`에서 HIGHLIGHT 노트를 조회해 `DELETE /notes/{noteId}` 연동.
+  - 노트 로드 완료 후 DB HIGHLIGHT → `highlightMap` 동기화 useEffect 추가: localStorage에 없는 항목만 보완해 다른 기기 접속 시 하이라이트 복원.
+  - 언어(en/ko) 추론: `note.content`와 `item.sourceText` 비교로 key(`${docUnitId}:en|ko`) 결정.
+
+- **번역 데이터 새로고침 내구성 개선 (FE - ReadList.tsx, NewDocument.tsx)**
+  - 기존: `translationPairs`, `fileName`, `documentId`가 sessionStorage에만 저장 → 새로고침 시 전부 유실, 업로드 과정 재시작 필요.
+  - 변경 (NewDocument.tsx): 번역 완료 시점(`applyResult`)에 세 값을 sessionStorage와 localStorage에 동시 저장. localStorage 용량 초과 시 try/catch로 조용히 무시.
+  - 변경 (ReadList.tsx): 데이터 초기화 시 sessionStorage 우선, 없으면 localStorage fallback으로 읽도록 변경.
+  - 효과: 새로고침해도 마지막 번역 결과를 복원해 읽기 화면을 유지.
+

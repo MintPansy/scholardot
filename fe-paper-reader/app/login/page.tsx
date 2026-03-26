@@ -90,14 +90,15 @@ export default function LoginPage() {
             로그인 시 이용약관 및 개인정보처리방침에 동의하게 됩니다.
           </p>
           <Link
-            href="https://www.notion.so/2fbeb2f40de780c5b996fc19312ca446?source=copy_link"
+            href="https://www.notion.so/ScholarDot-32d844e3f94680faa215c1bcae9c889b?source=copy_link"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.termsLinkText}>
             이용약관
           </Link>
+
           <Link
-            href="https://www.notion.so/2f4eb2f40de7802f8539e4762234b41d?source=copy_link"
+            href="https://www.notion.so/ScholarDot-32d844e3f946802eb7b5dd734df178f6?source=copy_link"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.termsLinkText}>

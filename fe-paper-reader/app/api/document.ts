@@ -319,6 +319,24 @@ export async function createNote(
   return handleResponse<UserDocNoteItem>(response);
 }
 
+export async function updateNote(
+  documentId: number | string,
+  noteId: number,
+  body: Partial<CreateNoteRequest>,
+  accessToken?: string
+): Promise<UserDocNoteItem> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${documentId}/notes/${noteId}`,
+    {
+      method: "PUT",
+      headers: getAuthHeaders(accessToken),
+      credentials: "include",
+      body: JSON.stringify(body),
+    }
+  );
+  return handleResponse<UserDocNoteItem>(response);
+}
+
 export async function deleteNote(
   documentId: number | string,
   noteId: number,

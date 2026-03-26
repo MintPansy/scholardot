@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@fontsource/noto-sans-kr": "^5.2.9",
+    "@fontsource/roboto": "^5.2.10",
     "event-source-polyfill": "^1.0.31",
     "lucide-react": "^0.577.0",
     "next": "^16.1.6",

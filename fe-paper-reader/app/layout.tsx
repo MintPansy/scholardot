@@ -1,15 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
-import { Roboto } from "next/font/google";
 import Layout from "./components/layout/Layout";
-
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
-  display: "swap",
-  preload: true,
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -32,7 +24,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko" className={roboto.className}>
+    <html lang="ko" className="font-body">
       <body className="min-h-screen bg-[#F8FAFC] antialiased">
         <Layout>{children}</Layout>
       </body>

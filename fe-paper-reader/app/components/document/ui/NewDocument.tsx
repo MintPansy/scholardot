@@ -11,6 +11,7 @@ import {
 } from "@/app/services/document";
 import { useAccessTokenStore, useLoginStore } from "@/app/store/useLogin";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 interface UploadingFile {
   id: string;
@@ -99,7 +100,7 @@ export default function NewDocumentPage() {
           },
         ]);
       } else {
-        alert("PDF 파일만 업로드 가능합니다.");
+        toast.error("PDF 파일만 업로드 가능합니다.");
       }
     }
   };
@@ -119,7 +120,7 @@ export default function NewDocumentPage() {
           },
         ]);
       } else {
-        alert("PDF 파일만 업로드 가능합니다.");
+        toast.error("PDF 파일만 업로드 가능합니다.");
       }
     }
     // 같은 파일을 다시 선택할 수 있도록 input 값 초기화
@@ -188,7 +189,7 @@ export default function NewDocumentPage() {
           error instanceof Error
             ? error.message
             : "파일 업로드에 실패했습니다.";
-        alert(message);
+        toast.error(message);
         setDocument(null);
         setTranslatedText([]);
         setUploadingFiles([]);
@@ -209,14 +210,22 @@ export default function NewDocumentPage() {
     const applyResult = (list: TranslationPair[]) => {
       if (list.length === 0) return;
       setTranslatedText(list);
-      sessionStorage.setItem("translationPairs", JSON.stringify(list));
+      const serialized = JSON.stringify(list);
+      sessionStorage.setItem("translationPairs", serialized);
+      try { localStorage.setItem("translationPairs", serialized); } catch { /* 용량 초과 무시 */ }
       setUploadingFiles((prev) =>
         prev.map((f, i) =>
           i === 0 ? { ...f, progress: 100, status: "completed" as const } : f
         )
       );
       const name = uploadingFiles[0]?.file?.name;
-      if (name) sessionStorage.setItem("fileName", name);
+      if (name) {
+        sessionStorage.setItem("fileName", name);
+        localStorage.setItem("fileName", name);
+      }
+      if (document?.documentId) {
+        localStorage.setItem("documentId", document.documentId);
+      }
     };
 
     const run = async () => {
@@ -281,8 +290,6 @@ export default function NewDocumentPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [document?.documentId]);
-
-  console.log("translatedText", translatedText);
 
   const isTranslationLoading =
     document != null && translatedText.length === 0 && isTranslating;

@@ -1,6 +1,23 @@
 /* Tailwind v4 (PostCSS) — 유틸리티 사용을 위해 진입점 로드 */
 @import "tailwindcss";
 
+/* Self-hosted fonts — avoids build-time Google Fonts fetch + Turbopack next/font issues */
+@import "@fontsource/roboto/latin-300.css";
+@import "@fontsource/roboto/latin-400.css";
+@import "@fontsource/roboto/latin-500.css";
+@import "@fontsource/roboto/latin-700.css";
+@import "@fontsource/noto-sans-kr/korean-700.css";
+@import "@fontsource/noto-sans-kr/korean-800.css";
+@import "@fontsource/noto-sans-kr/korean-900.css";
+
+.font-body {
+  font-family: "Roboto", ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-landing-display {
+  font-family: "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+}
+
 /* ===== PaperDot 학술 테마 (Navy + Cream + Gray) ===== */
 :root {
   --pd-navy: #1e3a8a;

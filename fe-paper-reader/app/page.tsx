@@ -3,15 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Noto_Sans_KR } from "next/font/google";
 import { useLoginStore } from "@/app/store/useLogin";
 import styles from "./page.module.css";
-
-const notoSansKr = Noto_Sans_KR({
-  subsets: ["latin"],
-  weight: ["700", "800", "900"],
-  display: "swap",
-});
 
 const features = [
   {
@@ -66,7 +59,7 @@ export default function Home() {
             ScholarDot
           </div>
 
-          <h1 className={`${styles.heroTitle} ${notoSansKr.className}`}>
+          <h1 className={`${styles.heroTitle} font-landing-display`}>
             영어 논문을 연구 노트처럼 읽는 ScholarDot
           </h1>
 
@@ -143,7 +136,7 @@ export default function Home() {
             <p className={styles.kicker}>
               Features
             </p>
-            <h2 className={`${styles.sectionTitle} ${notoSansKr.className}`}>
+            <h2 className={`${styles.sectionTitle} font-landing-display`}>
               논문 읽기를 학습으로 바꾸는
               <br className={styles.breakSm} />
               ScholarDot 기능
@@ -181,7 +174,7 @@ export default function Home() {
         <div className={styles.container}>
           <div className={styles.sectionHeaderWide}>
             <p className={styles.kicker}>Research</p>
-            <h2 className={`${styles.sectionTitle} ${notoSansKr.className}`}>
+            <h2 className={`${styles.sectionTitle} font-landing-display`}>
               왜 이런 UI를 만들었나요?
             </h2>
             <p className={styles.sectionSub}>
@@ -191,7 +184,7 @@ export default function Home() {
 
           <div className={styles.researchGrid}>
             <article className={styles.researchCard}>
-              <h3 className={`${styles.researchCardTitle} ${notoSansKr.className}`}>기존 UX 문제</h3>
+              <h3 className={`${styles.researchCardTitle} font-landing-display`}>기존 UX 문제</h3>
               <ul className={styles.researchList}>
                 <li>원문과 번역을 오가며 왕복 스크롤이 반복됩니다.</li>
                 <li>번역 내용을 따로 복붙하며 읽기 흐름이 끊깁니다.</li>
@@ -200,7 +193,7 @@ export default function Home() {
             </article>
 
             <article className={styles.researchCard}>
-              <h3 className={`${styles.researchCardTitle} ${notoSansKr.className}`}>ScholarDot 해결책</h3>
+              <h3 className={`${styles.researchCardTitle} font-landing-display`}>ScholarDot 해결책</h3>
               <ul className={styles.researchList}>
                 <li>문장 단위로 원문·번역을 병렬 배치해 맥락을 유지합니다.</li>
                 <li>하이라이트·메모·복습 큐를 읽기 흐름 안에 통합합니다.</li>
@@ -219,7 +212,7 @@ export default function Home() {
             <p className={styles.kicker}>
               Demo
             </p>
-            <h2 className={`${styles.sectionTitle} ${notoSansKr.className}`}>
+            <h2 className={`${styles.sectionTitle} font-landing-display`}>
               실제 읽는 화면도
               <br className={styles.breakSm} />
               바로 확인할 수 있습니다
@@ -272,7 +265,7 @@ export default function Home() {
 
         <div className={styles.ctaInner}>
           <div className={styles.ctaCard}>
-            <h2 className={`${styles.ctaTitle} ${notoSansKr.className}`}>
+            <h2 className={`${styles.ctaTitle} font-landing-display`}>
               지금 PDF를 업로드하고
               <br className={styles.breakSm} />
               더 편하게 읽어보세요

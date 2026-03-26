@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(grep -rn \"createNote\\\\|getNotes\\\\|UserDocNote\" /c/paperdot2/fe-paper-reader/app --include=*.tsx --include=*.ts)"
     ]
   }
 }

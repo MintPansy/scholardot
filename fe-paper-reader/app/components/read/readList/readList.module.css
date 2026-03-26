@@ -454,6 +454,7 @@
   background: #f8fafc;
   cursor: pointer;
   transition: background 0.15s;
+  justify-content: space-between;
 }
 
 .reviewQueueItem:hover {
@@ -469,6 +470,39 @@
   flex-shrink: 0;
   position: relative;
   top: 1px;
+}
+
+.reviewQueueText {
+  flex: 1;
+  min-width: 0;
+}
+
+.reviewQueueDeleteBtn {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: none;
+  color: #94a3b8;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+
+.reviewQueueItem:hover .reviewQueueDeleteBtn {
+  opacity: 1;
+}
+
+.reviewQueueDeleteBtn:hover {
+  color: #b91c1c;
+  background: #fee2e2;
 }
 
 .reviewQueueEmpty {
@@ -510,6 +544,89 @@
 
 .highlightMenuBtnDanger:hover {
   background: #fef2f2;
+}
+
+/* 메모 모달 */
+.memoModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memoModal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.memoModalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0 0 12px;
+}
+
+.memoModalTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border: 1px solid #d4dbe8;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  color: #374151;
+}
+
+.memoModalTextarea:focus {
+  outline: none;
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2);
+}
+
+.memoModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.memoModalCancelBtn {
+  padding: 7px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #d4dbe8;
+  border-radius: 8px;
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.memoModalCancelBtn:hover {
+  background: #f8fafc;
+}
+
+.memoModalSaveBtn {
+  padding: 7px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background: #1e3a8a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.memoModalSaveBtn:hover {
+  background: #1e40af;
 }
 
 /* ==================== Responsive ==================== */

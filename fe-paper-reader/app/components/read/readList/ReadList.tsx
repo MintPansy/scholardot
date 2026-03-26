@@ -9,6 +9,8 @@ import { getJSON, getNumber, setJSON, setNumber } from "@/lib/localStorage";
 import {
   getNotes,
   createNote,
+  updateNote,
+  deleteNote,
   type UserDocNoteItem,
 } from "@/app/api/document";
 import {
@@ -38,7 +40,10 @@ export default function ReadList({
   const [data] = useState<TranslationPair[]>(() => {
     if (typeof window === "undefined") return MOCK_TRANSLATION_PAIRS;
     try {
-      const stored = sessionStorage.getItem("translationPairs");
+      // sessionStorage 우선, 없으면 localStorage fallback
+      const stored =
+        sessionStorage.getItem("translationPairs") ??
+        localStorage.getItem("translationPairs");
       if (stored) {
         const parsed = JSON.parse(stored) as TranslationPair[];
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -51,13 +56,17 @@ export default function ReadList({
 
   const [fileName] = useState(() => {
     if (typeof window === "undefined") return MOCK_FILE_NAME;
-    const stored = sessionStorage.getItem("fileName");
+    const stored =
+      sessionStorage.getItem("fileName") ??
+      localStorage.getItem("fileName");
     return stored?.trim() || MOCK_FILE_NAME;
   });
 
   const documentIdRef = useRef<string | null>(null);
   if (typeof window !== "undefined" && !documentIdRef.current) {
-    documentIdRef.current = sessionStorage.getItem("documentId");
+    documentIdRef.current =
+      sessionStorage.getItem("documentId") ??
+      localStorage.getItem("documentId");
   }
   const documentId = documentIdRef.current;
 
@@ -93,6 +102,9 @@ export default function ReadList({
     if (!documentId || !accessToken) return;
     getNotes(documentId, accessToken).then(setNotes).catch(() => {});
   }, [documentId, accessToken]);
+
+  const [memoModal, setMemoModal] = useState<{ docUnitId: number; noteId?: number; initialContent?: string } | null>(null);
+  const [memoContent, setMemoContent] = useState("");
 
   const [selectedPageIndex, setSelectedPageIndex] = useState(0);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -137,6 +149,12 @@ export default function ReadList({
   const closeSelectionModal = useCallback(() => setSelectionModal(null), []);
   const closeContextMenu = useCallback(() => setContextMenu(null), []);
 
+  const highlightColorToHex = useCallback((color: HighlightColor): string => {
+    if (color === "pink") return "#f472b6";
+    if (color === "blue") return "#0ea5e9";
+    return "#fff59d";
+  }, []);
+
   const handleCopySelection = useCallback(() => {
     const text = selectionModalTextRef.current;
     if (text) {
@@ -151,7 +169,7 @@ export default function ReadList({
     if (!documentId || !accessToken || !text || docUnitId == null) return;
     createNote(
       documentId,
-      { docUnitId, noteType: "HIGHLIGHT", content: text, color: "#fff59d" },
+      { docUnitId, noteType: "HIGHLIGHT", content: text, color: highlightColorToHex(highlightColor) },
       accessToken
     )
       .then(() => {
@@ -159,24 +177,35 @@ export default function ReadList({
         setSelectionModal(null);
       })
       .catch(() => {});
-  }, [documentId, accessToken, refetchNotes, selectionModal?.docUnitId]);
+  }, [documentId, accessToken, refetchNotes, selectionModal?.docUnitId, highlightColor, highlightColorToHex]);
 
   const handleSaveMemo = useCallback(() => {
     const docUnitId = selectionModal?.docUnitId;
     if (!documentId || !accessToken || docUnitId == null) return;
-    const content = window.prompt("메모 내용을 입력하세요.");
-    if (content == null) return;
-    createNote(
-      documentId,
-      { docUnitId, noteType: "MEMO", content: content.trim() || null },
-      accessToken
-    )
+    setMemoContent("");
+    setMemoModal({ docUnitId });
+    setSelectionModal(null);
+  }, [documentId, accessToken, selectionModal?.docUnitId]);
+
+  const handleSubmitMemo = useCallback(() => {
+    if (!memoModal || !documentId || !accessToken) return;
+    const content = memoContent.trim() || null;
+    const action = memoModal.noteId != null
+      ? updateNote(documentId, memoModal.noteId, { content }, accessToken)
+      : createNote(documentId, { docUnitId: memoModal.docUnitId, noteType: "MEMO", content }, accessToken);
+    action
       .then(() => {
         refetchNotes();
-        setSelectionModal(null);
+        setMemoModal(null);
+        setMemoContent("");
       })
       .catch(() => {});
-  }, [documentId, accessToken, refetchNotes, selectionModal?.docUnitId]);
+  }, [memoModal, documentId, accessToken, memoContent, refetchNotes]);
+
+  const closeMemoModal = useCallback(() => {
+    setMemoModal(null);
+    setMemoContent("");
+  }, []);
 
   // 본문 영역에서 텍스트 선택 시 모달 표시
   useEffect(() => {
@@ -236,6 +265,32 @@ export default function ReadList({
   useEffect(() => {
     setJSON(`${storageNamespace}:highlights`, highlightMap);
   }, [highlightMap, storageNamespace]);
+
+  // DB HIGHLIGHT 노트 → highlightMap 동기화 (다른 기기/캐시 초기화 대응)
+  useEffect(() => {
+    if (notesLoading || notes.length === 0) return;
+    const highlightNotes = notes.filter(n => n.noteType === "HIGHLIGHT");
+    if (highlightNotes.length === 0) return;
+    setHighlightMap(prev => {
+      let changed = false;
+      const merged = { ...prev };
+      highlightNotes.forEach(note => {
+        if (!note.content) return;
+        const item = data.find(d => d.docUnitId === note.docUnitId);
+        if (!item) return;
+        const enKey = `${note.docUnitId}:en`;
+        const koKey = `${note.docUnitId}:ko`;
+        if (merged[enKey] || merged[koKey]) return; // 이미 있으면 스킵
+        const color: HighlightColor =
+          note.color === "#f472b6" ? "pink" :
+          note.color === "#0ea5e9" ? "blue" : "yellow";
+        const lang = note.content === item.sourceText ? "en" : "ko";
+        merged[`${note.docUnitId}:${lang}`] = { color, text: note.content };
+        changed = true;
+      });
+      return changed ? merged : prev;
+    });
+  }, [notes, notesLoading, data]);
 
   const saveReadingPosition = useCallback(
     (pageIndex: number, scrollTop: number) => {
@@ -379,8 +434,18 @@ export default function ReadList({
   const applyHighlight = useCallback(
     (key: string, text: string, color: HighlightColor) => {
       setHighlightMap((prev) => ({ ...prev, [key]: { color, text } }));
+      if (documentId && accessToken) {
+        const docUnitId = parseInt(key.split(":")[0], 10);
+        createNote(
+          documentId,
+          { docUnitId, noteType: "HIGHLIGHT", content: text, color: highlightColorToHex(color) },
+          accessToken
+        )
+          .then(() => refetchNotes())
+          .catch(() => {});
+      }
     },
-    []
+    [documentId, accessToken, highlightColorToHex, refetchNotes]
   );
 
   const removeHighlight = useCallback((key: string) => {
@@ -390,7 +455,16 @@ export default function ReadList({
       delete next[key];
       return next;
     });
-  }, []);
+    if (documentId && accessToken) {
+      const docUnitId = parseInt(key.split(":")[0], 10);
+      const highlightNote = (notesByDocUnitId.get(docUnitId) ?? []).find(n => n.noteType === "HIGHLIGHT");
+      if (highlightNote) {
+        deleteNote(documentId, highlightNote.id, accessToken)
+          .then(() => refetchNotes())
+          .catch(() => {});
+      }
+    }
+  }, [documentId, accessToken, notesByDocUnitId, refetchNotes]);
 
   const handleSentenceClick = useCallback(
     (key: string, text: string) => {
@@ -581,7 +655,18 @@ export default function ReadList({
                       className={styles.reviewQueueDot}
                       style={{ background: highlightColorToStyle(entry.color) }}
                     />
-                    {entry.text.length > 40 ? `${entry.text.slice(0, 40)}…` : entry.text}
+                    <span className={styles.reviewQueueText}>
+                      {entry.text.length > 40 ? `${entry.text.slice(0, 40)}…` : entry.text}
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.reviewQueueDeleteBtn}
+                      onClick={(e) => { e.stopPropagation(); removeHighlight(key); }}
+                      title="하이라이트 삭제"
+                      aria-label="하이라이트 삭제"
+                    >
+                      ×
+                    </button>
                   </li>
                 ))}
                 {reviewQueue.length === 0 && (
@@ -609,7 +694,16 @@ export default function ReadList({
               }}
               className={hasHighlight ? styles.hasSavedHighlight : undefined}>
               {memos.length > 0 && (
-                <div className={styles.memoBadge} title={memos.map((m) => m.content ?? "").join("\n")}>
+                <div
+                  className={styles.memoBadge}
+                  title="클릭하면 메모를 수정할 수 있습니다"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    const memo = memos[0];
+                    setMemoContent(memo.content ?? "");
+                    setMemoModal({ docUnitId: item.docUnitId, noteId: memo.id, initialContent: memo.content ?? "" });
+                  }}
+                >
                   📝 {memos.length}
                 </div>
               )}
@@ -778,6 +872,34 @@ export default function ReadList({
               onClick={closeSelectionModal}>
               닫기
             </button>
+          </div>
+        </div>
+      )}
+
+      {memoModal && (
+        <div className={styles.memoModalOverlay} onClick={closeMemoModal}>
+          <div className={styles.memoModal} onClick={(e) => e.stopPropagation()}>
+            <p className={styles.memoModalTitle}>{memoModal?.noteId != null ? "메모 수정" : "메모 추가"}</p>
+            <textarea
+              className={styles.memoModalTextarea}
+              value={memoContent}
+              onChange={(e) => setMemoContent(e.target.value)}
+              placeholder="메모 내용을 입력하세요."
+              rows={4}
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSubmitMemo();
+                if (e.key === "Escape") closeMemoModal();
+              }}
+            />
+            <div className={styles.memoModalActions}>
+              <button type="button" className={styles.memoModalCancelBtn} onClick={closeMemoModal}>
+                취소
+              </button>
+              <button type="button" className={styles.memoModalSaveBtn} onClick={handleSubmitMemo}>
+                저장
+              </button>
+            </div>
           </div>
         </div>
       )}
