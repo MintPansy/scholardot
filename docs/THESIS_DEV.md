@@ -241,3 +241,25 @@
   - 변경 (ReadList.tsx): 데이터 초기화 시 sessionStorage 우선, 없으면 localStorage fallback으로 읽도록 변경.
   - 효과: 새로고침해도 마지막 번역 결과를 복원해 읽기 화면을 유지.
 
+---
+
+### 2026-03-27 (실험 실행 점검 — 로컬 환경 이슈 확인)
+
+- **실험 실행 전제 점검 (Experiment)**
+  - `experiment/README.md`, `measure_pipeline.py`, `measure_latency.py` 기준으로 실험 절차와 필수 조건을 재확인.
+  - `01page.pdf` 자체는 입력 파일로 사용 가능하며, 핵심 전제는 `localhost:8080` 백엔드 정상 기동임.
+
+- **DB 기동 이슈 (Docker)**
+  - `docker compose -f compose/docker-compose.local.yml up -d` 실행 시 Docker 엔진 연결 실패.
+  - 오류 핵심: `open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.`
+  - 원인 정리: compose 파일 문법 문제가 아니라 Docker Desktop daemon 미실행 상태.
+
+- **백엔드 기동 이슈 (Spring Boot/Gradle)**
+  - `./gradlew bootRun --args='--spring.profiles.active=local'` 실행 시 실패.
+  - 오류 핵심: Java Toolchain 17 미탐지(`Cannot find a Java installation ... languageVersion=17`).
+  - 원인 정리: 애플리케이션 코드 문제보다 로컬 JDK 17 런타임/환경변수 미구성 이슈.
+
+- **오늘 결론 및 다음 액션**
+  - 오늘은 코드 변경/성능 측정 실행 대신, 실험 막힘 원인을 환경 레벨에서 분리 진단.
+  - 다음 실행 순서: Docker Desktop 엔진 실행 확인 → JDK 17 설치 및 `JAVA_HOME` 점검 → 백엔드 기동 확인 후 `measure_pipeline.py`부터 재시도.
+
