@@ -3,7 +3,27 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(xargs grep:*)",
-      "Bash(grep -rn \"createNote\\\\|getNotes\\\\|UserDocNote\" /c/paperdot2/fe-paper-reader/app --include=*.tsx --include=*.ts)"
+      "Bash(grep -rn \"createNote\\\\|getNotes\\\\|UserDocNote\" /c/paperdot2/fe-paper-reader/app --include=*.tsx --include=*.ts)",
+      "Bash(find /c/paperdot2/be-paper-reader -name *.env* -o -name application-local*)",
+      "Bash(find /c/paperdot2/be-paper-reader -name *Pipeline* -o -name *pipeline*)",
+      "Bash(find /c/paperdot2/be-paper-reader -name *Controller*)",
+      "Bash(find /c/paperdot2/be-paper-reader -name SecurityConfig*)",
+      "Bash(xargs cat:*)",
+      "Bash(docker --version)",
+      "Bash(docker info:*)",
+      "Bash(docker compose:*)",
+      "Bash(java -version)",
+      "Read(//c/Program Files/Java/**)",
+      "Read(//c/Program Files/Eclipse Adoptium/**)",
+      "Bash(netstat -ano)",
+      "Bash(curl -s http://localhost:8080/swagger-ui/index.html)",
+      "Bash(docker stop:*)",
+      "Bash(curl:*)",
+      "Bash(python measure_pipeline.py)",
+      "Bash(py --version)",
+      "Bash(py -m pip install requests -q)",
+      "Bash(py measure_pipeline.py)",
+      "Bash(py:*)"
     ]
   }
 }
