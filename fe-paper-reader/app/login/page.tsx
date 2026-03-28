@@ -44,13 +44,13 @@ export default function LoginPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <Image
-          src="/newlogo.png"
-          alt="ScholarDot"
-          width={420}
-          height={148}
-          className={styles.logo}
-        />
+      <Image
+  src="/svglogo.svg"
+  alt="ScholarDot"
+  width={420}
+  height={148}
+  className={styles.logo}
+/>
         <div className={styles.buttonContainer}>
           <button
             type="button"

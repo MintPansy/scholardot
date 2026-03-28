@@ -8,14 +8,13 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.container}>
         <Link href="/" className={styles.logoLink}>
-          <Image
-            src="/newlogo.png"
-            alt="PaperDot"
-            width={180}
-            height={60}
-            className={styles.logoImage}
-            priority
-          />
+        <Image
+  src="/svglogo.svg"
+  alt="ScholarDot"
+  width={180}
+  height={60}
+  className={styles.logo}
+/>
         </Link>
         <IsLogin />
       </div>
