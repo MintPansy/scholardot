@@ -290,3 +290,58 @@
 - **로컬 도구 (Windows)**
   - `openssl rand -hex 32` 미설치 시: PowerShell에서 `[System.Security.Cryptography.RandomNumberGenerator]`로 32바이트 hex 생성해 `JWT_SECRET` 등에 사용 가능.
 
+---
+
+### 2026-03-30 (ScholarDot 읽기 화면 UX 고도화 — 하이라이트·이어읽기·복습큐·검색 이동)
+
+- **3색 하이라이트 색상 변경 + 토글 + 문서별 저장 (FE - ReadList.tsx)**
+  - `HighlightColor` 타입을 `"yellow" | "pink" | "blue"` → `"yellow" | "green" | "pink"` 로 변경 (파랑 제거, 초록 추가).
+  - 문장 클릭 동작을 토글 방식으로 수정: 이미 하이라이트된 문장을 다시 클릭하면 해제, 미하이라이트 문장은 현재 선택 색으로 적용.
+  - localStorage 키를 `${namespace}:highlights` → `${namespace}:${documentId ?? 'local'}:highlights` 로 변경해 문서별 독립 저장 구현.
+  - hex 색상 매핑 및 RGBA 스타일 함수(`highlightColorToHex`, `highlightColorToStyle`)를 초록 계열로 업데이트 (`#4ade80`, `rgba(74, 222, 128, 0.35)`).
+  - DB 노트 동기화 색상 매핑도 `#0ea5e9(파랑)` → `#4ade80(초록)` 으로 일관 수정.
+
+- **이어읽기 기능 추가 (FE - localStorage.ts + ReadList.tsx)**
+  - `lib/localStorage.ts`에 `ReadingProgress` 인터페이스(`{ pageIndex, scrollTop, updatedAt }`) 및 `getReadingProgress` / `setReadingProgress` 헬퍼 함수 추가.
+  - localStorage 키 형식: `readingProgress-${pdfName}` (기존 `${namespace}:position:*` 두 개 분리 키 → 단일 JSON 키로 통합).
+  - 초기화 시 새 키 우선 읽고 구 키로 fallback 처리해 하위 호환 유지.
+  - `saveReadingPosition`에서 `updatedAt: Date.now()`를 포함해 저장.
+  - 3초마다 `setInterval`로 현재 페이지·스크롤 위치 자동저장하는 useEffect 추가.
+  - 사이드바 "마지막 위치 이어 읽기" 버튼은 기존 `jumpToSavedPosition` 연결 유지.
+
+- **복습 큐 기능 강화 (FE - ReadList.tsx + readList.module.css)**
+  - `reviewQueue` useMemo를 페이지 오름차순 정렬로 수정: `data.findIndex`로 각 key의 실제 data 배열 위치 비교.
+  - `pageOfKey(key)` 헬퍼 추가: key → docUnitId → data 인덱스 → `Math.floor(idx / ITEMS_PER_PAGE) + 1` 로 페이지 번호 계산.
+  - 각 복습 큐 항목에 `p.N` 페이지 라벨 표시 (`reviewQueuePageLabel` 클래스).
+  - "전체 삭제" 버튼 추가 (`clearAllHighlights` 콜백): 복습 큐가 1개 이상일 때만 조건부 렌더링.
+  - `jumpToHighlight` 에 `setSelectedPageIndex(Math.floor(idx / ITEMS_PER_PAGE))` 추가: 복습 큐 클릭 시 사이드바 페이지 하이라이트도 동기화.
+  - 기존 8개 제한(`slice(0, 8)`) 제거 → 전체 항목 표시.
+  - CSS: `reviewQueueTitleRow`(flex between), `reviewQueueClearBtn`, `reviewQueuePageLabel`, `reviewQueueItem` align-items를 `baseline` → `center` 수정.
+
+- **mock 데이터 4페이지로 확장 (FE - mockTranslationData.ts)**
+  - 기존 10문장 → 32문장으로 확장 (8문장/페이지 × 4페이지).
+  - 실제 학술 논문 구조로 작성: Introduction(1-8) / Related Work & Method(9-16) / Experiments(17-24) / Discussion & Conclusion(25-32).
+  - 논문 주제: ScholarDot 검색 증강 프레임워크(RAG 기반 학술 문서 이해 시스템)로 설정해 프로젝트 맥락과 일치.
+
+- **읽기 화면 + 사이드바 UI 개선 (FE - readList.module.css + ReadList.tsx)**
+  - `sourceText` 가독성 개선: `font-weight: 800 → 600`, `line-height: 1.25 → 1.55` (장문 연속 읽기 시 눈 피로 감소).
+  - `translatedText`: `line-height: 1.35 → 1.65`, `font-size: 1rem → 0.97rem` (원문/번역 시각적 위계 강화).
+  - `.interactiveSentence:hover` 신규 추가: `background-color: rgba(30, 58, 138, 0.05)` (클릭 가능 문장 hover 상태 명확화).
+  - `.pageCardSelected` 강화: 테두리만 → 배경 tint(`rgba(30,58,138,0.04)`) + 3px ring shadow 병행.
+  - `docUnitWrapper` 클래스 신규 추가: 문장 블록 간 `border-bottom: 1px solid #f1f5f9` 구분선 및 `padding: 20px 0` 적용.
+  - 사이드바 하단 도구 패널 구조 개선:
+    - 형광펜·검색·복습큐 영역을 `sidebarTools` div로 묶고 `border-top`으로 페이지 썸네일 영역과 구분.
+    - `sidebarDivider`(`<hr>`) 로 형광펜/검색/복습큐 섹션 간 시각 구분.
+    - `sidebarSectionLabel` ("검색 · 이어읽기") 추가로 섹션 위계 명시.
+    - `sidebarResumeButton`: ghost 스타일 → accent 채움 스타일(`#1e3a8a` 배경, 흰 텍스트)로 CTA 강도 강화.
+
+- **검색 이동 기능 추가 (FE - ReadList.tsx + readList.module.css)**
+  - `searchMatchItems` useMemo: 검색어 + 필터 모드(all/english/korean)를 반영해 매칭된 data 인덱스 목록 생성.
+  - `searchMatchIdx` state: 현재 포커스 위치 (`-1` = 미이동).
+  - `handleSearchKeyDown`: Enter → 다음 매치, Shift+Enter → 이전 매치, 마지막에서 첫 번째로 순환.
+  - 검색어 변경 시 `searchMatchIdx`를 `-1`로 초기화해 타이핑 중 자동 스크롤 방지.
+  - `searchMatchIdx` 변경 시 smooth scroll + `setSelectedPageIndex` 동기화 useEffect.
+  - `highlightMatches` 함수에 `isActive` 파라미터 추가: 현재 포커스 매치는 주황색(`highlightActive` 클래스)으로, 나머지는 기존 노란색(`highlight`)으로 구분.
+  - 검색 카운터 UI: 쿼리 없음→숨김 / 결과 없음→"결과 없음" / 미이동→"N개 — Enter로 이동" / 이동 중→"n / N" 으로 상태별 표시.
+  - CSS: `.highlightActive`(주황 `rgba(251,146,60,0.8)` + 주황 border), `.searchCounter`(우측 정렬 소형 텍스트) 추가.
+
