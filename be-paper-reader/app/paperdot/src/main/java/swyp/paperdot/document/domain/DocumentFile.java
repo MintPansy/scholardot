@@ -35,11 +35,14 @@ public class DocumentFile {
     @Column(nullable = false)
     private StorageProvider storageProvider;
 
-    @Column(nullable = false)
-    private String originalFilename;
+    @Column(name = "original_name", nullable = false)
+    private String originalName;
 
-    @Column(nullable = false)
-    private String storagePath;
+    @Column(name = "stored_name", nullable = false)
+    private String storedName;
+
+    @Column(name = "file_path", nullable = false)
+    private String filePath;
 
     @Column(nullable = false)
     private String mimeType;
@@ -50,15 +53,16 @@ public class DocumentFile {
     @Column(length = 64, nullable = false)
     private String checksumSha256;
 
-    @Column(nullable = false)
+    @Column(name = "uploaded_at", nullable = false)
     private Instant uploadedAt;
 
     /* ===== 생성 메서드 ===== */
     public static DocumentFile create(
             DocumentFileType fileType,
             StorageProvider storageProvider,
-            String originalFilename,
-            String storagePath,
+            String originalName,
+            String storedName,
+            String filePath,
             String mimeType,
             Long fileSizeBytes,
             String checksumSha256
@@ -66,8 +70,9 @@ public class DocumentFile {
         DocumentFile file = new DocumentFile();
         file.fileType = fileType;
         file.storageProvider = storageProvider;
-        file.originalFilename = originalFilename;
-        file.storagePath = storagePath;
+        file.originalName = originalName;
+        file.storedName = storedName;
+        file.filePath = filePath;
         file.mimeType = mimeType;
         file.fileSizeBytes = fileSizeBytes;
         file.checksumSha256 = checksumSha256;
@@ -78,5 +83,13 @@ public class DocumentFile {
     /* package-private */
     void setDocument(Document document) {
         this.document = document;
+    }
+
+    public String getOriginalFilename() {
+        return originalName;
+    }
+
+    public String getStoragePath() {
+        return filePath;
     }
 }

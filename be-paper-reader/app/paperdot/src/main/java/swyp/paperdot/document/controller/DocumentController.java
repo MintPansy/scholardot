@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriUtils;
+
+import java.nio.charset.StandardCharsets;
 
 import swyp.paperdot.document.dto.DocumentResponse;
 import swyp.paperdot.document.dto.DocumentUploadRequest;
@@ -59,6 +62,28 @@ public class DocumentController {
         InputStream inputStream = documentDownloadService.downloadOriginalPdf(documentId);
 
         String disposition = inline ? "inline" : "attachment; filename=\"document-" + documentId + ".pdf\"";
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    @Operation(
+            summary = "파일 ID 기반 PDF 다운로드",
+            description = "DB에 저장된 파일 메타데이터(fileId) 기준으로 PDF를 반환합니다."
+    )
+    @GetMapping("/files/{fileId}")
+    public ResponseEntity<InputStreamResource> downloadPdfByFileId(
+            @PathVariable Long fileId,
+            @RequestParam(defaultValue = "true") boolean inline
+    ) {
+        InputStream inputStream = documentDownloadService.downloadByFileId(fileId);
+        String originalName = documentDownloadService.getOriginalNameByFileId(fileId);
+        String encodedName = UriUtils.encode(originalName, StandardCharsets.UTF_8);
+        String disposition = inline
+                ? "inline; filename*=UTF-8''" + encodedName
+                : "attachment; filename*=UTF-8''" + encodedName;
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)

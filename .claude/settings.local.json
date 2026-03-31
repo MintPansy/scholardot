@@ -26,7 +26,9 @@
       "Bash(py:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(find /c/paperdot2/fe-paper-reader -type f -name *localStorage* -o -name *storage*)",
+      "Bash(find /c/paperdot2/fe-paper-reader/app/components -type f -name *.tsx -o -name *.ts)"
     ]
   }
 }

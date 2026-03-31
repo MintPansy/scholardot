@@ -44,8 +44,8 @@ public class DocumentDownloadService {
 
         // 2. storagePath에서 objectKey 파싱
         // DB에 저장된 storagePath 문자열에서 실제 objectKey를 추출합니다.
-        String storagePath = documentFile.getStoragePath();
-        String objectKey = storagePathParser.getObjectKey(storagePath);
+        String filePath = documentFile.getFilePath();
+        String objectKey = storagePathParser.getObjectKey(filePath);
 
         // 3. 스토리지 클라이언트를 통해 파일 다운로드
         try {
@@ -64,5 +64,32 @@ public class DocumentDownloadService {
             String errorMessage = String.format("An unexpected error occurred during file download. objectKey: %s", objectKey);
             throw new StorageDownloadException(errorMessage, e);
         }
+    }
+
+    public InputStream downloadByFileId(Long fileId) {
+        DocumentFile documentFile = getRequiredFile(fileId);
+
+        String objectKey = storagePathParser.getObjectKey(documentFile.getFilePath());
+        try {
+            return objectStorageClient.download(objectKey);
+        } catch (S3Exception e) {
+            String errorMessage = String.format(
+                    "Failed to download file from storage. objectKey: %s, statusCode: %d, message: %s",
+                    objectKey, e.statusCode(), e.awsErrorDetails().errorMessage()
+            );
+            throw new StorageDownloadException(errorMessage, e);
+        } catch (Exception e) {
+            String errorMessage = String.format("An unexpected error occurred during file download. objectKey: %s", objectKey);
+            throw new StorageDownloadException(errorMessage, e);
+        }
+    }
+
+    public String getOriginalNameByFileId(Long fileId) {
+        return getRequiredFile(fileId).getOriginalName();
+    }
+
+    private DocumentFile getRequiredFile(Long fileId) {
+        return documentFileRepository.findById(fileId)
+                .orElseThrow(() -> new DocumentNotFoundException("File not found. fileId: " + fileId));
     }
 }

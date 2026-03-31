@@ -35,7 +35,8 @@ public class DocumentFileService {
 
         String originalFilename = normalizeFilename(file.getOriginalFilename());
         String contentType = normalizeContentType(file.getContentType());
-        String key = buildObjectKey(ownerId, documentId, "original", originalFilename);
+        String storedName = buildStoredName(originalFilename);
+        String key = buildObjectKey(ownerId, documentId, "original", storedName);
 
         String checksum = sha256Hex(file);
 
@@ -49,6 +50,7 @@ public class DocumentFileService {
                 DocumentFileType.ORIGINAL_PDF,
                 objectStorageClient.getProvider(),
                 originalFilename,
+                storedName,
                 buildStoragePath(objectStorageClient.getBucket(), key),
                 contentType,
                 file.getSize(),
@@ -56,10 +58,7 @@ public class DocumentFileService {
         );
     }
 
-    private String buildObjectKey(Long ownerId, Long documentId, String folder, String originalFilename) {
-        String extension = extractExtension(originalFilename);
-        String uuid = UUID.randomUUID().toString();
-        String filename = extension.isEmpty() ? uuid : uuid + extension;
+    private String buildObjectKey(Long ownerId, Long documentId, String folder, String storedName) {
         return String.format(
                 Locale.ROOT,
                 "%s/%d/%d/%s/%s",
@@ -67,8 +66,14 @@ public class DocumentFileService {
                 ownerId,
                 documentId,
                 folder,
-                filename
+                storedName
         );
+    }
+
+    private String buildStoredName(String originalFilename) {
+        String extension = extractExtension(originalFilename);
+        String uuid = UUID.randomUUID().toString();
+        return extension.isEmpty() ? uuid : uuid + extension;
     }
 
     private String buildStoragePath(String bucket, String key) {
