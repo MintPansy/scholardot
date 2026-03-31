@@ -389,3 +389,20 @@
   - 모달 내 `<iframe>`에 `${pdfDataUrl}#page=${pageNum}` 형태로 해당 페이지 직접 이동.
   - `pdfModalOverlay` / `pdfModal` / `pdfModalHeader` / `pdfModalFrame` CSS 신규 추가 (`width: min(90vw, 860px)`, `height: min(90vh, 680px)`).
   - 오버레이 클릭 또는 `×` 버튼으로 닫기.
+
+---
+
+### 2026-04-01
+
+- **PDF 업로드 Railway 환경 대응 (BE - ObjectStorageClientConfig.java)**
+  - 로컬 스토리지 fallback 경로 우선순위를 `UPLOAD_DIR` → `LOCAL_STORAGE_ROOT` → `./uploads` 순으로 변경.
+  - `UPLOAD_DIR` 환경변수로 Railway Volume 마운트 경로(예: `/app/uploads`) 지정 가능.
+  - 기본값을 기존 `storage/local` → `./uploads`로 변경하여 로컬 개발 환경과 일치.
+  - AWS 자격증명이 없을 때만 로컬 폴더 사용하는 기존 fallback 로직은 유지.
+
+- **원본 PDF 다운로드 API 추가 (BE - DocumentController.java)**
+  - `GET /documents/{documentId}/file` 엔드포인트 신규 추가.
+  - `?inline=true`(기본): `Content-Disposition: inline` → 브라우저에서 PDF 바로 열기.
+  - `?inline=false`: `Content-Disposition: attachment` → 파일 다운로드.
+  - 기존 `DocumentDownloadService`를 재사용해 스토리지(LOCAL/S3/NCLOUD) 무관하게 동작.
+  - `InputStreamResource`로 스트리밍 응답, `Content-Type: application/pdf` 설정.

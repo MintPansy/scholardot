@@ -17,7 +17,7 @@ import java.nio.file.Path;
 @Configuration
 public class ObjectStorageClientConfig {
 
-    private static final String DEFAULT_LOCAL_STORAGE_ROOT = "storage/local";
+    private static final String DEFAULT_LOCAL_STORAGE_ROOT = "./uploads";
 
     @Bean
     public ObjectStorageClient objectStorageClient() {
@@ -35,7 +35,9 @@ public class ObjectStorageClientConfig {
                 notBlank(bucket);
 
         if (!hasAwsCredentials) {
-            String localRoot = getenvOrDefault("LOCAL_STORAGE_ROOT", DEFAULT_LOCAL_STORAGE_ROOT);
+            // UPLOAD_DIR(Railway volume) → LOCAL_STORAGE_ROOT → ./uploads 순으로 fallback
+            String localRoot = getenvOrDefault("UPLOAD_DIR",
+                    getenvOrDefault("LOCAL_STORAGE_ROOT", DEFAULT_LOCAL_STORAGE_ROOT));
             return new LocalObjectStorageClient(Path.of(localRoot).toAbsolutePath().normalize(), "local");
         }
 
