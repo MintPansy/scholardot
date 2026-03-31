@@ -378,3 +378,14 @@
   - 색상 picker 툴팁 "노랑" → "파랑" 변경.
   - `.hasSavedHighlight` 배경도 노란 계열 → 파란 계열(`rgba(147,197,253,0.1)`)로 통일.
 
+- **복습 큐 스크롤 제한 (FE - readList.module.css)**
+  - `.reviewQueueList`에 `max-height: 114px`, `overflow-y: auto` 추가.
+  - 3개 항목까지는 전체 표시, 4개 이상부터 스크롤바 노출 → 사이드바 상단 페이지 썸네일 영역 가림 방지.
+
+- **사이드바 페이지 더블클릭 → 원본 PDF 뷰어 모달 (FE - ReadList.tsx + readList.module.css)**
+  - 페이지 카드 버튼에 `onDoubleClick` 핸들러 추가.
+  - `pdfDataUrl` ref: 컴포넌트 마운트 시 `sessionStorage.getItem("pdfFileData")` 로 base64 PDF 데이터 참조.
+  - PDF 데이터가 있을 경우 `pdfModal` state(`{ pageNum }`)를 열어 모달 표시; 없으면 무동작.
+  - 모달 내 `<iframe>`에 `${pdfDataUrl}#page=${pageNum}` 형태로 해당 페이지 직접 이동.
+  - `pdfModalOverlay` / `pdfModal` / `pdfModalHeader` / `pdfModalFrame` CSS 신규 추가 (`width: min(90vw, 860px)`, `height: min(90vh, 680px)`).
+  - 오버레이 클릭 또는 `×` 버튼으로 닫기.

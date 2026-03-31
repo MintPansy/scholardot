@@ -630,6 +630,9 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  max-height: 114px; /* 3개 항목(~34px each + gap)까지 그대로, 4개부터 스크롤 */
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .reviewQueueItem {
@@ -798,6 +801,71 @@
 
 .memoModalSaveBtn:hover {
   background: #1e40af;
+}
+
+/* ==================== PDF Modal ==================== */
+
+.pdfModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdfModal {
+  background: #fff;
+  border-radius: 12px;
+  width: min(90vw, 860px);
+  height: min(90vh, 680px);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.pdfModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.pdfModalTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.pdfModalCloseBtn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  font-size: 1.3rem;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+.pdfModalCloseBtn:hover {
+  background: #f1f5f9;
+  color: #1e3a8a;
+}
+
+.pdfModalFrame {
+  flex: 1;
+  width: 100%;
+  border: none;
 }
 
 /* ==================== Responsive ==================== */

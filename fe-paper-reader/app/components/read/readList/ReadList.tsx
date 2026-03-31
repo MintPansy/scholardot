@@ -117,6 +117,11 @@ export default function ReadList({
 
   const [selectedPageIndex, setSelectedPageIndex] = useState(0);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [pdfModal, setPdfModal] = useState<{ pageNum: number } | null>(null);
+  const pdfDataUrl = useRef<string | null>(null);
+  if (typeof window !== "undefined" && !pdfDataUrl.current) {
+    pdfDataUrl.current = sessionStorage.getItem("pdfFileData");
+  }
   const [filterMode, setFilterMode] = useState<"all" | "korean" | "english">(
     "all"
   );
@@ -690,6 +695,10 @@ export default function ReadList({
                       index === selectedPageIndex ? styles.pageCardSelected : ""
                     }`}
                     onClick={() => scrollToPage(index)}
+                    onDoubleClick={() => {
+                      if (pdfDataUrl.current) setPdfModal({ pageNum: index + 1 });
+                    }}
+                    title={pdfDataUrl.current ? "더블클릭하면 원본 PDF를 봅니다" : undefined}
                     aria-pressed={index === selectedPageIndex}>
                     <div className={styles.pagePreview}>
                       {(() => {
@@ -1100,6 +1109,29 @@ export default function ReadList({
                 저장
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {pdfModal && pdfDataUrl.current && (
+        <div className={styles.pdfModalOverlay} onClick={() => setPdfModal(null)}>
+          <div className={styles.pdfModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.pdfModalHeader}>
+              <span className={styles.pdfModalTitle}>원본 PDF — {pdfModal.pageNum}페이지</span>
+              <button
+                type="button"
+                className={styles.pdfModalCloseBtn}
+                onClick={() => setPdfModal(null)}
+                aria-label="닫기"
+              >
+                ×
+              </button>
+            </div>
+            <iframe
+              className={styles.pdfModalFrame}
+              src={`${pdfDataUrl.current}#page=${pdfModal.pageNum}`}
+              title="원본 PDF"
+            />
           </div>
         </div>
       )}
