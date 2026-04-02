@@ -22,6 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import swyp.paperdot.domain.user.*;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -96,6 +97,15 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
+                    // CORS preflight(OPTIONS)는 redirect되면 브라우저에서 차단됩니다.
+                    // 여기서는 OPTIONS에 대해서는 redirect 대신 성공 응답만 내려서 CORS가 통과되게 합니다.
+                    if (HttpMethod.OPTIONS.matches(request.getMethod())) {
+                        response.setStatus(HttpServletResponse.SC_OK);
+                        return;
+                    }
+                    response.sendRedirect("/login");
+                }))
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(a -> a.authorizationRequestResolver(authorizationRequestResolver))
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService).oidcUserService(customOidcUserService))
