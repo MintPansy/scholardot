@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -79,6 +80,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(c -> {})
+                // formLogin 명시적 비활성화: 활성화 상태면 미인증 요청 시 /login으로 302 redirect 발생
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable())
+                // OAuth2 flow는 세션 필요. API 요청에는 세션 불필요하지만 IF_REQUIRED로 공존
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 HttpMethod.OPTIONS,
@@ -100,21 +108,25 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
                     String requestUri = request.getRequestURI();
 
-                    // CORS preflight(OPTIONS)는 redirect되면 브라우저에서 차단됩니다.
+                    // CORS preflight(OPTIONS)
                     if (HttpMethod.OPTIONS.matches(request.getMethod())) {
                         response.setStatus(HttpServletResponse.SC_OK);
                         return;
                     }
 
-                    // API성 요청은 /login redirect 대신 401로 반환해 fetch 리다이렉트/루프를 방지합니다.
-                    if (requestUri != null && requestUri.startsWith("/documents")) {
+                    // 모든 API 요청(/documents, /api/**, /auth/**)은 redirect 대신 401 반환
+                    if (requestUri != null && (
+                            requestUri.startsWith("/documents") ||
+                            requestUri.startsWith("/api/") ||
+                            requestUri.startsWith("/auth/"))) {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json;charset=UTF-8");
                         response.getWriter().write("{\"message\":\"Unauthorized\"}");
                         return;
                     }
 
-                    response.sendRedirect("/login");
+                    // OAuth2 로그인 페이지로 리다이렉트 (브라우저 직접 접근 시)
+                    response.sendRedirect("/oauth2/authorization/google");
                 }))
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(a -> a.authorizationRequestResolver(authorizationRequestResolver))
