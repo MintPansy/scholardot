@@ -199,7 +199,7 @@ export default function Home() {
                 <li>하이라이트·메모·복습 큐를 읽기 흐름 안에 통합합니다.</li>
                 <li>읽기/집중 데이터로 학습 트래킹까지 이어집니다.</li>
               </ul>
-              <p className={styles.researchBadge}>졸업논문 프로젝트</p>
+
             </article>
           </div>
         </div>

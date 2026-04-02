@@ -44,30 +44,15 @@ export default function LoginPage() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-      <Image
-  src="/svglogo.svg"
-  alt="ScholarDot"
-  width={420}
-  height={148}
-  className={styles.logo}
-/>
+        <Image
+          src="/svglogo.svg"
+          alt="ScholarDot"
+          width={420}
+          height={148}
+          className={styles.logo}
+        />
         <div className={styles.buttonContainer}>
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className={styles.googleButton}
-            disabled={!!redirecting}
-            aria-label="구글로 로그인"
-          >
-            {redirecting === "google" ? (
-              <span className={styles.buttonLoading}>이동 중...</span>
-            ) : (
-              <>
-                <Image src="/googleLogo.svg" alt="" width={20} height={20} aria-hidden />
-                구글로 시작하기
-              </>
-            )}
-          </button>
+          {/* 카카오 로그인 (메인 CTA) */}
           <button
             type="button"
             onClick={handleKakaoLogin}
@@ -84,11 +69,32 @@ export default function LoginPage() {
               </>
             )}
           </button>
+
+          {/* 체험 버튼 (기존 구글 버튼 대체) */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className={styles.demoButton}
+            disabled={!!redirecting}
+            aria-label="로그인 없이 체험하기"
+          >
+            {redirecting === "google" ? (
+              <span className={styles.buttonLoading}>이동 중...</span>
+            ) : (
+              <>
+                로그인 없이 체험해보기
+              </>
+            )}
+          </button>
         </div>
         <div className={styles.termsContainer}>
           <p className={styles.termsText}>
             로그인 시 이용약관 및 개인정보처리방침에 동의하게 됩니다.
           </p>
+          <p className={styles.demoHint}>
+            (로그인 없이 일부 기능을 체험할 수 있습니다.)
+          </p>
+
           <Link
             href="https://www.notion.so/ScholarDot-32d844e3f94680faa215c1bcae9c889b?source=copy_link"
             target="_blank"

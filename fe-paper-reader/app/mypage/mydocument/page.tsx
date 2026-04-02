@@ -2,26 +2,20 @@
 
 import { DocumentListItem, getDocumentList } from "@/app/api/document";
 import Button from "@/app/components/button/Button";
+import { getApiUrl } from "@/app/config/env";
 import styles from "@/app/mypage/mydocument/document.module.css";
 import { useLoginStore } from "@/app/store/useLogin";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const ITEMS_PER_PAGE = 6;
+const API_BASE_URL = getApiUrl();
 
 export default function MyDocument() {
   const router = useRouter();
   const [documents, setDocuments] = useState<DocumentListItem[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(null);
   const userData = useLoginStore((state) => state.userInfo);
-
-  const totalPages = Math.ceil(documents.length / ITEMS_PER_PAGE) || 1;
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedDocuments = documents.slice(
-    startIdx,
-    startIdx + ITEMS_PER_PAGE
-  );
 
   const handleContinueReading = () => {
     router.push(`/read`);
@@ -40,8 +34,12 @@ export default function MyDocument() {
         lastTranslatedAt: doc.lastTranslatedAt,
       }));
       setDocuments(newDocs);
-      const newTotalPages = Math.ceil(newDocs.length / ITEMS_PER_PAGE) || 1;
-      setCurrentPage((prev) => Math.min(prev, newTotalPages));
+      setSelectedDocumentId((prev) => {
+        if (prev && newDocs.some((doc) => doc.documentId === prev)) {
+          return prev;
+        }
+        return newDocs.length > 0 ? newDocs[0].documentId : null;
+      });
     };
     fetchDocuments();
   }, [userData?.userId]);
@@ -51,6 +49,12 @@ export default function MyDocument() {
   };
 
   const recentDocument = documents[0];
+  const selectedDocument = documents.find(
+    (doc) => doc.documentId === selectedDocumentId
+  );
+  const selectedPdfUrl = selectedDocument
+    ? `${API_BASE_URL}/documents/${selectedDocument.documentId}/file?inline=true`
+    : "";
 
   return (
     <main className={styles.container}>
@@ -86,7 +90,7 @@ export default function MyDocument() {
           </div>
         </section>
       ) : (
-        <>
+        <section className={styles.viewerSection}>
           <div className={styles.recentDocumentPrompt}>
             <p className={styles.recentDocumentPromptText}>
               {userData?.nickname}님, {recentDocument?.title}를 이어서 볼까요?
@@ -112,126 +116,43 @@ export default function MyDocument() {
             </div>
           </div>
 
-          <section className={styles.recentSectionCard}>
-            <h2 className={styles.recentDocumentsTitle}>최근 학습한 문서</h2>
-            <div className={styles.documentTableWrapper}>
-            <table className={styles.documentsTable}>
-              <thead className={styles.tableHeader}>
-                <tr>
-                  <th
-                    className={styles.tableHeaderCell}
-                    style={{ width: "40%" }}>
-                    파일명
-                  </th>
-                  <th
-                    className={styles.tableLastHeaderCell}
-                    style={{ width: "20%" }}>
-                    날짜
-                  </th>
-                  <th
-                    className={styles.tableLastHeaderCell}
-                    style={{ width: "20%" }}></th>
-                </tr>
-              </thead>
-              <tbody className={styles.tableBodyContainer}>
-                {paginatedDocuments.map((doc) => (
-                  <tr key={doc.documentId} className={styles.tableRow}>
-                    <td className={styles.tableCell}>
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "12px",
-                        }}>
-                        <Image
-                          src="/smallPdfIcon.svg"
-                          alt="pdf"
-                          width={20}
-                          height={20}
-                        />
-                        <span className={styles.tableCellText}>
-                          {doc.title}
-                        </span>
-                      </div>
-                    </td>
-                    <td className={styles.tableCellInfo}>
-                      <span className={styles.tableCellInfoText}>
-                        {new Date(doc.lastTranslatedAt).toLocaleDateString()}
-                      </span>
-                    </td>
-                    <td className={styles.tableCellInfo}>
-                      <span className={styles.tableCellInfoText}>
-                        {doc.totalPages}
-                      </span>
-                    </td>
-                    <td className={styles.tableCellIcon}>
-                      <Image
-                        src="/trash.svg"
-                        alt="delete"
-                        width={20}
-                        height={20}
-                      />
-                    </td>
-                  </tr>
+          <section className={styles.pdfWorkspace}>
+            <aside className={styles.pdfSidebar}>
+              <h2 className={styles.pdfSidebarTitle}>문서함</h2>
+              <div className={styles.pdfSidebarList}>
+                {documents.map((doc) => (
+                  <button
+                    key={doc.documentId}
+                    type="button"
+                    className={
+                      selectedDocumentId === doc.documentId
+                        ? `${styles.pdfDocButton} ${styles.pdfDocButtonSelected}`
+                        : styles.pdfDocButton
+                    }
+                    onClick={() => setSelectedDocumentId(doc.documentId)}>
+                    <span className={styles.pdfDocTitle}>{doc.title}</span>
+                    <span className={styles.pdfDocMeta}>
+                      {new Date(doc.lastTranslatedAt).toLocaleDateString()} ·{" "}
+                      {doc.totalPages}p
+                    </span>
+                  </button>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </aside>
+
+            <div className={styles.pdfViewerCard}>
+              {selectedDocument ? (
+                <iframe
+                  title={`${selectedDocument.title} PDF`}
+                  src={selectedPdfUrl}
+                  className={styles.pdfIframe}
+                />
+              ) : (
+                <div className={styles.pdfEmptyState}>문서를 선택해주세요</div>
+              )}
             </div>
           </section>
-          {totalPages > 1 && (
-            <div className={styles.pagination}>
-              <button
-                type="button"
-                className={`${styles.pageButton} ${
-                  currentPage === 1 ? styles.pageBtnDisabled : ""
-                }`}
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                aria-label="이전 페이지">
-                <Image
-                  src="/leftListBtn.png"
-                  alt="leftArrow"
-                  width={36}
-                  height={36}
-                />
-              </button>
-              <span className={styles.paginationPages}>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (page) => (
-                    <button
-                      key={page}
-                      type="button"
-                      className={
-                        currentPage === page
-                          ? `${styles.pageBtn} ${styles.pageBtnActive}`
-                          : styles.pageBtn
-                      }
-                      onClick={() => setCurrentPage(page)}
-                      aria-current={currentPage === page ? "page" : undefined}>
-                      {page}
-                    </button>
-                  )
-                )}
-              </span>
-              <button
-                type="button"
-                className={`${styles.pageButton} ${
-                  currentPage === totalPages ? styles.pageBtnDisabled : ""
-                }`}
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
-                }
-                disabled={currentPage === totalPages}
-                aria-label="다음 페이지">
-                <Image
-                  src="/rightListBtn.png"
-                  alt="rightArrow"
-                  width={36}
-                  height={36}
-                />
-              </button>
-            </div>
-          )}
-        </>
+        </section>
       )}
     </main>
   );
