@@ -430,4 +430,11 @@
 - **Vercel 빌드 경고 수정 (`ReferenceError: location is not defined`)**
   - 원인: `Layout.tsx` 렌더 단계에서 `toast.error`/`router.push`를 즉시 호출해 SSR/SSG 중 브라우저 전역 참조가 발생.
   - 조치: 인증 리다이렉트 로직을 `useEffect`로 이동하고 중복 토스트를 ref로 제어.
+
+- **SecurityConfig permitAll 범위 확장 (BE - SecurityConfig.java)** _(2026-04-02)_
+  - 증상: `https://scholardot.vercel.app/newdocument`에서 PDF 업로드 시 302 리다이렉트 + CORS 에러 발생.
+  - 원인 분석: `SecurityConfig`의 `requestMatchers`에 `/documents`만 허용되어 있어, `/documents/`(슬래시 후행), `/documents/{id}` 등 하위 경로는 `anyRequest().authenticated()`에 걸려 인증 없이 접근 불가.
+  - `JwtAuthFilter`는 토큰이 없으면 예외를 무시하고 통과(`catch ignored`)하는 구조라 필터 자체는 문제 없었고, matcher 범위가 좁은 것이 실제 원인.
+  - 조치: `/documents/**`를 permitAll 목록에 추가.
+  - 관련 파일: `be-paper-reader/app/paperdot/src/main/java/swyp/paperdot/common/SecurityConfig.java`
   - 결과: 로컬 `pnpm build` 재검증에서 `location is not defined` 경고 없이 빌드 완료.
