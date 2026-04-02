@@ -474,3 +474,45 @@
     - 플랫폼: `https://scholardot.vercel.app`, `https://scholardot-production.up.railway.app`
     - Redirect URI: `https://scholardot-production.up.railway.app/login/oauth2/code/kakao`
   - 로그인 완료 후 구 도메인(`paperdot`)으로 이동하는 증상은 BE의 `PAPERDOT_FRONTEND_BASE_URL` 적용 상태 점검 필요로 정리.
+
+
+---
+
+### 2026-04-02 (PDF 업로드 오류 근본 원인 해결)
+
+- **문제 요약**
+  - `POST /documents` 요청이 302 → 무한루프 → 500으로 순차적으로 변하며 업로드가 계속 실패.
+  - 총 8회의 수정 시도 끝에 3가지 독립적인 근본 원인을 모두 해소함.
+
+- **원인 1: Spring Security form login 미비활성화 (302 리다이렉트 루프)**
+  - 증상: `POST /documents` → 302 → `/login` → 302 → `/login` 무한루프.
+  - 원인: `formLogin()`을 명시적으로 비활성화하지 않아 Spring Security 내부 필터가 특정 조건에서 `/login`으로 302 redirect 발생.
+  - 조치: `SecurityConfig`에 `.formLogin(form -> form.disable())`, `.httpBasic(basic -> basic.disable())` 추가. `authenticationEntryPoint`를 `/documents`, `/api/**`, `/auth/**` 전체에 대해 redirect 대신 401 반환으로 변경.
+  - 관련 파일: `be-paper-reader/.../common/SecurityConfig.java`
+
+- **원인 2: 프론트엔드 ownerId null 전송 (레이스 컨디션)**
+  - 증상: 302 해소 후 400 또는 500 간헐 발생.
+  - 원인: `IsLogin` 컴포넌트의 `/auth/token` → `/users/me` 비동기 호출 완료 전에 업로드 `useEffect`가 실행되어 `userInfo?.userId`가 `undefined` → formData에 `"undefined"` 문자열 전송.
+  - 조치 (FE): `accessToken`이 없으면 업로드 시도 차단, `ownerId` 폼 데이터 제거.
+  - 조치 (BE): `DocumentController`에서 `ownerId`를 프론트 폼이 아닌 JWT 토큰(`SecurityContextHolder`)에서 직접 추출.
+  - 관련 파일: `fe-paper-reader/.../NewDocument.tsx`, `be-paper-reader/.../DocumentController.java`
+
+- **원인 3: DB 컬럼명 불일치 (500 Internal Server Error)**
+  - 증상: 302 해소 후 `DataIntegrityViolationException` 500 에러.
+  - 원인: `DocumentFile` 엔티티 리팩토링 과정에서 컬럼명이 변경됐으나 Railway DB는 최초 배포 스키마 유지. `ddl-auto: update`는 컬럼명 변경을 인식 못하고 구 컬럼을 NOT NULL로 유지한 채 신규 컬럼만 추가.
+  - 불일치 목록:
+    - `original_name` (엔티티) ↔ `original_filename` (DB 실제) → 코드 수정
+    - `file_path` (엔티티) ↔ `storage_path` (DB 실제) → 코드 수정
+    - 잔존 NOT NULL 컬럼(`original_name`, `file_path`) → Railway Postgres Query에서 직접 DROP
+  - 조치 (코드): `@Column(name = "file_path")` → `@Column(name = "storage_path")`, `stored_name` nullable 처리.
+  - 조치 (DB): `ALTER TABLE document_files DROP COLUMN IF EXISTS file_path;` 등 직접 실행.
+  - 관련 파일: `be-paper-reader/.../document/domain/DocumentFile.java`
+
+- **기타 개선 (BE)**
+  - `DocumentFileService`: `catch (IOException | RuntimeException e)` — AWS SDK v2 `SdkException`(unchecked) 미처리 500 방지.
+  - `DocumentExceptionHandler`: 범용 `Exception` 핸들러 추가 및 `log.error`로 Railway 로그에 상세 원인 출력.
+  - `ObjectStorageClientConfig`: `AWS_*` 없을 시 `NCP_*` fallback 추가, 기본 경로 `./uploads` → `/tmp/uploads` (Railway read-only 파일시스템 대응).
+
+- **결과**
+  - PDF 업로드 → 번역 파이프라인 정상 동작 확인 (201 Created → 번역 완료).
+  - 논문 구현 챕터 재료: Spring Security 필터 체인 구조, Hibernate `ddl-auto: update` 한계, JWT 기반 인증 흐름을 실제 트러블슈팅 사례로 정리 가능.
