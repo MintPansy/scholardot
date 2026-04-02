@@ -438,3 +438,39 @@
   - 조치: `/documents/**`를 permitAll 목록에 추가.
   - 관련 파일: `be-paper-reader/app/paperdot/src/main/java/swyp/paperdot/common/SecurityConfig.java`
   - 결과: 로컬 `pnpm build` 재검증에서 `location is not defined` 경고 없이 빌드 완료.
+
+---
+
+### 2026-04-02 (FE 마이페이지 UI 완성도 고도화 + 카카오 로그인 운영 점검)
+
+- **내 계정 페이지 카드형 리디자인 (FE - `app/mypage/account/page.tsx`, `account.module.css`)**
+  - 로직 변경 없이 정보 구조를 카드 중심으로 재배치: 프로필 요약 카드 + 계정 정보 카드 + 위험 영역 카드.
+  - 입력폼 느낌을 줄이고 읽기 전용 정보(이름/이메일/소셜 로그인)를 명확한 hierarchy로 정리.
+  - 로그아웃 CTA는 상단 프로필 카드 우측 액션으로, 회원 탈퇴는 하단 위험 카드로 분리해 의도 전달 강화.
+  - spacing/타이포/보더/그림자를 조정해 “기능 화면”에서 “서비스 수준 대시보드 UI” 톤으로 개선.
+
+- **내 계정 미세 UI 개선 (FE)**
+  - 프로필 카드에 보조 정보 한 줄(`구글/카카오 로그인 · 최근 활동 없음`)을 추가해 정보 밀도 강화.
+  - 계정 정보 row 경계선을 연하게 조정해 테이블 느낌을 줄이고 카드형 정보 블록 느낌을 강화.
+  - 위험 영역 버튼의 danger 강조(hover/보더/텍스트)를 강화.
+  - 사이드바 active 상태를 좌측 accent border + 배경 대비 강화 방식으로 개선.
+
+- **내 문서함 empty state 개선 (FE - `app/mypage/mydocument/page.tsx`, `document.module.css`)**
+  - empty 화면을 카드형 구조로 재구성: 아이콘 + 제목 + 설명 + 대표 CTA 1개.
+  - CTA 문구를 학습 맥락으로 변경(`첫 논문 업로드하기`)하고 버튼 강조(hover/그림자) 강화.
+  - “최근 읽은 문서” 영역을 “최근 학습한 문서” 톤으로 정리하고, empty 상태도 별도 카드(아이콘+보조문구)로 구성.
+  - 카드 간격/패딩/정렬을 미세 조정해 대시보드 밀도와 가독성을 균형 있게 개선.
+
+- **회원 탈퇴 모달 UI 고도화 (FE - `app/components/modal/DeleteUserModal.tsx`, `DeleteUserModal.module.css`)**
+  - 제목 왼쪽 경고 아이콘 추가 및 타이틀 강조.
+  - 위험 안내 문구를 2문장 구조로 분리해 가독성과 경고 메시지 전달력 강화.
+  - 체크박스를 배경 영역으로 감싸고 문구를 `위 내용을 이해했으며 탈퇴에 동의합니다`로 명확화.
+  - 탈퇴 사유 라벨/간격 정리(`탈퇴 이유를 선택해주세요 (선택사항)`), 버튼 영역을 취소(outline) / 회원 탈퇴(danger) 2축으로 개선.
+  - 접근성 보강: 드롭다운 트리거 keyboard(Enter/Space) 대응 및 aria 라벨 추가.
+
+- **카카오 로그인 운영 오류 단계별 점검**
+  - KOE101/KOE205/KOE006 오류를 각각 앱 설정/동의항목/Redirect URI 불일치로 분리해 원인 추적.
+  - 운영 도메인 기준으로 Kakao 콘솔 설정 규칙 확정:
+    - 플랫폼: `https://scholardot.vercel.app`, `https://scholardot-production.up.railway.app`
+    - Redirect URI: `https://scholardot-production.up.railway.app/login/oauth2/code/kakao`
+  - 로그인 완료 후 구 도메인(`paperdot`)으로 이동하는 증상은 BE의 `PAPERDOT_FRONTEND_BASE_URL` 적용 상태 점검 필요로 정리.
