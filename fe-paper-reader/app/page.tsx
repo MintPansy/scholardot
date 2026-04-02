@@ -283,8 +283,8 @@ export default function Home() {
 
             <div className={styles.modalImageWrap}>
               <Image
-                src="/demo-screenshot2.png"
-                alt="리더 데모"
+                src="/howtouse.webp"
+                alt="ScholarDot 사용 방법"
                 fill
                 className={styles.modalImageContain}
               />
