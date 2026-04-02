@@ -2,7 +2,7 @@
 
 import styles from "@/app/components/modal/DeleteUserModal.module.css";
 import { DELETE_REASON_OPTIONS } from "@/app/consts/deleteConsts";
-import { ChevronDown } from "lucide-react";
+import { AlertTriangle, ChevronDown } from "lucide-react";
 import { useRef, useState } from "react";
 import Button from "../button/Button";
 import { useClickOutSide } from "@/app/hooks/useClickOutSide";
@@ -60,26 +60,38 @@ export default function DeleteUserModal({
       <ToastContainer position="top-right" theme="colored" autoClose={1500} />
 
       <div className={styles.deleteModalContent}>
-        <h2 className={styles.deleteModalTitle}>회원 탈퇴</h2>
+        <div className={styles.deleteModalTitleRow}>
+          <span className={styles.deleteModalIcon} aria-hidden>
+            <AlertTriangle size={18} />
+          </span>
+          <h2 className={styles.deleteModalTitle}>회원 탈퇴</h2>
+        </div>
 
         <p className={styles.deleteModalMessage}>
-          탈퇴 시 번역 기록, 내정보를 포함한 모든 데이터가 삭제되며 <br />
-          복구할 수 없습니다.
+          탈퇴 시 번역 기록과 계정 정보가 모두 삭제됩니다.
+          <br />
+          삭제된 데이터는 복구할 수 없습니다.
         </p>
 
-        <label className={styles.agreeCheckbox}>
+        <label className={styles.agreeCheckboxWrap}>
+          <span className={styles.agreeCheckboxTitle}>최종 확인</span>
+          <span className={styles.agreeCheckbox}>
           <input
             type="checkbox"
             className={styles.checkboxInput}
             checked={agreeChecked}
             onChange={() => setAgreeChecked((prev) => !prev)}
+            aria-label="탈퇴 동의 체크박스"
           />
-          <span className={styles.checkboxLabel}>동의합니다.</span>
+            <span className={styles.checkboxLabel}>
+              위 내용을 이해했으며 탈퇴에 동의합니다
+            </span>
+          </span>
         </label>
 
         <div className={styles.deleteReasonSection}>
           <label className={styles.deleteReasonLabel}>
-            계정 삭제 이유를 알려주세요
+            탈퇴 이유를 선택해주세요 (선택사항)
           </label>
 
           {/* 🔥 커스텀 드롭다운 */}
@@ -90,7 +102,16 @@ export default function DeleteUserModal({
                   ? styles.customSelectValueHidden
                   : styles.customSelectValue
               }
-              onClick={() => setShowDropdown((prev) => !prev)}>
+              onClick={() => setShowDropdown((prev) => !prev)}
+              role="button"
+              tabIndex={0}
+              aria-label="탈퇴 사유 선택"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setShowDropdown((prev) => !prev);
+                }
+              }}>
               <p className={styles.customSelectValueText}>
                 {selectedReason || "선택해주세요"}
               </p>
@@ -147,7 +168,7 @@ export default function DeleteUserModal({
                 ? styles.deleteModalConfirmBtn
                 : styles.deleteModalConfirmBtnDisabled
             }>
-            탈퇴하기
+            회원 탈퇴
           </Button>
         </div>
       </div>
