@@ -25,6 +25,9 @@ export default function LoginPage() {
       nickname: "데모유저",
       email: "demo@example.com",
     });
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("fileName", "sample_test.pdf");
+    }
     router.push("/read");
   };
 

@@ -8,11 +8,22 @@ export interface MockTranslationPair {
   docUnitId: number;
   sourceText: string;
   translatedText: string;
+  /** 1-based 페이지. mock 데이터는 8문장당 1페이지 */
+  sourcePage: number;
 }
 
-export const MOCK_FILE_NAME = "sample-paper.pdf";
+export const MOCK_FILE_NAME = "sample_test.pdf";
 
-export const MOCK_TRANSLATION_PAIRS: MockTranslationPair[] = [
+function withMockSourcePages(
+  pairs: Omit<MockTranslationPair, "sourcePage">[]
+): MockTranslationPair[] {
+  return pairs.map((item, idx) => ({
+    ...item,
+    sourcePage: Math.floor(idx / 8) + 1,
+  }));
+}
+
+export const MOCK_TRANSLATION_PAIRS: MockTranslationPair[] = withMockSourcePages([
   // ── PAGE 1: Introduction ──────────────────────────────────────────────
   {
     docUnitId: 1,
@@ -244,4 +255,4 @@ export const MOCK_TRANSLATION_PAIRS: MockTranslationPair[] = [
     translatedText:
       "우리는 이 연구가 인간 전문가만큼 효과적으로 과학 문헌에서 지식을 읽고, 추론하고, 종합할 수 있는 AI 시스템을 향한 유망한 길을 열어준다고 믿습니다.",
   },
-];
+]);

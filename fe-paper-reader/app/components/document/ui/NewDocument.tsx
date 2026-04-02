@@ -35,6 +35,7 @@ interface TranslationPair {
   docUnitId: number;
   sourceText: string;
   translatedText: string;
+  sourcePage?: number;
 }
 
 export default function NewDocumentPage() {

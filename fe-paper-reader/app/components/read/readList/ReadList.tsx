@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import ReadHeader from "../../header/ReadHeader";
 import styles from "./readList.module.css";
 import { useClickOutSide } from "@/app/hooks/useClickOutSide";
-import { useAccessTokenStore } from "@/app/store/useLogin";
+import { useAccessTokenStore, useLoginStore } from "@/app/store/useLogin";
 import { getJSON, getNumber, setJSON, setNumber, getReadingProgress, setReadingProgress } from "@/lib/localStorage";
 import {
   getNotes,
@@ -16,10 +16,16 @@ import {
 import {
   MOCK_TRANSLATION_PAIRS,
   MOCK_FILE_NAME,
-  type MockTranslationPair,
 } from "@/app/data/mockTranslationData";
+import PdfPageThumbnail from "@/app/components/read/pdf/PdfPageThumbnail";
 
-type TranslationPair = MockTranslationPair;
+type TranslationPair = {
+  docUnitId: number;
+  sourceText: string;
+  translatedText: string;
+  /** 백엔드·mock에서 오면 PDF 실제 페이지(1-based)와 사이드바가 일치 */
+  sourcePage?: number;
+};
 type HighlightColor = "yellow" | "green" | "pink";
 
 interface HighlightEntry {
@@ -56,6 +62,14 @@ export default function ReadList({
 
   const [fileName] = useState(() => {
     if (typeof window === "undefined") return MOCK_FILE_NAME;
+    const isDemoUser =
+      useLoginStore.getState().userInfo?.userId === "demo-user";
+    if (isDemoUser) {
+      const sid = sessionStorage.getItem("documentId");
+      const sfn = sessionStorage.getItem("fileName");
+      if (sid && sfn?.trim()) return sfn.trim();
+      return MOCK_FILE_NAME;
+    }
     const stored =
       sessionStorage.getItem("fileName") ??
       localStorage.getItem("fileName");
@@ -128,22 +142,62 @@ export default function ReadList({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMatchIdx, setSearchMatchIdx] = useState(-1);
 
-  // 파생 값: 7~8문장 단위로 페이지 묶음
-  const dataToPage = useMemo(
-    () =>
+  /** PDF 페이지 기준( sourcePage 있음 ) 또는 기존 N문장 묶음 */
+  const pageLayout = useMemo(() => {
+    const itemsPerPage = ITEMS_PER_PAGE;
+    const usePdfPages =
+      data.length > 0 &&
+      data.every(
+        (d) => typeof d.sourcePage === "number" && d.sourcePage >= 1
+      );
+    if (usePdfPages) {
+      const dataToPageArr = data.map((d) => d.sourcePage as number);
+      const maxPage = Math.max(...dataToPageArr);
+      const p2i = new Map<number, number>();
+      for (let i = 0; i < data.length; i++) {
+        const p = dataToPageArr[i];
+        if (!p2i.has(p)) p2i.set(p, i);
+      }
+      return {
+        kind: "pdf" as const,
+        totalPages: maxPage,
+        dataToPage: dataToPageArr,
+        pageToFirstIdx: p2i,
+      };
+    }
+    const totalPg = Math.ceil(data.length / itemsPerPage) || 1;
+    const dataToPageArr =
       data.length === 0
         ? []
-        : data.map((_, i) => Math.floor(i / ITEMS_PER_PAGE) + 1),
-    [data]
-  );
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE) || 1;
-  const pageToFirstIdx = useMemo(() => {
+        : data.map((_, i) => Math.floor(i / itemsPerPage) + 1);
     const p2i = new Map<number, number>();
-    for (let p = 1; p <= totalPages; p++) {
-      p2i.set(p, (p - 1) * ITEMS_PER_PAGE);
+    for (let p = 1; p <= totalPg; p++) {
+      p2i.set(p, (p - 1) * itemsPerPage);
     }
-    return p2i;
-  }, [totalPages]);
+    return {
+      kind: "legacy" as const,
+      totalPages: totalPg,
+      dataToPage: dataToPageArr,
+      pageToFirstIdx: p2i,
+      itemsPerPage,
+    };
+  }, [data]);
+
+  const totalPages = pageLayout.totalPages;
+  const dataToPage = pageLayout.dataToPage;
+  const pageToFirstIdx = pageLayout.pageToFirstIdx;
+
+  const pageIndexFromDataIdx = useCallback(
+    (idx: number) => {
+      if (idx < 0 || idx >= dataToPage.length) return 0;
+      return dataToPage[idx] - 1;
+    },
+    [dataToPage]
+  );
+
+  const showPdfThumbnails = Boolean(
+    pdfDataUrl.current && pageLayout.kind === "pdf"
+  );
 
   const contentScrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -594,8 +648,8 @@ export default function ReadList({
     const targetRect = ref.getBoundingClientRect();
     const offset = targetRect.top - containerRect.top + el.scrollTop;
     el.scrollTo({ top: offset, behavior: "smooth" });
-    setSelectedPageIndex(Math.floor(dataIdx / ITEMS_PER_PAGE));
-  }, [searchMatchIdx, searchMatchItems]);
+    setSelectedPageIndex(pageIndexFromDataIdx(dataIdx));
+  }, [searchMatchIdx, searchMatchItems, pageIndexFromDataIdx]);
 
   const handleSearchKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -624,9 +678,10 @@ export default function ReadList({
     (key: string): number => {
       const docUnitId = parseInt(key.split(":")[0], 10);
       const idx = data.findIndex((d) => d.docUnitId === docUnitId);
-      return idx < 0 ? 1 : Math.floor(idx / ITEMS_PER_PAGE) + 1;
+      if (idx < 0) return 1;
+      return dataToPage[idx] ?? 1;
     },
-    [data]
+    [data, dataToPage]
   );
 
   const clearAllHighlights = useCallback(() => {
@@ -645,9 +700,9 @@ export default function ReadList({
       const targetRect = ref.getBoundingClientRect();
       const offset = targetRect.top - containerRect.top + el.scrollTop;
       el.scrollTo({ top: offset, behavior: "smooth" });
-      setSelectedPageIndex(Math.floor(idx / ITEMS_PER_PAGE));
+      setSelectedPageIndex(pageIndexFromDataIdx(idx));
     },
-    [data]
+    [data, pageIndexFromDataIdx]
   );
 
   /** 검색어가 포함된 텍스트를 하이라이트된 React 노드로 반환.
@@ -698,42 +753,66 @@ export default function ReadList({
                     onDoubleClick={() => {
                       if (pdfDataUrl.current) setPdfModal({ pageNum: index + 1 });
                     }}
-                    title={pdfDataUrl.current ? "더블클릭하면 원본 PDF를 봅니다" : undefined}
+                    title={
+                      pdfDataUrl.current
+                        ? "더블클릭하면 원본 PDF를 봅니다"
+                        : undefined
+                    }
                     aria-pressed={index === selectedPageIndex}>
                     <div className={styles.pagePreview}>
-                      {(() => {
-                        const firstIdx = index * ITEMS_PER_PAGE;
-                        const item = data[firstIdx];
-                        if (!item) {
+                      {showPdfThumbnails && pdfDataUrl.current ? (
+                        <PdfPageThumbnail
+                          pdfDataUrl={pdfDataUrl.current}
+                          pageNumber={index + 1}
+                          className={styles.pagePreviewCanvas}
+                        />
+                      ) : (
+                        (() => {
+                          const pageNum = index + 1;
+                          const firstIdx =
+                            pageToFirstIdx.get(pageNum) ?? 0;
+                          const endIdx =
+                            pageLayout.kind === "pdf"
+                              ? pageToFirstIdx.get(pageNum + 1) ??
+                                data.length
+                              : Math.min(
+                                  firstIdx + pageLayout.itemsPerPage,
+                                  data.length
+                                );
+                          const pageItems = data.slice(firstIdx, endIdx);
+                          const item = data[firstIdx];
+                          if (!item) {
+                            return (
+                              <div
+                                className={styles.pagePreviewPlaceholder}
+                              />
+                            );
+                          }
                           return (
-                            <div className={styles.pagePreviewPlaceholder} />
+                            <div className={styles.pagePreviewText}>
+                              {pageItems.flatMap((x) => [
+                                <div
+                                  key={`${x.docUnitId}-en`}
+                                  className={styles.pagePreviewRow}>
+                                  <p
+                                    className={
+                                      styles.pagePreviewTextSourceText
+                                    }>
+                                    {x.sourceText || " "}
+                                  </p>
+                                </div>,
+                                <div
+                                  key={`${x.docUnitId}-ko`}
+                                  className={styles.pagePreviewRow}>
+                                  <p className={styles.pagePreviewTextText}>
+                                    {x.translatedText || " "}
+                                  </p>
+                                </div>,
+                              ])}
+                            </div>
                           );
-                        }
-                        const pageItems = data.slice(
-                          firstIdx,
-                          firstIdx + ITEMS_PER_PAGE
-                        );
-                        return (
-                          <div className={styles.pagePreviewText}>
-                            {pageItems.flatMap((x) => [
-                              <div
-                                key={`${x.docUnitId}-en`}
-                                className={styles.pagePreviewRow}>
-                                <p className={styles.pagePreviewTextSourceText}>
-                                  {x.sourceText || " "}
-                                </p>
-                              </div>,
-                              <div
-                                key={`${x.docUnitId}-ko`}
-                                className={styles.pagePreviewRow}>
-                                <p className={styles.pagePreviewTextText}>
-                                  {x.translatedText || " "}
-                                </p>
-                              </div>,
-                            ])}
-                          </div>
-                        );
-                      })()}
+                        })()
+                      )}
                     </div>
                     <span className={styles.pageNumber}>{index + 1}</span>
                   </button>

@@ -38,6 +38,7 @@ export interface TranslatedDocumentUnit {
   docUnitId: number;
   sourceText: string;
   translatedText: string;
+  sourcePage?: number;
 }
 
 export const getTranslatedDocument = async (

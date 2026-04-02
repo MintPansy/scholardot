@@ -12,7 +12,8 @@ import swyp.paperdot.document.exception.StorageDownloadException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
 // Files, Path, StandardCopyOption은 더 이상 필요 없으므로 제거 (혹시 이전 코드에 있었다면)
 
 /**
@@ -50,6 +51,33 @@ public class PdfTextExtractService {
         } catch (IOException e) {
             log.error("documentId {} - PDF 텍스트 추출 중 I/O 또는 PDF 파싱 오류 발생: {}", documentId, e.getMessage(), e);
             throw new PdfParseException("Failed to process PDF file for documentId: " + documentId, e);
+        }
+    }
+
+    /**
+     * 페이지별로 텍스트를 추출합니다 (순서는 1페이지부터).
+     */
+    public List<String> extractTextByPages(Long documentId) {
+        log.info("documentId {} - PDF 페이지별 텍스트 추출 시작", documentId);
+        try (InputStream inputStream = documentDownloadService.downloadOriginalPdf(documentId)) {
+            try (PDDocument document = Loader.loadPDF(inputStream.readAllBytes())) {
+                int total = document.getNumberOfPages();
+                PDFTextStripper stripper = new PDFTextStripper();
+                List<String> pages = new ArrayList<>(total);
+                for (int i = 1; i <= total; i++) {
+                    stripper.setStartPage(i);
+                    stripper.setEndPage(i);
+                    pages.add(stripper.getText(document));
+                }
+                log.info("documentId {} - 페이지별 추출 완료. pages={}", documentId, pages.size());
+                return pages;
+            }
+        } catch (DocumentNotFoundException | StorageDownloadException e) {
+            log.error("documentId {} - 페이지별 추출 중 문서/스토리지 오류: {}", documentId, e.getMessage(), e);
+            throw e;
+        } catch (IOException e) {
+            log.error("documentId {} - 페이지별 추출 중 I/O 오류: {}", documentId, e.getMessage(), e);
+            throw new PdfParseException("Failed to process PDF pages for documentId: " + documentId, e);
         }
     }
 }

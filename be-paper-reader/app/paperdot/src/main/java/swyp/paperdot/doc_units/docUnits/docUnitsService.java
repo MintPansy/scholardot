@@ -79,6 +79,7 @@ public class docUnitsService {
                     .orderInDoc(order)
                     .sourceText(text)
                     .status(UnitStatus.CREATED)
+                    .sourcePage(1)
                     .build();
 
             unitBatch.add(unitEntity);

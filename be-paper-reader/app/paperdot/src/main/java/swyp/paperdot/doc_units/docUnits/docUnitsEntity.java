@@ -42,6 +42,10 @@ public class docUnitsEntity {
     @Column(nullable = false)
     private Integer orderInDoc;
 
+    /** 원본 PDF에서의 1-based 페이지 번호 (페이지별 추출 시 설정) */
+    @Column(name = "source_page")
+    private Integer sourcePage;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String sourceText;
 
@@ -55,12 +59,13 @@ public class docUnitsEntity {
 
 
     @Builder
-    public docUnitsEntity(Long documentId, UnitType unitType, Integer orderInDoc, String sourceText, UnitStatus status) {
+    public docUnitsEntity(Long documentId, UnitType unitType, Integer orderInDoc, String sourceText, UnitStatus status, Integer sourcePage) {
         this.documentId = documentId;
         this.unitType = unitType;
         this.orderInDoc = orderInDoc;
         this.sourceText = sourceText;
         this.status = status;
+        this.sourcePage = sourcePage != null ? sourcePage : 1;
     }
 
     public void updateStatus(UnitStatus status) {

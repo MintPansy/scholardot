@@ -41,18 +41,26 @@ public class DocumentPipelineService {
         log.info("===== Document Pipeline START for documentId: {} (Overwrite: {}) =====", documentId, overwrite);
 
         try {
-            // Step 1: Extract full text from PDF
-            log.info("[Step 1/3] documentId {} - PDF text extraction start", documentId);
-            String rawText = pdfTextExtractService.extractText(documentId);
-            log.info("[Step 1/3] documentId {} - PDF text extraction done. length={}", documentId, rawText.length());
+            // Step 1: 페이지별 텍스트 추출
+            log.info("[Step 1/3] documentId {} - PDF 페이지별 추출 시작", documentId);
+            List<String> pageTexts = pdfTextExtractService.extractTextByPages(documentId);
+            log.info("[Step 1/3] documentId {} - 페이지 수={}", documentId, pageTexts.size());
 
-            // Step 2: Local sentence split
-            List<String> sentences = splitToSentences(rawText);
-            log.info("[Step 2/3] documentId {} - sentence split done. count={}", documentId, sentences.size());
+            // Step 2: 페이지 단위 문장 분할 + sourcePage 부여
+            List<String> sentences = new ArrayList<>();
+            List<Integer> sourcePages = new ArrayList<>();
+            for (int p = 0; p < pageTexts.size(); p++) {
+                int pageNum = p + 1;
+                for (String s : splitToSentences(pageTexts.get(p))) {
+                    sentences.add(s);
+                    sourcePages.add(pageNum);
+                }
+            }
+            log.info("[Step 2/3] documentId {} - 문장 수={} (페이지 매핑 포함)", documentId, sentences.size());
 
-            // Step 3: Pre-save doc_units and translate in batches
+            // Step 3: doc_units 저장 및 배치 번역
             log.info("[Step 3/3] documentId {} - pre-save doc_units and batch translation start. Overwrite={}", documentId, overwrite);
-            processTranslationInBatches(documentId, sentences, DEFAULT_TARGET_LANG, overwrite, batchSize);
+            processTranslationInBatches(documentId, sentences, sourcePages, DEFAULT_TARGET_LANG, overwrite, batchSize);
             log.info("[Step 3/3] documentId {} - pre-save doc_units and batch translation done", documentId);
 
         } catch (Exception e) {
@@ -93,6 +101,7 @@ public class DocumentPipelineService {
                     .status(UnitStatus.TRANSLATED)
                     .unitType(UnitType.SENTENCE)
                     .orderInDoc(orderInDoc++)
+                    .sourcePage(1)
                     .build();
             newDocUnits.add(docUnit);
         }
@@ -170,6 +179,7 @@ public class DocumentPipelineService {
     private void processTranslationInBatches(
             Long documentId,
             List<String> sentences,
+            List<Integer> sourcePages,
             String targetLang,
             boolean overwrite,
             int batchSize
@@ -177,6 +187,9 @@ public class DocumentPipelineService {
         if (CollectionUtils.isEmpty(sentences)) {
             log.warn("documentId {} - no sentences after split. abort.", documentId);
             return;
+        }
+        if (sentences.size() != sourcePages.size()) {
+            throw new IllegalStateException("sentences and sourcePages size mismatch for documentId " + documentId);
         }
 
         if (overwrite) {
@@ -190,13 +203,14 @@ public class DocumentPipelineService {
         // Pre-save doc_units with TRANSLATING status
         List<docUnitsEntity> newDocUnits = new ArrayList<>(sentences.size());
         int orderInDoc = 0;
-        for (String sentence : sentences) {
+        for (int i = 0; i < sentences.size(); i++) {
             docUnitsEntity docUnit = docUnitsEntity.builder()
                     .documentId(documentId)
-                    .sourceText(sentence)
+                    .sourceText(sentences.get(i))
                     .status(UnitStatus.TRANSLATING)
                     .unitType(UnitType.SENTENCE)
                     .orderInDoc(orderInDoc++)
+                    .sourcePage(sourcePages.get(i))
                     .build();
             newDocUnits.add(docUnit);
         }
@@ -277,6 +291,7 @@ public class DocumentPipelineService {
                         .docUnitId(docUnit.getId())
                         .sourceText(docUnit.getSourceText())
                         .translatedText(translatedTextMap.getOrDefault(docUnit.getId(), ""))
+                        .sourcePage(docUnit.getSourcePage() != null ? docUnit.getSourcePage() : 1)
                         .build())
                 .collect(Collectors.toList());
     }
