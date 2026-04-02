@@ -92,7 +92,7 @@ export default function HeaderModal({
               {userInfo?.nickname || "김유저"}
             </p>
             <p className={styles.headerModalEmail}>
-              {userInfo?.email || "testid@naver.com"}
+              {userInfo?.email || "-"}
             </p>
           </div>
           <div className={styles.headerMiddleTitleContainer}>

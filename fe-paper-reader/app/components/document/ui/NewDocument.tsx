@@ -157,7 +157,8 @@ export default function NewDocumentPage() {
         formData.append("languageTgt", "en");
         formData.append("file", currentFile?.file);
 
-        const response = await postDocuments(formData);
+        // 업로드 요청에도 accessToken을 붙여서, (보안 설정/매처 불일치가 있더라도) 인증 문제로 302/login 리다이렉트가 발생하지 않게 합니다.
+        const response = await postDocuments(formData, accessToken ?? undefined);
         // API 응답 형태: { data: { ... } } | { document: { ... } } | { documentId, ... }
         const doc = response?.data ?? response?.document ?? response;
         if (doc?.documentId != null) {
