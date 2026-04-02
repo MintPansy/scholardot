@@ -1,6 +1,6 @@
 "use client";
 
-import { DocumentListItem, getDocumentList } from "@/app/api/document";
+import { deleteDocument, DocumentListItem, getDocumentList } from "@/app/api/document";
 import Button from "@/app/components/button/Button";
 import { getApiUrl } from "@/app/config/env";
 import styles from "@/app/mypage/mydocument/document.module.css";
@@ -19,6 +19,8 @@ export default function MyDocument() {
   const accessToken = useAccessTokenStore((s) => s.accessToken);
   const [pdfBlobUrl, setPdfBlobUrl] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const handleContinueReading = () => {
     router.push(`/read`);
@@ -86,6 +88,26 @@ export default function MyDocument() {
     };
   }, [selectedDocumentId, accessToken]);
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteTargetId) return;
+    setDeleting(true);
+    try {
+      await deleteDocument(deleteTargetId, accessToken ?? undefined);
+      setDocuments((prev) => {
+        const next = prev.filter((d) => d.documentId !== deleteTargetId);
+        if (selectedDocumentId === deleteTargetId) {
+          setSelectedDocumentId(next.length > 0 ? next[0].documentId : null);
+        }
+        return next;
+      });
+    } catch {
+      // 실패해도 모달은 닫음
+    } finally {
+      setDeleting(false);
+      setDeleteTargetId(null);
+    }
+  };
+
   const handleStartNewDocument = () => {
     router.push("/newdocument");
   };
@@ -94,9 +116,38 @@ export default function MyDocument() {
   const selectedDocument = documents.find(
     (doc) => doc.documentId === selectedDocumentId
   );
+  const deleteTargetDoc = documents.find((d) => d.documentId === deleteTargetId);
 
   return (
     <main className={styles.container}>
+      {/* 삭제 확인 모달 */}
+      {deleteTargetId !== null && (
+        <div className={styles.deleteModalOverlay}>
+          <div className={styles.deleteModal}>
+            <p className={styles.deleteModalTitle}>문서를 삭제할까요?</p>
+            <p className={styles.deleteModalSub}>
+              <strong>{deleteTargetDoc?.title}</strong>와(과) 관련된 번역 및 메모가 모두 삭제됩니다.
+            </p>
+            <div className={styles.deleteModalActions}>
+              <button
+                type="button"
+                className={styles.deleteModalCancel}
+                onClick={() => setDeleteTargetId(null)}
+                disabled={deleting}>
+                취소
+              </button>
+              <button
+                type="button"
+                className={styles.deleteModalConfirm}
+                onClick={handleDeleteConfirm}
+                disabled={deleting}>
+                {deleting ? "삭제 중..." : "삭제"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {documents.length === 0 ? (
         <section className={styles.emptyStateSection}>
           <div className={styles.emptyStatePromptCard}>
@@ -160,21 +211,35 @@ export default function MyDocument() {
               <h2 className={styles.pdfSidebarTitle}>문서함</h2>
               <div className={styles.pdfSidebarList}>
                 {documents.map((doc) => (
-                  <button
+                  <div
                     key={doc.documentId}
-                    type="button"
                     className={
                       selectedDocumentId === doc.documentId
-                        ? `${styles.pdfDocButton} ${styles.pdfDocButtonSelected}`
-                        : styles.pdfDocButton
-                    }
-                    onClick={() => setSelectedDocumentId(doc.documentId)}>
-                    <span className={styles.pdfDocTitle}>{doc.title}</span>
-                    <span className={styles.pdfDocMeta}>
-                      {new Date(doc.lastTranslatedAt).toLocaleDateString()} ·{" "}
-                      {doc.totalPages}p
-                    </span>
-                  </button>
+                        ? `${styles.pdfDocItem} ${styles.pdfDocItemSelected}`
+                        : styles.pdfDocItem
+                    }>
+                    <button
+                      type="button"
+                      className={styles.pdfDocButton}
+                      onClick={() => setSelectedDocumentId(doc.documentId)}>
+                      <span className={styles.pdfDocTitle}>{doc.title}</span>
+                      <span className={styles.pdfDocMeta}>
+                        {new Date(doc.lastTranslatedAt).toLocaleDateString()} ·{" "}
+                        {doc.totalPages}p
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.pdfDocDeleteBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteTargetId(doc.documentId);
+                      }}
+                      title="문서 삭제"
+                      aria-label="문서 삭제">
+                      ×
+                    </button>
+                  </div>
                 ))}
               </div>
             </aside>

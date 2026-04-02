@@ -255,29 +255,151 @@
   overflow-y: auto;
 }
 
-.pdfDocButton {
-  width: 100%;
-  text-align: left;
+.pdfDocItem {
+  position: relative;
+  display: flex;
+  align-items: stretch;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   background: #ffffff;
-  padding: 11px 10px;
-  cursor: pointer;
   transition: all 180ms;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  overflow: hidden;
 }
 
-.pdfDocButton:hover {
+.pdfDocItem:hover {
   border-color: #bfdbfe;
   background: #f8fbff;
 }
 
-.pdfDocButtonSelected {
+.pdfDocItem:hover .pdfDocDeleteBtn {
+  opacity: 1;
+}
+
+.pdfDocItemSelected {
   background: #eff6ff;
   border-color: #93c5fd;
   box-shadow: inset 3px 0 0 #3b82f6;
+}
+
+.pdfDocButton {
+  flex: 1;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 11px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.pdfDocDeleteBtn {
+  flex-shrink: 0;
+  width: 28px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid transparent;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 160ms, background 160ms, color 160ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdfDocDeleteBtn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+  border-left-color: #fecaca;
+}
+
+/* 삭제 확인 모달 */
+.deleteModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+}
+
+.deleteModal {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  width: min(400px, 90vw);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deleteModalTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.deleteModalSub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.deleteModalSub strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.deleteModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.deleteModalCancel {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 160ms;
+}
+
+.deleteModalCancel:hover {
+  background: #f8fafc;
+}
+
+.deleteModalConfirm {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 160ms;
+}
+
+.deleteModalConfirm:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.deleteModalConfirm:disabled,
+.deleteModalCancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .pdfDocTitle {

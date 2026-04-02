@@ -338,6 +338,21 @@ export async function updateNote(
   return handleResponse<UserDocNoteItem>(response);
 }
 
+export async function deleteDocument(
+  documentId: number | string,
+  accessToken?: string
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${documentId}`,
+    {
+      method: "DELETE",
+      headers: getAuthHeaders(accessToken),
+      credentials: "include",
+    }
+  );
+  if (response.status !== 204) await handleResponse<unknown>(response);
+}
+
 export async function deleteNote(
   documentId: number | string,
   noteId: number,

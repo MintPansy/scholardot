@@ -38,7 +38,6 @@ export default function Home() {
   const userInfo = useLoginStore((s) => s.userInfo);
   const ctaHref = userInfo?.userId ? "/newdocument" : "/login";
   const [demoOpen, setDemoOpen] = useState(false);
-  const [demoImgError, setDemoImgError] = useState(false);
 
   return (
     <main className={styles.main}>
@@ -231,28 +230,13 @@ export default function Home() {
             </div>
 
             <div className={styles.demoImageWrap}>
-              {!demoImgError ? (
-                <Image
-                  src="/demo-screenshot2.png"
-                  alt="ScholarDot 리더 화면"
-                  fill
-                  className={styles.demoImageCoverTop}
-                  sizes="(max-width: 1280px) 100vw, 1280px"
-                  onError={() => setDemoImgError(true)}
-                  priority
-                />
-              ) : (
-                <div className={styles.demoFallback}>
-                  <div>
-                    <p className={styles.demoFallbackTitle}>
-                      리더 화면 스크린샷을 추가해주세요
-                    </p>
-                    <p className={styles.demoFallbackSub}>
-                      public/demo-screenshot2.png
-                    </p>
-                  </div>
-                </div>
-              )}
+              <iframe
+                src="https://www.youtube.com/embed/Kh_r0WPu9qA"
+                title="ScholarDot 데모 영상"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className={styles.demoYoutubeFrame}
+              />
             </div>
           </div>
         </div>
