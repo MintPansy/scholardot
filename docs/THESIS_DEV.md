@@ -4,6 +4,13 @@
 
 1인 개발·풀스택 프로젝트를 컴퓨터공학 학사 졸업논문으로 완성하기 위한 진행 가이드입니다.
 
+일부 문서 및 개발 일지에는 초기·중기 배포에 사용된 도메인(`be-paper-dot.store`, `fe-paper-dot.vercel.app` 등)이 그대로 포함되어 있습니니다. 
+이는 서비스가 이전 명칭 및 URL 체계를 거쳐 ScholarDot으로 정리된 과정을 프로젝트 이력으로 보존하기 위한 의도적 선택입니다.
+
+또한 `frontend/SWYP_REVIEW.md`는 해당 시점의 Vercel 주소를 기준으로 작성된 자료이므로, 문서의 맥락을 유지하기 위해 별도의 수정 없이 그대로 두었습니다다.
+
+추후 ScholarDot 명칭에 맞춰 URL 및 관련 문구를 통일할 수 있으나, 본 연구에서는 기존 기록을 보존하는 방향을 채택하였습니니다.
+
 ---
 
 ## 1. 논문 구조와 개발의 매핑
@@ -78,7 +85,7 @@
 ## 5. 참고
 
 - 루트 [README.md](../README.md) — 프로젝트 개요, 기술 스택, 개발 추천 아이디어 5가지
-- [fe-paper-reader/README.md](../fe-paper-reader/README.md) — 기여 내용·트러블슈팅 (논문 "구현" 참고)
+- [frontend/README.md](../frontend/README.md) — 기여 내용·트러블슈팅 (논문 "구현" 참고)
 - [SETUP.md](SETUP.md) — 실행 방법
 
 ---
@@ -266,7 +273,7 @@
 ### 2026-03-28 (프론트 Vercel 배포 + 백엔드 Railway·운영 환경 정리)
 
 - **프론트엔드 프로덕션 배포 (Vercel)**
-  - `fe-paper-reader`를 Root Directory로 두고 배포 완료. 공개 URL: `https://scholardot.vercel.app/`.
+  - `frontend`를 Root Directory로 두고 배포 완료. 공개 URL: `https://scholardot.vercel.app/`.
   - 빌드 실패 원인: `package.json`에 `@fontsource/noto-sans-kr`, `@fontsource/roboto` 추가 후 `pnpm-lock.yaml` 미갱신 → CI의 frozen-lockfile과 불일치 (`ERR_PNPM_OUTDATED_LOCKFILE`).
   - 해결: 로컬에서 `pnpm install`로 lockfile 동기화 후 커밋·푸시.
 
@@ -274,7 +281,7 @@
   - Vercel은 Next.js 프론트 전용. Spring Boot·PostgreSQL·장시간 프로세스는 Railway / Render / Fly.io / AWS 등 별도 호스팅.
   - 시크릿(JWT, OAuth, OpenAI, S3)은 호스팅 환경 변수로만 주입, 저장소에 커밋하지 않음.
 
-- **환경 변수·문서 (`fe-paper-reader`)**
+- **환경 변수·문서 (`frontend`)**
   - `.env.local`: 개인/로컬용으로 유지, 커밋 대상 아님.
   - `.env.example`: 플레이스홀더 중심으로 두고 팀·배포 참고용으로 쓰는 편이 좋음. `.gitignore`의 `.env*` 때문에 예시 파일이 무시되면 `!.env.example`로 예외 처리 검토.
 
@@ -436,7 +443,7 @@
   - 원인 분석: `SecurityConfig`의 `requestMatchers`에 `/documents`만 허용되어 있어, `/documents/`(슬래시 후행), `/documents/{id}` 등 하위 경로는 `anyRequest().authenticated()`에 걸려 인증 없이 접근 불가.
   - `JwtAuthFilter`는 토큰이 없으면 예외를 무시하고 통과(`catch ignored`)하는 구조라 필터 자체는 문제 없었고, matcher 범위가 좁은 것이 실제 원인.
   - 조치: `/documents/**`를 permitAll 목록에 추가.
-  - 관련 파일: `be-paper-reader/app/paperdot/src/main/java/swyp/paperdot/common/SecurityConfig.java`
+  - 관련 파일: `backend/app/paperdot/src/main/java/swyp/paperdot/common/SecurityConfig.java`
   - 결과: 로컬 `pnpm build` 재검증에서 `location is not defined` 경고 없이 빌드 완료.
 
 ---
@@ -488,14 +495,14 @@
   - 증상: `POST /documents` → 302 → `/login` → 302 → `/login` 무한루프.
   - 원인: `formLogin()`을 명시적으로 비활성화하지 않아 Spring Security 내부 필터가 특정 조건에서 `/login`으로 302 redirect 발생.
   - 조치: `SecurityConfig`에 `.formLogin(form -> form.disable())`, `.httpBasic(basic -> basic.disable())` 추가. `authenticationEntryPoint`를 `/documents`, `/api/**`, `/auth/**` 전체에 대해 redirect 대신 401 반환으로 변경.
-  - 관련 파일: `be-paper-reader/.../common/SecurityConfig.java`
+  - 관련 파일: `backend/.../common/SecurityConfig.java`
 
 - **원인 2: 프론트엔드 ownerId null 전송 (레이스 컨디션)**
   - 증상: 302 해소 후 400 또는 500 간헐 발생.
   - 원인: `IsLogin` 컴포넌트의 `/auth/token` → `/users/me` 비동기 호출 완료 전에 업로드 `useEffect`가 실행되어 `userInfo?.userId`가 `undefined` → formData에 `"undefined"` 문자열 전송.
   - 조치 (FE): `accessToken`이 없으면 업로드 시도 차단, `ownerId` 폼 데이터 제거.
   - 조치 (BE): `DocumentController`에서 `ownerId`를 프론트 폼이 아닌 JWT 토큰(`SecurityContextHolder`)에서 직접 추출.
-  - 관련 파일: `fe-paper-reader/.../NewDocument.tsx`, `be-paper-reader/.../DocumentController.java`
+  - 관련 파일: `frontend/.../NewDocument.tsx`, `backend/.../DocumentController.java`
 
 - **원인 3: DB 컬럼명 불일치 (500 Internal Server Error)**
   - 증상: 302 해소 후 `DataIntegrityViolationException` 500 에러.
@@ -506,7 +513,7 @@
     - 잔존 NOT NULL 컬럼(`original_name`, `file_path`) → Railway Postgres Query에서 직접 DROP
   - 조치 (코드): `@Column(name = "file_path")` → `@Column(name = "storage_path")`, `stored_name` nullable 처리.
   - 조치 (DB): `ALTER TABLE document_files DROP COLUMN IF EXISTS file_path;` 등 직접 실행.
-  - 관련 파일: `be-paper-reader/.../document/domain/DocumentFile.java`
+  - 관련 파일: `backend/.../document/domain/DocumentFile.java`
 
 - **기타 개선 (BE)**
   - `DocumentFileService`: `catch (IOException | RuntimeException e)` — AWS SDK v2 `SdkException`(unchecked) 미처리 500 방지.

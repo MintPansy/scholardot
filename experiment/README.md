@@ -4,19 +4,19 @@
 
 ### 1. Docker로 PostgreSQL 실행 (터미널 1)
 ```bash
-cd be-paper-reader
+cd backend
 docker compose -f compose/docker-compose.local.yml up -d
 ```
 
 ### 2. OPENAI_API_KEY 설정
-`be-paper-reader/.env` 파일에서:
+`backend/.env` 파일에서:
 ```
 OPENAI_API_KEY=sk-...
 ```
 
 ### 3. 백엔드 실행 (터미널 2)
 ```bash
-cd be-paper-reader/app/paperdot
+cd backend/app/paperdot
 # Windows
 set OPENAI_API_KEY=sk-...  && ./gradlew bootRun --args='--spring.profiles.active=local'
 

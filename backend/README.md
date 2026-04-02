@@ -4,7 +4,7 @@
 
 - **배포**: [https://scholardot-production.up.railway.app](https://scholardot-production.up.railway.app)
 - **Swagger**: `https://scholardot-production.up.railway.app/swagger-ui/index.html`
-- **프론트엔드 저장소**: [fe-paper-reader](../fe-paper-reader/README.md)
+- **프론트엔드 저장소**: [frontend](../frontend/README.md)
 
 ---
 
@@ -37,7 +37,7 @@
 ## 디렉토리 구조
 
 ```
-be-paper-reader/
+backend/
 ├── app/paperdot/
 │   └── src/main/java/swyp/paperdot/
 │       ├── common/
@@ -103,7 +103,7 @@ be-paper-reader/
 ### Docker (권장)
 
 ```bash
-cd be-paper-reader
+cd backend
 
 # 환경 변수 파일 준비
 cp .env.example .env
@@ -122,7 +122,7 @@ docker compose -f compose/docker-compose.local.yml down
 ### 직접 실행 (JDK 17 필요)
 
 ```bash
-cd be-paper-reader/app/paperdot
+cd backend/app/paperdot
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 

@@ -79,7 +79,7 @@
 
 **방법 A – Spring Boot Actuator (권장)**
 
-1. `be-paper-reader/app/paperdot/build.gradle`에 의존성 추가:
+1. `backend/app/paperdot/build.gradle`에 의존성 추가:
    ```gradle
    implementation 'org.springframework.boot:spring-boot-starter-actuator'
    ```
@@ -115,7 +115,7 @@
 
 **구현 위치 예시**
 
-1. **API 클라이언트** (`fe-paper-reader/lib/api.ts`)
+1. **API 클라이언트** (`frontend/lib/api.ts`)
    - `uploadPdf`, `translateSentences` 등에서 `fetch` 실패 시:
      - `res.ok`가 false이거나 네트워크 에러일 때 **일관된 에러 메시지** throw  
        (예: “서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.”)

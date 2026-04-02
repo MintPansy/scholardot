@@ -38,7 +38,7 @@
 
 ## 기술 스택
 
-### Frontend (`fe-paper-reader`)
+### Frontend (`frontend`)
 
 | 분류 | 기술 |
 |------|------|
@@ -48,7 +48,7 @@
 | PDF 렌더링 | pdfjs-dist 4.10.38 |
 | 배포 | Vercel |
 
-### Backend (`be-paper-reader`)
+### Backend (`backend`)
 
 | 분류 | 기술 |
 |------|------|
@@ -66,7 +66,7 @@
 
 ```
 paperdot2/
-├── fe-paper-reader/              # Next.js 프론트엔드
+├── frontend/                     # Next.js 프론트엔드
 │   ├── app/
 │   │   ├── components/           # 공통 컴포넌트
 │   │   │   ├── read/             # 읽기 화면 (ReadList, PdfPageThumbnail)
@@ -83,7 +83,7 @@ paperdot2/
 │   │   └── config/               # 환경 변수 (getApiUrl)
 │   └── public/                   # 정적 파일
 │
-├── be-paper-reader/              # Spring Boot 백엔드
+├── backend/                      # Spring Boot 백엔드
 │   └── app/paperdot/
 │       └── src/main/java/swyp/paperdot/
 │           ├── common/           # SecurityConfig, JWT 필터
@@ -107,7 +107,7 @@ paperdot2/
 ### Backend
 
 ```bash
-cd be-paper-reader
+cd backend
 cp .env.example .env
 # .env에 DB, OpenAI API 키, OAuth, JWT 시크릿 등 설정
 
@@ -122,7 +122,7 @@ docker compose -f compose/docker-compose.local.yml up -d
 ### Frontend
 
 ```bash
-cd fe-paper-reader
+cd frontend
 # .env.local 파일 생성
 # NEXT_PUBLIC_API_URL=http://localhost:8080
 
@@ -150,8 +150,8 @@ pnpm dev
 
 ## 참고 문서
 
-- [fe-paper-reader/README.md](fe-paper-reader/README.md) — 프론트엔드 상세 구조 및 구현 설명
-- [be-paper-reader/README.md](be-paper-reader/README.md) — 백엔드 실행 방법 및 API 구조
+- [frontend/README.md](frontend/README.md) — 프론트엔드 상세 구조 및 구현 설명
+- [backend/README.md](backend/README.md) — 백엔드 실행 방법 및 API 구조
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — 시스템 아키텍처, API 목록, DB 스키마
 - [docs/THESIS_DEV.md](docs/THESIS_DEV.md) — 개발 일지 (졸업 논문 재료)
 

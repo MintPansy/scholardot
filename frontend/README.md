@@ -3,7 +3,7 @@
 **Next.js 기반 영어 논문 한·영 병렬 읽기 웹 서비스 프론트엔드입니다.**
 
 - **배포**: [https://scholardot.vercel.app](https://scholardot.vercel.app)
-- **백엔드 저장소**: [be-paper-reader](../be-paper-reader/README.md)
+- **백엔드 저장소**: [backend](../backend/README.md)
 
 ---
 
@@ -35,7 +35,7 @@
 ## 디렉토리 구조
 
 ```
-fe-paper-reader/
+frontend/
 ├── app/
 │   ├── page.tsx                  # 홈(랜딩) 화면
 │   ├── layout.tsx                # 전역 레이아웃, ToastContainer

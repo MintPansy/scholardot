@@ -3,11 +3,11 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(xargs grep:*)",
-      "Bash(grep -rn \"createNote\\\\|getNotes\\\\|UserDocNote\" /c/paperdot2/fe-paper-reader/app --include=*.tsx --include=*.ts)",
-      "Bash(find /c/paperdot2/be-paper-reader -name *.env* -o -name application-local*)",
-      "Bash(find /c/paperdot2/be-paper-reader -name *Pipeline* -o -name *pipeline*)",
-      "Bash(find /c/paperdot2/be-paper-reader -name *Controller*)",
-      "Bash(find /c/paperdot2/be-paper-reader -name SecurityConfig*)",
+      "Bash(grep -rn \"createNote\\\\|getNotes\\\\|UserDocNote\" /c/paperdot2/frontend/app --include=*.tsx --include=*.ts)",
+      "Bash(find /c/paperdot2/backend -name *.env* -o -name application-local*)",
+      "Bash(find /c/paperdot2/backend -name *Pipeline* -o -name *pipeline*)",
+      "Bash(find /c/paperdot2/backend -name *Controller*)",
+      "Bash(find /c/paperdot2/backend -name SecurityConfig*)",
       "Bash(xargs cat:*)",
       "Bash(docker --version)",
       "Bash(docker info:*)",
@@ -27,8 +27,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(find /c/paperdot2/fe-paper-reader -type f -name *localStorage* -o -name *storage*)",
-      "Bash(find /c/paperdot2/fe-paper-reader/app/components -type f -name *.tsx -o -name *.ts)",
+      "Bash(find /c/paperdot2/frontend -type f -name *localStorage* -o -name *storage*)",
+      "Bash(find /c/paperdot2/frontend/app/components -type f -name *.tsx -o -name *.ts)",
       "Bash(git pull:*)",
       "Bash(xargs ls:*)"
     ]

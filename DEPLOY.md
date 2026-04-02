@@ -7,7 +7,7 @@
 ## 1. Vercel에서 새 프로젝트 생성
 
 1. [Vercel](https://vercel.com) 로그인 후 **Add New** → **Project**
-2. 이 저장소(paperdot2) 연결 후 **Root Directory**를 `fe-paper-reader`로 지정
+2. 이 저장소(paperdot2) 연결 후 **Root Directory**를 `frontend`로 지정
 3. Framework Preset: **Next.js** 그대로 사용
 4. **Deploy**로 먼저 한 번 배포해도 되고, 아래 환경 변수 설정 후 재배포해도 됩니다.
 
@@ -46,5 +46,5 @@
 
 ## 5. 로컬에서 새 배포와 동일하게 쓰고 싶을 때
 
-`fe-paper-reader/.env.local`에 위와 같은 키를 두고,  
+`frontend/.env.local`에 위와 같은 키를 두고,  
 `NEXT_PUBLIC_BASE_URL`만 로컬 주소(예: `http://localhost:3000`)로 두면 로컬에서도 동일하게 테스트할 수 있습니다.

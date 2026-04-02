@@ -30,7 +30,7 @@
 ## 3. 실행
 
 ```bash
-cd fe-paper-reader
+cd frontend
 npm install
 npm run dev
 ```
