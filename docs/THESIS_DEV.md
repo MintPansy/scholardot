@@ -635,3 +635,31 @@
 > 본 프로젝트는 1인 개발·풀스택·졸업논문을 동시에 완성하는 도전이었다.  
 > 설계 단계의 문서화부터 운영 배포까지 전 과정을 직접 경험하며,  
 > 실제 서비스 수준의 트러블슈팅과 UX 완성도를 모두 다루었다.
+
+---
+
+### 2026-04-03 (학술 논문 전용 번역 함수 구현 — BE)
+
+- **`AcademicTranslationItem` DTO 추가 (BE - `OpenAiTranslationDto.java`)**
+  - 기존 `TranslationPair(source, translated)` 구조와 별개로, 학술 번역 전용 레코드 `AcademicTranslationItem(int id, String original, String translated)` 추가.
+  - 응답 JSON 형식을 `[{"id": 1, "original": "...", "translated": "..."}]` 로 명시해 원문·번역 문장 간 순서 매핑을 id 필드로 보장.
+
+- **`translateAcademic()` 메서드 구현 (BE - `OpenAiTranslator.java`)**
+  - 입력 텍스트를 그대로 user 메시지로 주입하고, system 프롬프트에 번역 규칙(문장 경계 유지, 병합·분리 금지, 1:1 대응)을 명시.
+  - `response_format: json_object` 모드를 활성화해 OpenAI가 반드시 JSON을 반환하도록 강제.
+  - 응답은 `{"translations": [...]}` 래퍼 구조로 수신하며, `parseAcademicTranslationResponse`에서 `translations` 키를 추출해 `List<AcademicTranslationItem>`으로 역직렬화.
+
+- **외부 API 불안정성 대응: 재시도 로직 (BE - `OpenAiTranslator.java`)**
+  - 단일 API 호출을 `callOpenAiForAcademic()`으로 분리하고, `translateAcademic()`이 최대 `ACADEMIC_MAX_ATTEMPTS = 3`회까지 재시도하는 루프를 구성.
+  - 파싱 오류(`TranslationException`)와 문장 수 불일치(`TranslationSizeMismatchException`) 모두 재시도 대상으로 처리.
+  - 3회 모두 실패 시 마지막 예외 타입을 보존해 throw — 상위 호출자에서 원인 구분이 가능하도록 설계.
+
+- **번역 결과 신뢰성 검증: 문장 수 검증 (BE - `OpenAiTranslator.java`)**
+  - `countSentences(String text)`: `.?!` 뒤 공백 기준 정규식(`(?<=[.?!])\\s+`)으로 입력 문장 수를 산출.
+  - 매 시도 후 `items.size() != expectedCount`이면 경고 로그(`log.warn`) 출력 후 재시도 — GPT 응답이 규칙을 깨고 문장을 병합·분리한 경우를 탐지.
+  - 불일치 시 기존 `TranslationSizeMismatchException`을 재사용해 예외 체계 일관성 유지.
+  - → 논문 "구현" 챕터 재료: 외부 LLM 응답의 신뢰성을 코드 레벨 검증으로 확보하는 전략, 재시도를 통한 가용성 확보 전략.
+
+- **관련 파일**
+  - `backend/.../translator/dto/OpenAiTranslationDto.java`
+  - `backend/.../translator/OpenAiTranslator.java`
