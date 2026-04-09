@@ -123,6 +123,19 @@ function autoWrapMathSpans(input: string): string {
   return out;
 }
 
+function autoWrapMathOnEquationLines(input: string): string {
+  return input
+    .split("\n")
+    .map((line) => {
+      const t = line.trim();
+      if (!t) return line;
+      // 설명문 라인은 자동 수식화하지 않음 (문장 분해/색상 깨짐 방지)
+      if (!isEquationLikeLine(t)) return line;
+      return autoWrapMathSpans(line);
+    })
+    .join("\n");
+}
+
 function isEquationLikeLine(line: string): boolean {
   const t = line.trim();
   if (!t) return false;
@@ -155,6 +168,42 @@ function wrapEquationLikeLines(input: string): string {
       return `$$${trimmed}$$`;
     })
     .join("\n");
+}
+
+function mergeProseLines(input: string): string {
+  const lines = input.split("\n");
+  const out: string[] = [];
+  let proseBuffer: string[] = [];
+
+  const flushProse = () => {
+    if (proseBuffer.length === 0) return;
+    out.push(proseBuffer.join(" ").replace(/\s{2,}/g, " ").trim());
+    proseBuffer = [];
+  };
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) {
+      flushProse();
+      out.push("");
+      continue;
+    }
+
+    // 이미 명시적 수식 구분자가 있거나 수식 줄로 판정되면 줄 단위를 유지
+    const explicitMath =
+      line.includes("$$") || line.includes("$") || line.includes("\\(") || line.includes("\\[");
+    if (explicitMath || isEquationLikeLine(line)) {
+      flushProse();
+      out.push(line);
+      continue;
+    }
+
+    // 설명문은 줄바꿈을 병합해 "토막 문장 + 수식 토큰 분리" 현상 완화
+    proseBuffer.push(line);
+  }
+
+  flushProse();
+  return out.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 function normalizePdfEquationArtifacts(input: string): string {
@@ -252,6 +301,8 @@ function normalizeUnicodeMathToLatex(input: string): string {
     .replaceAll("−", "-");
 
   s = normalizePdfEquationArtifacts(s);
+  // PDF 추출에서 잘린 설명문 라인을 먼저 병합해 텍스트/수식 분리를 안정화
+  s = mergeProseLines(s);
 
   // 03page.pdf 계열에서 과한 오탐을 막기 위해 줄 전체 승격은 제한적으로만 적용
   // (문장형 설명 텍스트까지 수식화되는 문제 방지)
@@ -277,8 +328,9 @@ function normalizeUnicodeMathToLatex(input: string): string {
     return s;
   }
 
-  // 2) 구분자 없는 LaTeX 패턴 구간을 자동 탐지해 inline/block 구분자로 감싸기
-  return autoWrapMathSpans(s);
+  // 2) 구분자 없는 LaTeX 자동 보정은 "수식 줄"에서만 제한적으로 적용
+  // (일반 설명문 내부 토큰 오탐 방지)
+  return autoWrapMathOnEquationLines(s);
 }
 
 /**
