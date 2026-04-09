@@ -137,18 +137,95 @@ function normalizeUnicodeMathToLatex(input: string): string {
 }
 
 /**
+ * 줄이 수식 위주인지 판단합니다.
+ * 수식 줄은 spacing 보정을 skip합니다.
+ */
+function isMathLine(line: string): boolean {
+  // LaTeX 구분자 또는 유니코드 수학 기호가 있으면 수식 줄
+  if (/\$|\\[a-zA-Z]/.test(line)) return true;
+  if (/[∑∫√∞⟨⟩αβγδθλμνπρσφω]/.test(line)) return true;
+  // 기호 밀도 30% 이상이면 수식 줄
+  const mathChars = (line.match(/[|=<>+\-*/^{}[\]()]/g) ?? []).length;
+  return line.length > 0 && mathChars / line.length > 0.3;
+}
+
+/**
+ * 단일 줄 텍스트에 spacing 보정을 적용합니다.
+ * 수식 줄이 아닌 순수 텍스트에만 호출됩니다.
+ */
+function fixLineText(s: string): string {
+  // ── 1. 소문자 → 대문자 경계 ──────────────────────────────
+  s = s.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+  // ── 2. 연속 대문자 → 새 단어 (약어 뒤) ──────────────────
+  s = s.replace(/([A-Z]{2,})([A-Z][a-z])/g, "$1 $2");
+
+  // ── 3. 문자 ↔ 숫자 (단독 포함, 사용자 요청 강화) ─────────
+  s = s.replace(/([a-zA-Z])(\d)/g, "$1 $2");
+  s = s.replace(/(\d)([a-zA-Z])/g, "$1 $2");
+
+  // ── 4. 괄호 앞뒤 ─────────────────────────────────────────
+  s = s.replace(/([a-zA-Z])\(/g, "$1 (");
+  s = s.replace(/\)([a-zA-Z])/g, ") $1");
+
+  // ── 5. 쉼표 뒤 공백 ──────────────────────────────────────
+  s = s.replace(/,([a-zA-Z\d])/g, ", $1");
+
+  // ── 6. 접속사·전치사 단어 복구 ───────────────────────────
+  //    2회 반복으로 연쇄 키워드 처리
+  //    "statewiththeinitialcondition" → "state with the initial condition"
+  //    Pass 1: "statewiththei" → "state withthei"
+  //    Pass 2: "state withthei" → "state with thei"
+  for (let _pass = 0; _pass < 2; _pass++) {
+    // 키워드 앞 분리 (preceding text 와 분리) — and/or 는 오탐 위험으로 제외
+    s = s.replace(
+      /([a-zA-Z])(with|where|that|this|the|for|from|into|upon|each|such|also|both|then|when|thus|than)/gi,
+      "$1 $2"
+    );
+    // 키워드 뒤 분리 — and/or 포함
+    s = s.replace(
+      /(with|where|that|this|the|for|from|into|upon|each|such|also|both|then|when|thus|than|and|or)([a-zA-Z])/gi,
+      "$1 $2"
+    );
+  }
+
+  // ── 7. 수식 기호 주변 공백 ────────────────────────────────
+  //    | 기호
+  s = s.replace(/([a-zA-Z\d])\|/g, "$1 |");
+  s = s.replace(/\|([a-zA-Z\d])/g, "| $1");
+  //    >= <= 복합 연산자: 단위 유지하며 앞뒤 공백
+  s = s.replace(/([a-zA-Z\d])>=/g, "$1 >=");
+  s = s.replace(/>=([a-zA-Z\d])/g, ">= $1");
+  s = s.replace(/([a-zA-Z\d])<=/g, "$1 <=");
+  s = s.replace(/<=([a-zA-Z\d])/g, "<= $1");
+  //    = 다음 | (ket 표기: "=|k0>" → "= |k0>")
+  s = s.replace(/=\|/g, "= |");
+  //    단독 > (>= 처리됨, >> 유지)
+  s = s.replace(/([a-zA-Z\d])>(?![=>])/g, "$1 >");
+  s = s.replace(/(?<![=>])>([a-zA-Z])/g, "> $1");
+  //    단독 < (<= 처리됨, << 유지)
+  s = s.replace(/([a-zA-Z\d])<(?![=<])/g, "$1 <");
+  s = s.replace(/(?<![=<])<([a-zA-Z\d])/g, "< $1");
+  //    단독 = (>=, <=, =>, == 제외)
+  s = s.replace(/([a-zA-Z\d])=(?![=><])/g, "$1 =");
+  s = s.replace(/(?<![<>!=])=([a-zA-Z\d])/g, "= $1");
+
+  // ── 8. 노이즈 제거: 단독 ^ 기호 ──────────────────────────
+  //    PDF에서 상첨자가 ^ 로 남는 경우 제거
+  s = s.replace(/(^|\s)\^(\s|$)/gm, "$1$2");
+  s = s.replace(/\s\^(?=\s)/g, " ");
+
+  // ── 9. 중복 공백 제거 ─────────────────────────────────────
+  s = s.replace(/[ \t]{2,}/g, " ").trim();
+
+  return s;
+}
+
+/**
  * PDF 추출 텍스트에서 유실된 공백을 휴리스틱으로 복원합니다.
- * 수식 세그먼트에는 적용하지 않고 일반 텍스트에만 사용합니다.
- *
- * 적용 규칙:
- *  1. 소문자 → 대문자 경계  "initialState" → "initial State"
- *  2. 연속 대문자 뒤 새 단어  "ABCDef" → "ABC Def"
- *  3. 2글자 이상 영문 ↔ 숫자  "chain1section" → "chain 1 section"
- *     (단독 변수명 k0, H0 등은 건드리지 않음)
- *  4. 수식 기호 주변 공백  "|I>=|k0>" → "| I >= | k0 >"
- *  5. 중복 공백 제거
- *
- * 한국어/CJK 텍스트는 skip합니다.
+ * - 수식 줄(isMathLine)은 건드리지 않음
+ * - 한국어/CJK 텍스트는 skip
+ * - 수식 세그먼트가 아닌 text 세그먼트에만 호출됨
  */
 function restoreWordSpacing(text: string): string {
   if (!text || text.length < 2) return text;
@@ -156,49 +233,15 @@ function restoreWordSpacing(text: string): string {
   // 한국어/CJK 포함 시 skip
   if (/[\uAC00-\uD7A3\u4E00-\u9FFF\u3040-\u30FF]/.test(text)) return text;
 
-  // 라틴 문자 비율 25% 미만이면 skip (숫자·기호 위주 텍스트 보호)
+  // 라틴 문자 비율 25% 미만이면 skip
   const latinCount = (text.match(/[a-zA-Z]/g) ?? []).length;
   if (latinCount < 3 || latinCount / text.length < 0.25) return text;
 
-  let s = text;
-
-  // 1. 소문자 → 대문자 경계 (camelCase 분리)
-  s = s.replace(/([a-z])([A-Z])/g, "$1 $2");
-
-  // 2. 연속 대문자 → 새 단어 시작 (약어 뒤 단어)
-  //    "ABCDef" → "ABC Def"
-  s = s.replace(/([A-Z]{2,})([A-Z][a-z])/g, "$1 $2");
-
-  // 3. 2글자 이상 영문 ↔ 숫자 경계 (단독 k0, H0 는 유지)
-  s = s.replace(/([a-zA-Z]{2,})(\d+)/g, "$1 $2");
-  s = s.replace(/(\d+)([a-zA-Z]{2,})/g, "$1 $2");
-
-  // 4. 수식 기호 주변 공백 (text 세그먼트 내 ket/bra 표기 등)
-  //    | 기호
-  s = s.replace(/([a-zA-Z\d])\|/g, "$1 |");
-  s = s.replace(/\|([a-zA-Z\d])/g, "| $1");
-  //    >= <= 복합 연산자: 단위로 유지하면서 앞뒤 공백
-  //    "coefficient>=threshold" → "coefficient >= threshold"
-  s = s.replace(/([a-zA-Z\d])>=/g, "$1 >=");
-  s = s.replace(/>=([a-zA-Z\d])/g, ">= $1");
-  s = s.replace(/([a-zA-Z\d])<=/g, "$1 <=");
-  s = s.replace(/<=([a-zA-Z\d])/g, "<= $1");
-  //    = 다음 | 기호 분리: ket 표기 "|I>=|k0>" → "| I > = | k0 >"
-  s = s.replace(/=\|/g, "= |");
-  //    단독 > (>= 은 위에서 처리, >> 유지)
-  s = s.replace(/([a-zA-Z\d])>(?![=>])/g, "$1 >");
-  s = s.replace(/(?<![=>])>([a-zA-Z])/g, "> $1");
-  //    단독 < (<= 은 위에서 처리, << 유지)
-  s = s.replace(/([a-zA-Z\d])<(?![=<])/g, "$1 <");
-  s = s.replace(/(?<![=<])<([a-zA-Z\d])/g, "< $1");
-  //    단독 = (>=, <=, =>, == 제외)
-  s = s.replace(/([a-zA-Z\d])=(?![=><])/g, "$1 =");
-  s = s.replace(/(?<![<>!=])=([a-zA-Z\d])/g, "= $1");
-
-  // 5. 중복 공백 제거
-  s = s.replace(/[ \t]{2,}/g, " ").trim();
-
-  return s;
+  // 줄 단위로 분리 → 수식 줄은 그대로, 텍스트 줄만 보정
+  return text
+    .split("\n")
+    .map((line) => (isMathLine(line) ? line : fixLineText(line)))
+    .join("\n");
 }
 
 /**
