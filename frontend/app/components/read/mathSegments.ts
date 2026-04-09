@@ -3,6 +3,8 @@
  * 지원: $$...$$, \[...\], \(...\), $...$ (단일 $는 $$와 겹치지 않을 때)
  */
 
+const CJK_RE = /[\uAC00-\uD7A3\u4E00-\u9FFF\u3040-\u30FF]/;
+
 export type MathSegment =
   | { kind: "text"; value: string }
   | { kind: "math"; value: string; displayMode: boolean };
@@ -139,6 +141,14 @@ export function splitMathSegments(input: string): MathSegment[] {
 
     const trimmed = inner.trim();
     if (trimmed.length === 0) {
+      segments.push({ kind: "text", value: input.slice(next.index, end) });
+      pos = end;
+      continue;
+    }
+
+    // 한글/CJK가 포함된 구간은 수식이 아닌 텍스트로 처리
+    // (번역문이 $...$로 감싸여도 KaTeX에 먹히지 않도록 방지)
+    if (CJK_RE.test(trimmed)) {
       segments.push({ kind: "text", value: input.slice(next.index, end) });
       pos = end;
       continue;
