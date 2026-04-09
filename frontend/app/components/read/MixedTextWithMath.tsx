@@ -15,6 +15,8 @@ const LATEX_CMD_HINT_RE =
 
 const MATH_TOKEN_RE =
   /(\\sum|\\int|\\frac|\\langle|\\rangle|\\sqrt|\\lim|\\to|\\infty|\\left|\\right|\\[A-Za-z]+|\|[A-Za-z][^|]{0,40}\\rangle|\^[A-Za-z0-9({\\]|_[A-Za-z0-9({\\])/g;
+const COMPLEX_MATH_RE =
+  /(\\sum|\\int|\\frac|\\langle|\\rangle|\\lim|\\sqrt|\|[A-Za-z][^|]{0,40}\\rangle|\\left|\\right)/;
 
 type Span = { start: number; end: number };
 
@@ -85,10 +87,10 @@ function autoWrapMathSpans(input: string): string {
       pos = sp.end;
       continue;
     }
-    // 길거나 합/적분 중심 표현은 block, 나머지는 inline
+    // 복잡한 수식은 block으로 분리해 파싱 안정성과 가독성을 높임
     const blockLike =
       body.length > 90 ||
-      /\\sum|\\int|\\lim|\\frac/.test(body) ||
+      COMPLEX_MATH_RE.test(body) ||
       body.includes("\n");
     out += blockLike ? `$$${body}$$` : `$${body}$`;
     pos = sp.end;
@@ -154,17 +156,15 @@ function renderSearchHighlights(
   );
 }
 
-function KaTeXBlock({
+function InlineMath({
   latex,
-  displayMode,
 }: {
   latex: string;
-  displayMode: boolean;
 }) {
   const html = useMemo(() => {
     try {
       return katex.renderToString(latex.trim(), {
-        displayMode,
+        displayMode: false,
         throwOnError: false,
         strict: (code) =>
           code === "unicodeTextInMathMode" || code === "mathVsTextUnits"
@@ -173,24 +173,47 @@ function KaTeXBlock({
       });
     } catch {
       return katex.renderToString(latex, {
-        displayMode,
+        displayMode: false,
         throwOnError: false,
       });
     }
-  }, [latex, displayMode]);
-
-  if (displayMode) {
-    return (
-      <span
-        className="inline-block w-full text-center my-1"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    );
-  }
+  }, [latex]);
 
   return (
     <span
       className="inline-block align-baseline mx-0.5 max-w-none"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
+function BlockMath({
+  latex,
+}: {
+  latex: string;
+}) {
+  const html = useMemo(() => {
+    try {
+      return katex.renderToString(latex.trim(), {
+        displayMode: true,
+        throwOnError: false,
+        strict: (code) =>
+          code === "unicodeTextInMathMode" || code === "mathVsTextUnits"
+            ? "ignore"
+            : "warn",
+      });
+    } catch {
+      return katex.renderToString(latex, {
+        displayMode: true,
+        throwOnError: false,
+      });
+    }
+  }, [latex]);
+
+  // <p> 내부에서도 깨지지 않도록 span(block display)로 렌더링
+  return (
+    <span
+      className="block w-full my-2 overflow-x-auto text-center"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -205,12 +228,10 @@ function renderSegments(
 ): ReactNode {
   return segments.map((seg, idx) => {
     if (seg.kind === "math") {
-      return (
-        <KaTeXBlock
-          key={`m-${idx}`}
-          latex={seg.value}
-          displayMode={seg.displayMode}
-        />
+      return seg.displayMode ? (
+        <BlockMath key={`m-${idx}`} latex={seg.value} />
+      ) : (
+        <InlineMath key={`m-${idx}`} latex={seg.value} />
       );
     }
     return (
