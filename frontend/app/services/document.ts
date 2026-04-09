@@ -41,6 +41,35 @@ export interface TranslatedDocumentUnit {
   sourcePage?: number;
 }
 
+function normalizeTranslatedUnit(raw: unknown): TranslatedDocumentUnit | null {
+  if (!raw || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+  const docUnitIdValue = obj.docUnitId ?? obj.id ?? obj.unitId;
+  const docUnitId = Number(docUnitIdValue);
+  if (!Number.isFinite(docUnitId)) return null;
+
+  const sourceText = String(
+    obj.sourceText ?? obj.source ?? obj.originalText ?? obj.original ?? ""
+  );
+  const translatedText = String(
+    obj.translatedText ??
+      obj.translation ??
+      obj.translated ??
+      obj.result ??
+      obj.targetText ??
+      ""
+  );
+  const sourcePageRaw = obj.sourcePage ?? obj.page ?? obj.pageNumber;
+  const sourcePage = Number(sourcePageRaw);
+
+  return {
+    docUnitId,
+    sourceText,
+    translatedText,
+    sourcePage: Number.isFinite(sourcePage) ? sourcePage : undefined,
+  };
+}
+
 export const getTranslatedDocument = async (
   documentId: string | number,
   accessToken?: string
@@ -81,14 +110,16 @@ export const getTranslatedDocument = async (
 
     const raw = await response.json();
     // 백엔드가 배열 직접 반환 | { data: [...] } | { content: [...] } 형태 모두 처리
-    const data: TranslatedDocumentUnit[] = Array.isArray(raw)
+    const dataRaw: unknown[] = Array.isArray(raw)
       ? raw
       : Array.isArray(raw?.data)
       ? raw.data
       : Array.isArray(raw?.content)
       ? raw.content
       : [];
-    return data;
+    return dataRaw
+      .map((item) => normalizeTranslatedUnit(item))
+      .filter((item): item is TranslatedDocumentUnit => item != null);
   } catch (error) {
     // 네트워크 오류나 기타 에러는 그대로 throw
     // 404는 빈 배열로 처리하기 위해 에러를 다시 throw하지 않음

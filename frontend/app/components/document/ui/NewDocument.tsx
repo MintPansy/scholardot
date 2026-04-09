@@ -49,6 +49,11 @@ export default function NewDocumentPage() {
     translated: number;
     total: number;
   } | null>(null);
+  const [translationSnapshot, setTranslationSnapshot] = useState<{
+    translated: number;
+    failed: number;
+    total: number;
+  } | null>(null);
   const [, setTranslationStatus] = useState<string | null>(null);
   const [translatedText, setTranslatedText] = useState<TranslationPair[]>([]);
   const [batchFailures, setBatchFailures] = useState<
@@ -73,6 +78,7 @@ export default function NewDocumentPage() {
     setTranslationProgress(null);
     setTranslationStatus(null);
     setTranslatedText([]);
+    setTranslationSnapshot(null);
     setBatchFailures([]);
     setTranslationError(null);
   }, []);
@@ -138,6 +144,7 @@ export default function NewDocumentPage() {
 
   const handleRemoveFile = () => {
     setUploadingFiles([]);
+    setTranslationSnapshot(null);
     setTranslationError(null);
     setBatchFailures([]);
   };
@@ -199,6 +206,7 @@ export default function NewDocumentPage() {
         toast.error(message);
         setDocument(null);
         setTranslatedText([]);
+        setTranslationSnapshot(null);
         setUploadingFiles([]);
       }
     };
@@ -267,6 +275,11 @@ export default function NewDocumentPage() {
             ).length;
             const total = data.length;
             setTranslationProgress({ translated: translatedCount, total });
+            setTranslationSnapshot({
+              translated: progress?.translated ?? translatedCount,
+              failed: progress?.failed ?? 0,
+              total: progress?.total ?? total,
+            });
 
             if (translatedCount > 0) {
               setTranslatedText(data);
@@ -320,11 +333,13 @@ export default function NewDocumentPage() {
                       );
                       setDocument(null);
                       setUploadingFiles([]);
+                      setTranslationSnapshot(null);
                     }
                   } catch {
                     setTranslationError("번역 결과 조회에 실패했어요.");
                     setDocument(null);
                     setUploadingFiles([]);
+                    setTranslationSnapshot(null);
                   }
                   setIsTranslating(false);
                 }, 1500);
@@ -364,6 +379,7 @@ export default function NewDocumentPage() {
           setIsTranslating(false);
           setDocument(null);
           setUploadingFiles([]);
+          setTranslationSnapshot(null);
         }
       }
     };
@@ -383,6 +399,14 @@ export default function NewDocumentPage() {
 
   const isTranslationLoading =
     document != null && translatedText.length === 0 && isTranslating;
+  const translationReady =
+    document != null &&
+    !isTranslating &&
+    translationSnapshot != null &&
+    translationSnapshot.total > 0 &&
+    translationSnapshot.translated + translationSnapshot.failed >=
+      translationSnapshot.total &&
+    translationSnapshot.translated > 0;
 
   return (
     <main className={styles.container}>
@@ -456,7 +480,7 @@ export default function NewDocumentPage() {
             </div>
           )}
 
-          {translatedText.length > 0 && document && (
+          {translationReady && (
             <>
               {batchFailures.length > 0 && (
                 <p className={styles.batchFailureNotice} role="status">

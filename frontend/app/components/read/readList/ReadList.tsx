@@ -26,6 +26,11 @@ import {
   MOCK_TRANSLATION_PAIRS,
   MOCK_FILE_NAME,
 } from "@/app/data/mockTranslationData";
+import {
+  getTranslation,
+  getTranslationProgress,
+  type TranslatedDocumentUnit,
+} from "@/app/services/document";
 import PdfPageThumbnail from "@/app/components/read/pdf/PdfPageThumbnail";
 import MixedTextWithMath from "@/app/components/read/MixedTextWithMath";
 import { isDemoSessionClient } from "@/lib/authSession";
@@ -49,12 +54,54 @@ type HighlightMap = Record<string, HighlightEntry>;
 /** 페이지당 문장(항목) 수 (7~8문장 단위) */
 const ITEMS_PER_PAGE = 8;
 
+function normalizeTranslationPair(raw: unknown): TranslationPair | null {
+  if (!raw || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+  const docUnitId = Number(obj.docUnitId ?? obj.id ?? obj.unitId);
+  if (!Number.isFinite(docUnitId)) return null;
+  const sourceText = String(
+    obj.sourceText ?? obj.source ?? obj.originalText ?? obj.original ?? ""
+  );
+  const translatedText = String(
+    obj.translatedText ??
+      obj.translation ??
+      obj.translated ??
+      obj.result ??
+      obj.targetText ??
+      ""
+  );
+  const sourcePageRaw = obj.sourcePage ?? obj.page ?? obj.pageNumber;
+  const sourcePage = Number(sourcePageRaw);
+  return {
+    docUnitId,
+    sourceText,
+    translatedText,
+    sourcePage: Number.isFinite(sourcePage) ? sourcePage : undefined,
+  };
+}
+
+function normalizeTranslationPairs(raw: unknown): TranslationPair[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item) => normalizeTranslationPair(item))
+    .filter((item): item is TranslationPair => item != null);
+}
+
+function toTranslationPairList(raw: TranslatedDocumentUnit[]): TranslationPair[] {
+  return raw.map((item) => ({
+    docUnitId: item.docUnitId,
+    sourceText: item.sourceText ?? "",
+    translatedText: item.translatedText ?? "",
+    sourcePage: item.sourcePage,
+  }));
+}
+
 export default function ReadList({
   storageNamespace = "scholardot-read",
 }: {
   storageNamespace?: string;
 }) {
-  const [data] = useState<TranslationPair[]>(() => {
+  const [data, setData] = useState<TranslationPair[]>(() => {
     if (typeof window === "undefined") return MOCK_TRANSLATION_PAIRS;
     if (isDemoSessionClient()) return MOCK_TRANSLATION_PAIRS;
     if (useLoginStore.getState().userInfo?.userId === "demo-user") {
@@ -66,14 +113,17 @@ export default function ReadList({
         sessionStorage.getItem("translationPairs") ??
         localStorage.getItem("translationPairs");
       if (stored) {
-        const parsed = JSON.parse(stored) as TranslationPair[];
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        const parsed = normalizeTranslationPairs(JSON.parse(stored));
+        if (parsed.length > 0) return parsed;
       }
     } catch {
       /* ignore */
     }
     return MOCK_TRANSLATION_PAIRS;
   });
+  const [translationLoadState, setTranslationLoadState] = useState<
+    "idle" | "loading" | "failed"
+  >("idle");
 
   const [fileName] = useState(() => {
     if (typeof window === "undefined") return MOCK_FILE_NAME;
@@ -222,6 +272,80 @@ export default function ReadList({
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMatchIdx, setSearchMatchIdx] = useState(-1);
+  const getTranslatedDisplayText = useCallback(
+    (item: TranslationPair) => {
+      const value = (item.translatedText ?? "").trim();
+      if (value) return item.translatedText;
+      if (translationLoadState === "loading") return "번역 중...";
+      if (translationLoadState === "failed") return "번역 실패";
+      return "번역 없음";
+    },
+    [translationLoadState]
+  );
+
+  useEffect(() => {
+    if (!documentId || !accessToken || data.length === 0) return;
+    let cancelled = false;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    const hasMissingTranslation = (list: TranslationPair[]) =>
+      list.some((item) => (item.translatedText ?? "").trim() === "");
+
+    const persistPairs = (pairs: TranslationPair[]) => {
+      const serialized = JSON.stringify(pairs);
+      try {
+        sessionStorage.setItem("translationPairs", serialized);
+        localStorage.setItem("translationPairs", serialized);
+      } catch {
+        /* storage quota */
+      }
+    };
+
+    const syncOnce = async () => {
+      if (cancelled) return;
+      try {
+        setTranslationLoadState("loading");
+        const [translationList, progress] = await Promise.all([
+          getTranslation(documentId, accessToken),
+          getTranslationProgress(documentId, accessToken),
+        ]);
+        if (cancelled) return;
+
+        const normalized = toTranslationPairList(translationList);
+        if (normalized.length > 0) {
+          setData(normalized);
+          persistPairs(normalized);
+        }
+
+        const isSettled =
+          progress != null &&
+          progress.total > 0 &&
+          progress.translating === 0 &&
+          progress.translated + progress.failed >= progress.total;
+        if (isSettled || !hasMissingTranslation(normalized)) {
+          if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+          }
+          setTranslationLoadState("idle");
+        }
+      } catch {
+        if (!cancelled) {
+          setTranslationLoadState("failed");
+        }
+      }
+    };
+
+    if (hasMissingTranslation(data)) {
+      void syncOnce();
+      pollTimer = setInterval(syncOnce, 2000);
+    }
+
+    return () => {
+      cancelled = true;
+      if (pollTimer) clearInterval(pollTimer);
+    };
+  }, [documentId, accessToken, data]);
 
   /** PDF 페이지 기준( sourcePage 있음 ) 또는 기존 N문장 묶음 */
   const pageLayout = useMemo(() => {
@@ -836,7 +960,7 @@ export default function ReadList({
     if (!q) return [];
     return data.reduce<number[]>((acc, item, idx) => {
       const inSrc = (item.sourceText ?? "").toLowerCase().includes(q);
-      const inTgt = (item.translatedText ?? "").toLowerCase().includes(q);
+      const inTgt = getTranslatedDisplayText(item).toLowerCase().includes(q);
       const visible =
         filterMode === "english" ? inSrc :
         filterMode === "korean"  ? inTgt :
@@ -844,7 +968,7 @@ export default function ReadList({
       if (visible) acc.push(idx);
       return acc;
     }, []);
-  }, [searchQuery, data, filterMode]);
+  }, [searchQuery, data, filterMode, getTranslatedDisplayText]);
 
   /** 검색어 바뀌면 위치 초기화 (Enter 전까지 스크롤 안 함) */
   useEffect(() => {
@@ -1009,7 +1133,7 @@ export default function ReadList({
                                   className={styles.pagePreviewRow}>
                                   <p className={styles.pagePreviewTextText}>
                                     <MixedTextWithMath
-                                      text={x.translatedText || " "}
+                                      text={getTranslatedDisplayText(x)}
                                       markClassName={styles.highlight}
                                       markActiveClassName={styles.highlightActive}
                                     />
@@ -1231,14 +1355,14 @@ export default function ReadList({
                     onClick={() =>
                       handleSentenceClick(
                         sentenceKeyOf(item.docUnitId, "ko"),
-                        item.translatedText
+                        getTranslatedDisplayText(item)
                       )
                     }
                     onContextMenu={(e) =>
                       handleSentenceContextMenu(
                         e,
                         sentenceKeyOf(item.docUnitId, "ko"),
-                        item.translatedText
+                        getTranslatedDisplayText(item)
                       )
                     }
                     style={
@@ -1252,7 +1376,7 @@ export default function ReadList({
                     }
                   >
                     <MixedTextWithMath
-                      text={item.translatedText}
+                      text={getTranslatedDisplayText(item)}
                       searchQuery={
                         searchQuery.trim() ? searchQuery : undefined
                       }
@@ -1307,13 +1431,16 @@ export default function ReadList({
                     highlightMap[sentenceKeyOf(item.docUnitId, "ko")] ? styles.highlightedSentence : "",
                   ].filter(Boolean).join(" ")}
                   onClick={() =>
-                    handleSentenceClick(sentenceKeyOf(item.docUnitId, "ko"), item.translatedText)
+                    handleSentenceClick(
+                      sentenceKeyOf(item.docUnitId, "ko"),
+                      getTranslatedDisplayText(item)
+                    )
                   }
                   onContextMenu={(e) =>
                     handleSentenceContextMenu(
                       e,
                       sentenceKeyOf(item.docUnitId, "ko"),
-                      item.translatedText
+                      getTranslatedDisplayText(item)
                     )
                   }
                   style={
@@ -1327,7 +1454,7 @@ export default function ReadList({
                   }
                 >
                   <MixedTextWithMath
-                    text={item.translatedText}
+                    text={getTranslatedDisplayText(item)}
                     searchQuery={
                       searchQuery.trim() ? searchQuery : undefined
                     }
