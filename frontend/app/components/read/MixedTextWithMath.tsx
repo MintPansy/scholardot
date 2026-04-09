@@ -89,6 +89,14 @@ function autoWrapMathSpans(input: string): string {
       continue;
     }
 
+    // 한글/CJK이 포함된 구간은 자동 수식 래핑 금지
+    // (번역문 전체가 수식으로 오인되어 사라지는 현상 방지)
+    if (/[\uAC00-\uD7A3\u4E00-\u9FFF\u3040-\u30FF]/.test(body)) {
+      out += normalized.slice(sp.start, sp.end);
+      pos = sp.end;
+      continue;
+    }
+
     // 길게 잡혔는데 수학 기호가 부족하면 오탐으로 보고 원문 유지
     const mathSignalCount = (
       body.match(/\\|[_^{}|=+\-*/]|∑|∫|√|⟨|⟩/g) ?? []
