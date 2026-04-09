@@ -126,30 +126,24 @@ function autoWrapMathSpans(input: string): string {
 function isEquationLikeLine(line: string): boolean {
   const t = line.trim();
   if (!t) return false;
-  // 이미 명시적 구분자가 있으면 그대로 둠
+  // 이미 명시적 구분자가 있으면 별도 처리 경로에 맡긴다
   if (t.includes("$$") || t.includes("$") || t.includes("\\(") || t.includes("\\[")) {
     return false;
   }
   // CJK 문장은 오탐 방지를 위해 제외
   if (/[\uAC00-\uD7A3\u4E00-\u9FFF\u3040-\u30FF]/.test(t)) return false;
 
+  const words = (t.match(/[A-Za-z]{2,}/g) ?? []).length;
+  const mathSignals = (
+    t.match(/\\|[_^{}|=+\-*/<>∑∫√⟨⟩]/g) ?? []
+  ).length;
+  // 설명문 비중이 높으면 수식 줄로 승격하지 않음
+  if (words >= 6 && mathSignals < 12) return false;
+
   const hasLatexCmd = /\\[A-Za-z]+/.test(t);
-  const hasMathOps = /[=+\-*/^_{}|<>]/.test(t);
   const hasMathGlyph = /[∑∫√∞≤≥≈≠→←↔⟨⟩]/.test(t);
-  const tokenDense =
-    ((t.match(/[=+\-*/^_{}|<>()[\]\\]/g) ?? []).length / Math.max(1, t.length)) >
-    0.12;
   const likelyEquationNumber = /\(\d+\)\s*$/.test(t);
-
-  // 논문 PDF 추출식에서 자주 보이는 합표기 깨짐(X, n=0 등) 보정
-  const sumLike = /(?:^|\s)X(?:\s|$)|[a-zA-Z]\s*=\s*\d+/.test(t);
-
-  return (
-    hasLatexCmd ||
-    hasMathGlyph ||
-    likelyEquationNumber ||
-    (hasMathOps && (tokenDense || sumLike))
-  );
+  return hasLatexCmd || hasMathGlyph || likelyEquationNumber;
 }
 
 function wrapEquationLikeLines(input: string): string {
@@ -209,6 +203,8 @@ function isProseDominantDollarContent(content: string): boolean {
 
 function isolateMathAsBlocks(input: string): string {
   let s = input;
+  // PDF 추출에서 줄 단위로 뜨는 단독 '$' 노이즈 제거
+  s = s.replace(/^\s*\$\s*$/gm, "");
 
   // 1) \(...\), \[...\], $...$를 $$...$$ 블록으로 통일
   s = s
@@ -257,8 +253,9 @@ function normalizeUnicodeMathToLatex(input: string): string {
 
   s = normalizePdfEquationArtifacts(s);
 
-  // 03page.pdf 계열처럼 수식이 줄 단위로 분리된 텍스트를 우선 block 수식으로 감쌈
-  s = wrapEquationLikeLines(s);
+  // 03page.pdf 계열에서 과한 오탐을 막기 위해 줄 전체 승격은 제한적으로만 적용
+  // (문장형 설명 텍스트까지 수식화되는 문제 방지)
+  // s = wrapEquationLikeLines(s);
   // 명시적 수식 구간을 독립 block 행으로 강제 분리 (ko/en 공통)
   s = isolateMathAsBlocks(s);
 
@@ -289,12 +286,17 @@ function normalizeUnicodeMathToLatex(input: string): string {
  * 수식 줄은 spacing 보정을 skip합니다.
  */
 function isMathLine(line: string): boolean {
-  // LaTeX 구분자 또는 유니코드 수학 기호가 있으면 수식 줄
-  if (/\$|\\[a-zA-Z]/.test(line)) return true;
-  if (/[∑∫√∞⟨⟩αβγδθλμνπρσφω]/.test(line)) return true;
-  // 기호 밀도 30% 이상이면 수식 줄
-  const mathChars = (line.match(/[|=<>+\-*/^{}[\]()]/g) ?? []).length;
-  return line.length > 0 && mathChars / line.length > 0.3;
+  const t = line.trim();
+  if (!t) return false;
+  if (/[\uAC00-\uD7A3\u4E00-\u9FFF\u3040-\u30FF]/.test(t)) return false;
+
+  const words = (t.match(/[A-Za-z]{2,}/g) ?? []).length;
+  const mathSignals = (
+    t.match(/\\|[_^{}|=+\-*/<>∑∫√⟨⟩]/g) ?? []
+  ).length;
+  // 영어 설명문이 충분히 많으면 텍스트 취급
+  if (words >= 5 && mathSignals < 10) return false;
+  return mathSignals >= 6;
 }
 
 /**
