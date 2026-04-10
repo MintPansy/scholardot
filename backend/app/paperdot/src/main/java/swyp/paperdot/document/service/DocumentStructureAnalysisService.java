@@ -1,6 +1,7 @@
 package swyp.paperdot.document.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DocumentStructureAnalysisService {
@@ -54,7 +56,18 @@ public class DocumentStructureAnalysisService {
             if (src != null) {
                 totalSourceChars += src.length();
             }
-            int m = MathExpressionCounter.countMathSpans(src != null ? src : "");
+            String text = src != null ? src : "";
+            int latexOnly = MathExpressionCounter.countMathSpans(text);
+            int m = MathExpressionCounter.countMathForStructureAnalysis(text);
+            if (log.isDebugEnabled() && latexOnly == 0 && m > 0) {
+                log.debug(
+                        "[structure-analysis] plain-math heuristic docUnitId={} page={} len={} snippet={}",
+                        u.getId(),
+                        p,
+                        text.length(),
+                        text.length() > 200 ? text.substring(0, 200) + "…" : text
+                );
+            }
             mathByPage.merge(p, m, Integer::sum);
             mathTotal += m;
         }

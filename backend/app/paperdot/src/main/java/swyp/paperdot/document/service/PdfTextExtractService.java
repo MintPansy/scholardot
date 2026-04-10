@@ -101,6 +101,16 @@ public class PdfTextExtractService {
                     stripper.setStartPage(i);
                     stripper.setEndPage(i);
                     String pageText = stripper.getText(document);
+                    if (log.isDebugEnabled() && pageText != null) {
+                        String oneLine = pageText.replace('\n', ' ').trim();
+                        log.debug(
+                                "[pdf-extract] documentId={} page={} charLen={} head={}",
+                                documentId,
+                                i,
+                                pageText.length(),
+                                oneLine.length() > 240 ? oneLine.substring(0, 240) + "…" : oneLine
+                        );
+                    }
                     paragraphs.add(countParagraphsInPageText(pageText));
                     PDPage page = document.getPage(i - 1);
                     images.add(countImagesOnPage(page));
