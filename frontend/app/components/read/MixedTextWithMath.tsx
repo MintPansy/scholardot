@@ -259,7 +259,7 @@ function isolateMathAsBlocks(input: string): string {
   s = s
     .replace(/\\\[((?:.|\n)*?)\\\]/g, "$$$$ $1 $$$$")
     .replace(/\\\(((?:.|\n)*?)\\\)/g, "$$$$ $1 $$$$")
-    .replace(/\$(?!\$)([^$\n]+?)\$/g, (_, body: string) => {
+    .replace(/\$(?!\$)([^$\n]+?)\$(?!\$)/g, (_, body: string) => {
       // 문장 전체를 감싼 $...$는 수식이 아니라 텍스트로 복원
       if (isProseDominantDollarContent(body)) {
         return body.trim();

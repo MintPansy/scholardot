@@ -255,33 +255,33 @@ export const MOCK_TRANSLATION_PAIRS: MockTranslationPair[] = withMockSourcePages
     translatedText:
       "우리는 이 연구가 인간 전문가만큼 효과적으로 과학 문헌에서 지식을 읽고, 추론하고, 종합할 수 있는 AI 시스템을 향한 유망한 길을 열어준다고 믿습니다.",
   },
-  // 로그인 전 /read mock·데모에서 KaTeX 렌더 확인용 (마지막 문장)
+  // ── PAGE 5: Additional equations (demo) ─────────────────────────────
   {
     docUnitId: 33,
     sourceText:
-      "[Sample math] The quadratic formula reads $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$; for a normalized state, $\\langle \\psi | \\psi \\rangle = 1$.",
+      "The quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ and the normalisation condition $\\langle \\psi | \\psi \\rangle = 1$ serve as elementary benchmarks for the KaTeX rendering pipeline.",
     translatedText:
-      "[수식 샘플] 이차방정식 근의 공식은 $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$이고, 정규화된 상태에 대해 $\\langle \\psi | \\psi \\rangle = 1$입니다.",
+      "이차방정식 근의 공식 $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$와 정규화 조건 $\\langle \\psi | \\psi \\rangle = 1$은 KaTeX 렌더링 파이프라인의 기본 검증 기준으로 사용됩니다.",
   },
   {
     docUnitId: 34,
     sourceText:
-      "[03page regression] NH-1 X n=0 an |kn> <kn| + NH-1 X n=1 [bn |kn-1> <kn| + h.c.]",
+      "The spectral form factor $K(\\beta, t) = \\left| \\int dE\\, \\rho(E)\\, e^{(\\beta + it)E} \\right|^2$ exhibits a characteristic dip–ramp–plateau structure that distinguishes chaotic from integrable spectra.",
     translatedText:
-      "[03page 회귀] NH-1 X n=0 an |kn> <kn| + NH-1 X n=1 [bn |kn-1> <kn| + h.c.] 형태의 합 표기를 포함합니다.",
+      "스펙트럼 형태 인자 $K(\\beta, t) = \\left| \\int dE\\, \\rho(E)\\, e^{(\\beta + it)E} \\right|^2$는 혼돈 스펙트럼과 적분 가능 스펙트럼을 구분하는 특징적인 딥–램프–고원 구조를 보입니다.",
   },
   {
     docUnitId: 35,
     sourceText:
-      "[03page regression] SK,∞ = lim t->∞ 1/t ∫_0^t dt' SK(t') and Λn = X E Λn,|E|.",
+      "The time-evolved expectation value $$\\langle O(t) \\rangle = \\operatorname{Tr}\\!\\left[ \\rho_0\\, e^{iHt}\\, O\\, e^{-iHt} \\right]$$ captures thermalization dynamics in isolated quantum systems via the Heisenberg equation of motion.",
     translatedText:
-      "[03page 회귀] SK,∞ = lim t->∞ 1/t ∫_0^t dt' SK(t') 와 Λn = X E Λn,|E| 같은 표기가 PDF 추출에서 자주 깨집니다.",
+      "시간 전개된 기댓값 $$\\langle O(t) \\rangle = \\operatorname{Tr}\\!\\left[ \\rho_0\\, e^{iHt}\\, O\\, e^{-iHt} \\right]$$은 하이젠베르크 운동 방정식을 통해 고립된 양자계의 열화 동역학을 포착합니다.",
   },
   {
     docUnitId: 36,
     sourceText:
-      "[03page regression] The overlap is cn(t) = <kn|ψt> = X E e^{-iEt} <kn|E><E|k0>.",
+      "The eigenstate thermalization hypothesis asserts that $\\langle m | O | n \\rangle = \\mathcal{O}(\\bar{E})\\,\\delta_{mn} + e^{-S(\\bar{E})/2}\\, f(\\bar{E}, \\omega)\\, R_{mn}$ for energy eigenstates $|m\\rangle$ and $|n\\rangle$, where $\\bar{E} = (E_m + E_n)/2$ and $\\omega = E_m - E_n$.",
     translatedText:
-      "[03page 회귀] 중첩은 cn(t) = <kn|ψt> = X E e^{-iEt} <kn|E><E|k0> 형태로 나타나며 수식 줄로 분리되어야 합니다.",
+      "고유상태 열화 가설은 에너지 고유상태 $|m\\rangle$과 $|n\\rangle$에 대해 $\\langle m | O | n \\rangle = \\mathcal{O}(\\bar{E})\\,\\delta_{mn} + e^{-S(\\bar{E})/2}\\, f(\\bar{E}, \\omega)\\, R_{mn}$이 성립하며, 여기서 $\\bar{E} = (E_m + E_n)/2$이고 $\\omega = E_m - E_n$입니다.",
   },
 ]);

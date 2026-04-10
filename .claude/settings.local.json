@@ -34,7 +34,9 @@
       "Bash(npm run:*)",
       "Bash(ls:*)",
       "Bash(pnpm install:*)",
-      "Bash(grep -v \"import\\\\|type\\\\|interface\\\\|//\")"
+      "Bash(grep -v \"import\\\\|type\\\\|interface\\\\|//\")",
+      "Bash(pnpm exec:*)",
+      "Bash(echo \"EXIT:$?\")"
     ]
   }
 }
