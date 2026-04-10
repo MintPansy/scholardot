@@ -6,11 +6,14 @@ import styles from "./NewDocument.module.css";
 import { formatFileSize } from "@/app/utils/useFormatFileSize";
 import MixedTextWithMath from "@/app/components/read/MixedTextWithMath";
 import {
+  getDocumentStructureAnalysis,
   getTranslation,
   getTranslationProgress,
   postDocuments,
   postTranslation,
 } from "@/app/services/document";
+import type { DocumentStructureAnalysis } from "@/app/services/document";
+import DocumentAnalysisSummary from "@/app/components/document/ui/DocumentAnalysisSummary";
 import { useAccessTokenStore, useLoginStore } from "@/app/store/useLogin";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -82,6 +85,10 @@ export default function NewDocumentPage() {
     { start: number; end: number; reason: string }[]
   >([]);
   const [translationError, setTranslationError] = useState<string | null>(null);
+  const [structureAnalysis, setStructureAnalysis] =
+    useState<DocumentStructureAnalysis | null>(null);
+  const [structureLoading, setStructureLoading] = useState(false);
+  const [structureError, setStructureError] = useState<string | null>(null);
   const pollingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
     null
   );
@@ -105,7 +112,15 @@ export default function NewDocumentPage() {
     setPreviewCursor(0);
     setBatchFailures([]);
     setTranslationError(null);
+    setStructureAnalysis(null);
+    setStructureLoading(false);
+    setStructureError(null);
   }, []);
+
+  useEffect(() => {
+    setStructureAnalysis(null);
+    setStructureError(null);
+  }, [document?.documentId]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -508,6 +523,37 @@ export default function NewDocumentPage() {
     return () => window.clearInterval(id);
   }, [isTranslating, translatedPreviewItems.length]);
 
+  useEffect(() => {
+    if (!translationReady || !document?.documentId) {
+      return;
+    }
+    let cancelled = false;
+    setStructureLoading(true);
+    setStructureError(null);
+    getDocumentStructureAnalysis(document.documentId, accessToken ?? undefined)
+      .then((d) => {
+        if (!cancelled) {
+          setStructureAnalysis(d);
+        }
+      })
+      .catch((e: Error) => {
+        if (!cancelled) {
+          setStructureError(
+            e?.message ?? "문서 구조 분석을 불러오지 못했습니다."
+          );
+          setStructureAnalysis(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setStructureLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [translationReady, document?.documentId, accessToken]);
+
   return (
     <main className={styles.container}>
       <section className={styles.main}>
@@ -613,6 +659,11 @@ export default function NewDocumentPage() {
                   일부 구간 번역에 실패했어요. 나머지 결과는 확인할 수 있습니다.
                 </p>
               )}
+              <DocumentAnalysisSummary
+                data={structureAnalysis}
+                loading={structureLoading}
+                error={structureError}
+              />
               <button
                 type="button"
                 className={styles.viewResultButton}

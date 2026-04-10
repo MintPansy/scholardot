@@ -72,7 +72,7 @@ export async function uploadPdf(
   file: File,
   options?: UploadPdfOptions
 ): Promise<UploadPdfResult> {
-  const { uploadDocument } = await import("@/app/api/document");
+  const { uploadDocument } = await import("@/app/services/document");
   const ownerId = options?.ownerId ?? 0;
   const title = (options?.title ?? file.name.replace(/\.pdf$/i, "")) || "제목 없음";
   const result = await uploadDocument(

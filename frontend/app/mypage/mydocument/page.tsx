@@ -5,7 +5,7 @@ import {
   DocumentListItem,
   getDocumentList,
   getTranslatedDocumentUnits,
-} from "@/app/api/document";
+} from "@/app/services/document";
 import Button from "@/app/components/button/Button";
 import PdfPageThumbnail from "@/app/components/read/pdf/PdfPageThumbnail";
 import { getApiUrl } from "@/app/config/env";

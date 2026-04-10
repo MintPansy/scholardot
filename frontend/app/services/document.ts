@@ -299,6 +299,60 @@ export interface TranslationProgressPayload {
   failed: number;
 }
 
+/** GET /api/v1/documents/{id}/structure-analysis */
+export interface PageStructureStats {
+  pageNumber: number;
+  sentenceCount: number;
+  paragraphCount: number;
+  mathCount: number;
+  imageCount: number;
+}
+
+export interface DocumentComplexityScore {
+  score: number;
+  averageParagraphLength: number;
+  mathContribution: number;
+  imageContribution: number;
+  lengthContribution: number;
+}
+
+export interface DocumentStructureAnalysis {
+  pageCount: number;
+  sentenceCount: number;
+  paragraphCount: number;
+  mathCount: number;
+  imageCount: number;
+  pages: PageStructureStats[];
+  complexity?: DocumentComplexityScore;
+}
+
+export const getDocumentStructureAnalysis = async (
+  documentId: string | number,
+  accessToken?: string
+): Promise<DocumentStructureAnalysis> => {
+  const apiUrl = getApiUrl();
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(
+    `${apiUrl}/api/v1/documents/${documentId}/structure-analysis`,
+    { method: "GET", headers, credentials: "include" }
+  );
+
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("text/html")) {
+    throw new Error("인증이 필요합니다. 로그인해주세요.");
+  }
+
+  if (!response.ok) {
+    throw new Error("문서 구조 분석을 불러오지 못했습니다.");
+  }
+
+  return response.json() as Promise<DocumentStructureAnalysis>;
+};
+
 export const getTranslationProgress = async (
   documentId: string | number,
   accessToken?: string
@@ -352,4 +406,309 @@ export interface DocumentDetail {
   languageTgt: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// ---------------------------------------------------------------------------
+// 문서 API 클라이언트 (typed fetch + ApiError) — app/api/document.ts 통합본
+// ---------------------------------------------------------------------------
+
+const API_BASE_URL = getApiUrl();
+
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public response?: unknown
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
+function getErrorMessageForStatus(statusCode: number): string {
+  switch (statusCode) {
+    case 400:
+      return "잘못된 요청입니다. 입력값을 확인해주세요.";
+    case 401:
+      return "인증이 필요합니다. 로그인해주세요.";
+    case 403:
+      return "접근 권한이 없습니다.";
+    case 404:
+      return "요청한 리소스를 찾을 수 없습니다.";
+    case 409:
+      return "이미 존재하는 리소스입니다.";
+    case 413:
+      return "파일 크기가 너무 큽니다.";
+    case 415:
+      return "지원하지 않는 파일 형식입니다.";
+    case 422:
+      return "처리할 수 없는 요청입니다.";
+    case 429:
+      return "요청 횟수가 초과되었습니다. 잠시 후 다시 시도해주세요.";
+    case 500:
+      return "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+    case 502:
+      return "서버에 연결할 수 없습니다.";
+    case 503:
+      return "서비스가 일시적으로 사용할 수 없습니다.";
+    default:
+      return `오류가 발생했습니다. (${statusCode})`;
+  }
+}
+
+async function handleDocumentResponse<T>(response: Response): Promise<T> {
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("text/html")) {
+    throw new ApiError("인증이 필요합니다. 로그인해주세요.", 401);
+  }
+
+  if (!response.ok) {
+    let errorMessage = "알 수 없는 오류가 발생했습니다.";
+    let errorData: unknown = null;
+
+    try {
+      errorData = await response.json();
+      const ed = errorData as { message?: string; error?: string };
+      errorMessage = ed.message || ed.error || errorMessage;
+    } catch {
+      errorMessage = getErrorMessageForStatus(response.status);
+    }
+
+    throw new ApiError(errorMessage, response.status, errorData);
+  }
+
+  if (response.status === 204) {
+    return {} as T;
+  }
+
+  return response.json() as Promise<T>;
+}
+
+function buildJsonAuthHeaders(accessToken?: string): HeadersInit {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+  return headers;
+}
+
+export interface UploadDocumentRequest {
+  ownerId: number | string;
+  title: string;
+  languageSrc: string;
+  languageTgt: string;
+  file: File;
+}
+
+export interface UploadDocumentResponse {
+  documentId: number;
+  fileId: number;
+  storagePath: string;
+  fileType: "ORIGINAL_PDF" | "TRANSLATED_PDF";
+  status: "UPLOADED" | "TRANSLATING" | "TRANSLATED" | "FAILED";
+  originalFilename: string;
+  mimeType: string;
+  fileSizeBytes: number;
+}
+
+export interface DocumentListItem {
+  documentId: number;
+  title: string;
+  languageSrc: string;
+  languageTgt: string;
+  totalPages: number;
+  lastTranslatedAt: string;
+}
+
+export interface ProcessDocumentRequest {
+  documentId: number | string;
+  overwrite?: boolean;
+}
+
+export type NoteType = "HIGHLIGHT" | "MEMO";
+
+export interface UserDocNoteItem {
+  id: number;
+  docUnitId: number;
+  noteType: NoteType;
+  content: string | null;
+  color: string | null;
+  createdAt: string;
+}
+
+export interface CreateNoteRequest {
+  docUnitId: number;
+  noteType: NoteType;
+  content?: string | null;
+  color?: string | null;
+}
+
+/**
+ * POST /documents — 타입이 고정된 업로드 (lib/api 등에서 사용)
+ */
+export async function uploadDocument(
+  request: UploadDocumentRequest,
+  accessToken?: string
+): Promise<UploadDocumentResponse> {
+  const formData = new FormData();
+  formData.append("ownerId", String(request.ownerId));
+  formData.append("title", request.title);
+  formData.append("languageSrc", request.languageSrc);
+  formData.append("languageTgt", request.languageTgt);
+  formData.append("file", request.file);
+
+  const headers: HeadersInit = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/documents`, {
+    method: "POST",
+    headers,
+    body: formData,
+    credentials: "include",
+  });
+
+  return handleDocumentResponse<UploadDocumentResponse>(response);
+}
+
+/**
+ * 번역 쌍 조회 — getTranslatedDocument 와 동일(404 시 빈 배열).
+ */
+export async function getTranslatedDocumentUnits(
+  documentId: string | number,
+  accessToken?: string
+): Promise<TranslatedDocumentUnit[]> {
+  return getTranslatedDocument(documentId, accessToken);
+}
+
+/**
+ * 파이프라인 실행 (overwrite 옵션)
+ */
+export async function processDocument(
+  request: ProcessDocumentRequest,
+  accessToken?: string
+): Promise<void> {
+  const params = new URLSearchParams();
+  if (request.overwrite) {
+    params.append("overwrite", "true");
+  }
+
+  const queryString = params.toString();
+  const url = `${API_BASE_URL}/api/v1/documents/${request.documentId}/process${
+    queryString ? `?${queryString}` : ""
+  }`;
+
+  const headers: HeadersInit = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers,
+    credentials: "include",
+  });
+
+  await handleDocumentResponse<void>(response);
+}
+
+export async function getDocumentList(
+  ownerId: number | string
+): Promise<DocumentListItem[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/translation-histories?ownerId=${ownerId}`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  );
+  return handleDocumentResponse<DocumentListItem[]>(response);
+}
+
+export async function getNotes(
+  documentId: number | string,
+  accessToken?: string
+): Promise<UserDocNoteItem[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${documentId}/notes`,
+    {
+      method: "GET",
+      headers: buildJsonAuthHeaders(accessToken),
+      credentials: "include",
+    }
+  );
+  return handleDocumentResponse<UserDocNoteItem[]>(response);
+}
+
+export async function createNote(
+  documentId: number | string,
+  body: CreateNoteRequest,
+  accessToken?: string
+): Promise<UserDocNoteItem> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${documentId}/notes`,
+    {
+      method: "POST",
+      headers: buildJsonAuthHeaders(accessToken),
+      credentials: "include",
+      body: JSON.stringify(body),
+    }
+  );
+  return handleDocumentResponse<UserDocNoteItem>(response);
+}
+
+export async function updateNote(
+  documentId: number | string,
+  noteId: number,
+  body: Partial<CreateNoteRequest>,
+  accessToken?: string
+): Promise<UserDocNoteItem> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${documentId}/notes/${noteId}`,
+    {
+      method: "PUT",
+      headers: buildJsonAuthHeaders(accessToken),
+      credentials: "include",
+      body: JSON.stringify(body),
+    }
+  );
+  return handleDocumentResponse<UserDocNoteItem>(response);
+}
+
+export async function deleteDocument(
+  documentId: number | string,
+  accessToken?: string
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${documentId}`,
+    {
+      method: "DELETE",
+      headers: buildJsonAuthHeaders(accessToken),
+      credentials: "include",
+    }
+  );
+  if (response.status !== 204) {
+    await handleDocumentResponse<unknown>(response);
+  }
+}
+
+export async function deleteNote(
+  documentId: number | string,
+  noteId: number,
+  accessToken?: string
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/documents/${documentId}/notes/${noteId}`,
+    {
+      method: "DELETE",
+      headers: buildJsonAuthHeaders(accessToken),
+      credentials: "include",
+    }
+  );
+  if (response.status !== 204) {
+    await handleDocumentResponse<unknown>(response);
+  }
 }

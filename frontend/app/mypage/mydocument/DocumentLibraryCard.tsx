@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { DocumentListItem } from "@/app/api/document";
+import type { DocumentListItem } from "@/app/services/document";
 import PdfPageThumbnail from "@/app/components/read/pdf/PdfPageThumbnail";
 import { getApiUrl } from "@/app/config/env";
 import { useDocumentLibraryStore } from "@/app/store/useDocumentLibrary";

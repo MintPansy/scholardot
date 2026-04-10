@@ -21,7 +21,7 @@ import {
   updateNote,
   deleteNote,
   type UserDocNoteItem,
-} from "@/app/api/document";
+} from "@/app/services/document";
 import {
   MOCK_TRANSLATION_PAIRS,
   MOCK_FILE_NAME,
