@@ -1,7 +1,7 @@
 /* Tailwind v4 (PostCSS) — 유틸리티 사용을 위해 진입점 로드 */
 @import "tailwindcss";
 
-/* Self-hosted fonts — avoids build-time Google Fonts fetch + Turbopack next/font issues */
+/* Self-hosted fonts — avoids build-time external font fetch issues */
 @import "@fontsource/roboto/latin-300.css";
 @import "@fontsource/roboto/latin-400.css";
 @import "@fontsource/roboto/latin-500.css";

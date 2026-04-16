@@ -26,10 +26,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     if ("kakao".equals(registrationId)) {
       return handleKakao(oAuth2User);
     }
-    if ("google".equals(registrationId)) {
-      return handleGoogle(oAuth2User);
-    }
-
     return oAuth2User;
   }
 
@@ -66,25 +62,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     return new DefaultOAuth2User(
         Set.of(() -> "ROLE_USER"),
         Map.of("userId", user.getId(), "provider", "KAKAO"),
-        "userId");
-  }
-
-  private OAuth2User handleGoogle(OAuth2User oAuth2User) {
-    Map<String, Object> attributes = oAuth2User.getAttributes();
-
-    // Google OIDC: sub가 고유 식별자
-    String providerUserId = String.valueOf(attributes.get("sub"));
-
-    String email = (String) attributes.get("email"); // 보통 제공됨
-    String nickname = (String) attributes.get("name"); // 표시 이름
-    String profileImageUrl = (String) attributes.get("picture");
-
-    UserEntity user = userService.upsertSocialUser(
-        SocialProvider.GOOGLE, providerUserId, email, nickname, profileImageUrl);
-
-    return new DefaultOAuth2User(
-        Set.of(() -> "ROLE_USER"),
-        Map.of("userId", user.getId(), "provider", "GOOGLE"),
         "userId");
   }
 }

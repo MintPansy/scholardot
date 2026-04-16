@@ -27,24 +27,6 @@
   padding-top: 57px;
 }
 
-.googleButton {
-  height: 48px;
-  border-radius: 8px;
-  border: none;
-  border: 1px solid #dee3eb;
-  background: #fff;
-  color: #21232a;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 150%;
-  letter-spacing: -0.32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  cursor: pointer;
-}
-
 .kakaoButton {
   height: 48px;
   border-radius: 8px;
@@ -63,7 +45,7 @@
 }
 
 .kakaoButton:disabled,
-.googleButton:disabled {
+.demoButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }

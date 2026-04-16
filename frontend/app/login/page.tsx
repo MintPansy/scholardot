@@ -14,14 +14,14 @@ import {
 } from "@/lib/authSession";
 
 export default function LoginPage() {
-  const [redirecting, setRedirecting] = useState<"google" | "kakao" | null>(null);
+  const [redirecting, setRedirecting] = useState<"demo" | "kakao" | null>(null);
   const router = useRouter();
   const setLogin = useLoginStore((s) => s.setLogin);
   const setUserInfoState = useLoginStore((s) => s.setUserInfo);
 
-  const handleGoogleLogin = () => {
+  const handleDemoLogin = () => {
     // UI 데모만 필요할 때: 백엔드 OAuth를 타지 않고 화면만 데모 유저처럼 진입
-    setRedirecting("google");
+    setRedirecting("demo");
     setLogin(true);
     const demoProfile = {
       userId: "demo-user",
@@ -82,12 +82,12 @@ export default function LoginPage() {
           {/* 체험 버튼 (기존 구글 버튼 대체) */}
           <button
             type="button"
-            onClick={handleGoogleLogin}
+            onClick={handleDemoLogin}
             className={styles.demoButton}
             disabled={!!redirecting}
             aria-label="로그인 없이 체험하기"
           >
-            {redirecting === "google" ? (
+            {redirecting === "demo" ? (
               <span className={styles.buttonLoading}>이동 중...</span>
             ) : (
               <>

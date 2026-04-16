@@ -87,23 +87,6 @@ public class AuthController {
                 .build();
     }
 
-    // 구글 회원탈퇴
-    @DeleteMapping("/withdraw/google")
-    @Operation(
-            summary = "구글 회원 탈퇴",
-            description = "구글 계정 연동을 해지하고 쿠키를 삭제합니다."
-    )
-    public ResponseEntity<Void> withdrawGoogle(HttpServletRequest request) {
-        Long userId = resolveUserId(request);
-
-        authAppService.withdrawGoogle(userId);
-
-        ResponseCookie deleteCookie = deleteRefreshCookie();
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .build();
-    }
-
     // access(SecurityContext) -> refresh cookie 순으로 userId 획득
     private Long resolveUserId(HttpServletRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

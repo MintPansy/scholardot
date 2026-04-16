@@ -30,10 +30,6 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "t1.kakaocdn.net",
       },
-      {
-        protocol: "https",
-        hostname: "lh3.googleusercontent.com",
-      },
     ],
   },
   webpack(config) {

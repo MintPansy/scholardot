@@ -12,7 +12,6 @@ public class AuthAppService {
     private final SocialAccountRepository socialAccountRepository;
     private final UserRepository userRepository;
     private final KakaoAdminClient kakaoAdminClient;
-    private final GoogleOauthClient googleOAuthClient;
 
     // 공통 로그아웃
     @Transactional
@@ -28,28 +27,6 @@ public class AuthAppService {
     public void withdrawKakao(Long userId) {
         socialAccountRepository.findByUser_IdAndProvider(userId, SocialProvider.KAKAO)
                 .ifPresent(sa -> kakaoAdminClient.unlinkByProviderUserId(sa.getProviderUserId()));
-
-        deleteLocalUserData(userId);
-    }
-
-    // 구글 회원탈퇴(구글 revoke + DB 삭제)
-    @Transactional
-    public void withdrawGoogle(Long userId) {
-        socialAccountRepository.findByUser_IdAndProvider(userId, SocialProvider.GOOGLE)
-                .ifPresent(sa -> {
-                    // refresh 우선 (완성형)
-                    String refresh = sa.getProviderRefreshToken();
-                    if (refresh != null && !refresh.isBlank()) {
-                        googleOAuthClient.revoke(refresh);
-                        return;
-                    }
-
-                    // fallback: refresh가 없으면 access라도 revoke 시도(선택)
-                    String access = sa.getProviderAccessToken();
-                    if (access != null && !access.isBlank()) {
-                        googleOAuthClient.revoke(access);
-                    }
-                });
 
         deleteLocalUserData(userId);
     }

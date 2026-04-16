@@ -17,7 +17,8 @@ export default function DeleteUserModal({
   setShowDeleteModal: (show: boolean) => void;
   accessToken: string;
   userInfo: {
-    email: string;
+    userId?: string;
+    email?: string;
     nickname: string;
     profileImageUrl: string;
   };
@@ -35,15 +36,18 @@ export default function DeleteUserModal({
 
   const handleConfirmDelete = async () => {
     try {
+      if (userInfo?.userId === "demo-user") {
+        toast.info("체험 모드 계정은 탈퇴 대상이 아닙니다.");
+        setShowDeleteModal(false);
+        return;
+      }
+
       if (!accessToken) {
         toast.error("로그인 상태가 아닙니다. 다시 로그인해주세요.");
         return;
       }
 
-      const response = await withdraw(
-        userInfo?.email?.includes("gmail.com") ? "google" : "kakao",
-        accessToken
-      );
+      const response = await withdraw("kakao", accessToken);
       if (response.ok) {
         setShowDeleteModal(false);
         window.location.href = "/";

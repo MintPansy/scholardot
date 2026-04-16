@@ -22,26 +22,28 @@
 
 | 분류 | 기술 |
 |------|------|
-| 프레임워크 | Next.js 15 (App Router), React 19, TypeScript |
+| 프레임워크 | Next.js 16 (App Router), React 19, TypeScript |
 | 상태 관리 | Zustand (`useLoginStore`, `useAccessTokenStore`, `useDocumentStore`) |
 | 스타일 | CSS Modules |
 | PDF 렌더링 | pdfjs-dist 4.10.38 |
 | 알림 | react-toastify |
-| 패키지 매니저 | pnpm |
+| 패키지 매니저 | npm, pnpm |
 | 배포 | Vercel |
 
 ---
 
 ## 디렉토리 구조
 
-```
+```text
 frontend/
 ├── app/
 │   ├── page.tsx                  # 홈(랜딩) 화면
 │   ├── layout.tsx                # 전역 레이아웃, ToastContainer
-│   ├── login/                    # 로그인 페이지 (Google / Kakao OAuth)
+│   ├── login/                    # 로그인 페이지 (Kakao OAuth)
 │   ├── newdocument/              # PDF 업로드 + 번역 진행 화면
 │   ├── read/                     # 읽기 화면 진입점
+│   ├── privacy/                  # 개인정보처리방침
+│   ├── terms/                    # 이용약관
 │   ├── mypage/
 │   │   ├── sidebar/              # 마이페이지 사이드바
 │   │   ├── mydocument/           # 내 문서함 (좌측 목록 + 우측 PDF 뷰어)
@@ -66,8 +68,10 @@ frontend/
 │   ├── hooks/                    # useClickOutSide 등 커스텀 훅
 │   ├── data/
 │   │   └── mockTranslationData.ts # 데모용 mock 번역 데이터 (32문장)
-│   └── lib/
-│       └── localStorage.ts       # 읽기 진행률·하이라이트·메모 로컬 저장 유틸
+├── lib/
+│   ├── api.ts                    # fetch 래퍼, 에러 처리
+│   ├── authSession.ts            # 로그인 세션 유틸
+│   └── localStorage.ts           # 읽기 진행률·하이라이트·메모 로컬 저장 유틸
 ├── public/                       # 정적 파일 (이미지, favicon, PDF 데모 등)
 └── package.json
 ```
@@ -145,14 +149,16 @@ frontend/
 
 ```bash
 # 의존성 설치
-pnpm install
+npm install
+# 또는 pnpm install
 
 # 개발 서버
-pnpm dev          # http://localhost:3000
+npm run dev       # http://localhost:3000
+# 또는 pnpm dev
 
-# 프로덕션 빌드
-pnpm build
-pnpm start
+# 프로덕션 빌드/실행
+npm run build
+npm run start
 ```
 
 ---
@@ -162,14 +168,19 @@ pnpm start
 `.env.local` 파일을 생성하고 아래 변수를 설정합니다.
 
 ```env
-# 백엔드 API 주소 (로컬: http://localhost:8080)
+# 필수: 백엔드 API 주소
 NEXT_PUBLIC_API_URL=http://localhost:8080
 
-# OAuth Redirect URI (카카오 콘솔에 등록된 값과 일치해야 함)
-NEXT_PUBLIC_KAKAO_REDIRECT_URI=http://localhost:3000/login/oauth2/code/kakao
+# 선택: 배포/소셜로그인 운영 시 사용하는 프론트 도메인
+NEXT_PUBLIC_BASE_URL=https://scholardot.vercel.app/
+
+# 선택: OAuth 콘솔에 등록한 redirect URI와 동일하게 설정
+NEXT_PUBLIC_KAKAO_REDIRECT_URI=https://scholardot.vercel.app/api/auth/kakao
+
 ```
 
-> 프로덕션 배포 시 `NEXT_PUBLIC_API_URL`을 Railway 백엔드 도메인으로 변경합니다.
+> 현재 코드에서 API 호출은 `NEXT_PUBLIC_API_URL`을 사용합니다.
+> 배포 시에는 이 값을 Railway 백엔드 도메인으로 변경하세요.
 
 ---
 

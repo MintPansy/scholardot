@@ -12,7 +12,7 @@ export type AnalyticsEvent =
   | { name: "document_upload"; fileName: string; fileSizeBytes?: number }
   | { name: "document_translate_request"; documentId: string | number }
   | { name: "page_view"; path: string; referrer?: string }
-  | { name: "login"; provider?: "google" | "kakao" }
+  | { name: "login"; provider?: "demo" | "kakao" }
   | { name: "logout" };
 
 function isDevelopment(): boolean {

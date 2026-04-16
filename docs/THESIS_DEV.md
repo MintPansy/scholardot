@@ -189,7 +189,7 @@
 - **읽기 화면 CSS 가독성/대비 조정 (FE)**
   - `readHeader.module.css`, `readList.module.css`에서 폰트 크기/색/호버/선택 UI를 조정해 읽기 경험을 개선.
 - **로그인 데모 우회(“UI만” 목적, FE-only)**
-  - `app/login/page.tsx`의 Google 버튼을 OAuth 대신 “데모 유저처럼” 동작하도록 변경해 `/read` 진입을 UI 테스트 단계에서 가능하게 함.
+  - `app/login/page.tsx`의 체험 버튼을 OAuth 대신 “데모 유저처럼” 동작하도록 변경해 `/read` 진입을 UI 테스트 단계에서 가능하게 함.
 - **백엔드 로컬 기동/빌드 오류 해결 (BE/DevOps)**
   - Docker 빌드 실패 원인(컴파일 에러) 수정: `ObjectStorageClientConfig`, `UserDocNoteService`의 문제를 최소 수정으로 해결.
   - 런타임/부팅 실패 원인인 필수 env 미설정(`JWT_SECRET`, OAuth 필수 값들)을 로컬용 더미 값으로 채워 서버가 기동되도록 처리.

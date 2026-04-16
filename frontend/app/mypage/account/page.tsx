@@ -17,16 +17,9 @@ export default function MyAccount() {
   const setLogin = useLoginStore((state) => state.setLogin);
   const accessToken = useAccessTokenStore((state) => state.accessToken);
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
-  const hasEmail = !!userInfo?.email;
-  const isGoogleUser = hasEmail && userInfo?.email?.includes("gmail.com");
-  const loginProviderText = !hasEmail
-    ? "소셜 로그인"
-    : isGoogleUser
-      ? "구글 연동 로그인"
-      : "카카오톡 연동 로그인";
-  const profileSubInfo = `${
-    !hasEmail ? "소셜 로그인" : isGoogleUser ? "구글 로그인" : "카카오 로그인"
-  } · 최근 활동 없음`;
+  const isDemoUser = userInfo?.userId === "demo-user";
+  const loginProviderText = isDemoUser ? "체험 모드" : "카카오톡 연동 로그인";
+  const profileSubInfo = `${isDemoUser ? "체험 모드" : "카카오 로그인"} · 최근 활동 없음`;
 
   const handleLogoutClick = async () => {
     try {
@@ -95,11 +88,11 @@ export default function MyAccount() {
             <p className={styles.accountFormLabel}>소셜 로그인</p>
             <div className={styles.accountSocialLoginRight}>
               <Image
-                src={isGoogleUser ? "/googleLogo.svg" : "/kakaoIcon.svg"}
-                alt={isGoogleUser ? "google" : "kakao"}
+                src={isDemoUser ? "/userImage.svg" : "/kakaoIcon.svg"}
+                alt={isDemoUser ? "demo" : "kakao"}
                 width={20}
                 height={20}
-                className={isGoogleUser ? styles.googleLogo : ""}
+                className={isDemoUser ? styles.providerBadge : ""}
               />
               <p className={styles.accountSocialLoginText}>{loginProviderText}</p>
             </div>
@@ -124,7 +117,8 @@ export default function MyAccount() {
           accessToken={accessToken as string}
           userInfo={
             userInfo as {
-              email: string;
+              userId?: string;
+              email?: string;
               nickname: string;
               profileImageUrl: string;
             }

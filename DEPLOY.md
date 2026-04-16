@@ -22,9 +22,8 @@
 | `NEXT_PUBLIC_API_URL` | 백엔드 API 주소 | 예: `https://be-paper-dot.store` 또는 새 백엔드 URL |
 | `NEXT_PUBLIC_BASE_URL` | **이번에 배포하는 프론트 URL** | 예: `https://paperdot-v2.vercel.app` |
 | `NEXT_PUBLIC_KAKAO_REDIRECT_URI` | `{NEXT_PUBLIC_BASE_URL}/api/auth/kakao` | 카카오 개발자 콘솔에도 동일 URL 등록 |
-| `NEXT_PUBLIC_GOOGLE_REDIRECT_URI` | `{NEXT_PUBLIC_BASE_URL}/api/auth/google` | Google Cloud 콘솔에도 동일 redirect URI 등록 |
 
-- 새 도메인을 쓰면 **반드시** Kakao / Google OAuth 설정에서 **Redirect URI**에 새 프론트 URL을 추가해야 로그인이 동작합니다.
+- 새 도메인을 쓰면 **반드시** Kakao OAuth 설정에서 **Redirect URI**에 새 프론트 URL을 추가해야 로그인이 동작합니다.
 - 백엔드를 새로 띄우는 경우, 백엔드 설정의 `paperdot.frontend.base-url`(또는 CORS 허용 origin)에 위 `NEXT_PUBLIC_BASE_URL`을 넣어야 합니다.
 
 ---
@@ -32,7 +31,7 @@
 ## 3. 백엔드 측 (새 프론트 URL 사용 시)
 
 - **CORS**: Spring 설정에서 `paperdot.frontend.base-url`에 새 Vercel URL(예: `https://paperdot-v2.vercel.app`)을 넣어주세요.
-- **OAuth Redirect**: Kakao/Google 로그인 후 리다이렉트할 URL이 새 프론트 주소로 가도록, 백엔드/프론트 env가 위와 맞는지 확인하세요.
+- **OAuth Redirect**: Kakao 로그인 후 리다이렉트할 URL이 새 프론트 주소로 가도록, 백엔드/프론트 env가 위와 맞는지 확인하세요.
 
 ---
 

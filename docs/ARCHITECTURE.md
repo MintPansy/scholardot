@@ -19,7 +19,7 @@ flowchart TD
     end
 
     subgraph BE["백엔드 (Docker / Spring Boot 4)"]
-        Auth["인증 레이어\nSpring Security + JWT\nOAuth2 (Google / Kakao)"]
+        Auth["인증 레이어\nSpring Security + JWT\nOAuth2 (Kakao)"]
         DocAPI["문서 API\nDocumentController\nDocumentPipelineController"]
         NoteAPI["메모/하이라이트 API\nUserDocNoteController"]
         LLMAPI["LLM 채팅 API\nCallLLMController"]
@@ -28,9 +28,9 @@ flowchart TD
 
     subgraph Storage["외부 서비스"]
         PG["PostgreSQL"]
-        S3["AWS S3\n(PDF 원본 저장)\n+ 로컬 fallback"]
+        S3["로컬 파일 스토리지\n(UPLOAD_DIR)"]
         OpenAI["OpenAI API\n(GPT 번역)"]
-        OAuth["Google / Kakao\nOAuth2 서버"]
+        OAuth["Kakao\nOAuth2 서버"]
     end
 
     User -->|"PDF 업로드 / 읽기 요청"| Next
@@ -59,7 +59,7 @@ flowchart TD
 sequenceDiagram
     participant FE as 프론트엔드
     participant BE as 백엔드
-    participant S3 as AWS S3
+    participant S3 as Local Storage
     participant OpenAI as OpenAI API
     participant DB as PostgreSQL
 
@@ -93,10 +93,10 @@ sequenceDiagram
 
 | Method | 경로 | 설명 |
 |--------|------|------|
-| GET | `/oauth2/authorization/{provider}` | OAuth 로그인 시작 (provider: google, kakao) |
+| GET | `/oauth2/authorization/{provider}` | OAuth 로그인 시작 (provider: kakao) |
 | GET | `/login/oauth2/code/{provider}` | OAuth 콜백 (Spring Security 자동 처리) |
 | POST | `/auth/logout` | 로그아웃 (리프레시 토큰 무효화) |
-| DELETE | `/auth/withdraw/{socialType}` | 회원 탈퇴 (소셜 연동 해제 포함) |
+| DELETE | `/auth/withdraw/kakao` | 회원 탈퇴 (카카오 연동 해제 포함) |
 
 ### 문서 업로드
 
@@ -111,8 +111,6 @@ sequenceDiagram
 | POST | `/api/v1/documents/{id}/process` | 번역 파이프라인 비동기 실행 |
 | GET | `/api/v1/documents/{id}/translation-pairs` | 원문·번역 문장 쌍 전체 조회 |
 | GET | `/api/v1/documents/{id}/translation-progress` | 번역 진행률 (상태별 unit 수) |
-| GET | `/api/v1/documents/{id}/translation-status` | 번역 상태 폴링 (PENDING / STARTED / COMPLETED / FAILED) |
-| GET | `/api/v1/documents/{id}/translation-events` | 번역 진행 SSE 이벤트 스트림 |
 | GET | `/api/v1/documents/translation-histories` | 내 번역 완료 문서 목록 (`?ownerId={id}`) |
 
 ### 메모 / 하이라이트
@@ -150,7 +148,7 @@ sequenceDiagram
 |------|------|------|
 | id | BIGINT PK | — |
 | user_id | BIGINT FK → users | 연결된 사용자 |
-| provider | VARCHAR(20) | GOOGLE \| KAKAO |
+| provider | VARCHAR(20) | KAKAO |
 | provider_user_id | VARCHAR(255) | 소셜 플랫폼 고유 ID |
 | provider_refresh_token | VARCHAR(2000) | OAuth 리프레시 토큰 (revoke용) |
 | linked_at / last_login_at | TIMESTAMPTZ | 연동·최근 로그인 시각 |
@@ -226,7 +224,7 @@ sequenceDiagram
 | 경로 | 설명 | 핵심 컴포넌트 |
 |------|------|---------------|
 | `/` | 홈 (서비스 소개, 데모) | `app/page.tsx`, `MainScreen*` |
-| `/login` | Google / Kakao OAuth 로그인 | `app/login/page.tsx` |
+| `/login` | Kakao 로그인 + 데모 체험 진입 | `app/login/page.tsx` |
 | `/newdocument` | PDF 업로드 + 번역 요청 + 진행 대기 | `NewDocument.tsx` |
 | `/read` | 한·영 병렬 읽기 화면 | `Read.tsx`, `ReadList.tsx` |
 | `/mypage` | 내 문서 목록, 계정 관리, 회원 탈퇴 | `mypage/ui/*` |
@@ -242,12 +240,12 @@ sequenceDiagram
 | **상태 관리** | Zustand | Redux 대비 보일러플레이트 최소화, 필요한 컴포넌트만 구독 가능 |
 | **PDF 렌더링** | PDF.js | 브라우저 네이티브 PDF 렌더링, 텍스트 레이어 추출 지원 |
 | **스타일링** | Tailwind CSS 4 + CSS Modules | 유틸리티 클래스로 빠른 개발, 컴포넌트 단위 스코프 격리 |
-| **BE 프레임워크** | Spring Boot 4 / Java 17 | JPA·Security·OAuth2 생태계 성숙, 비동기 파이프라인 구현 용이 |
+| **BE 프레임워크** | Spring Boot 4 / Java 21 | JPA·Security·OAuth2 생태계 성숙, 비동기 파이프라인 구현 용이 |
 | **DB** | PostgreSQL | 관계형 데이터 모델(문서-단위-번역 1:N), JSONB 확장 가능 |
 | **번역 엔진** | OpenAI GPT API | 학술 문어체 번역 품질, 문장 단위 배치 처리 가능 |
 | **PDF 텍스트 추출** | Apache PDFBox | Java 네이티브, 페이지·단락 단위 추출 지원 |
-| **스토리지** | AWS S3 + 로컬 fallback | 운영 환경은 S3, 개발 환경은 로컬 파일 시스템으로 전환 가능 |
-| **인증** | Spring Security OAuth2 + JWT | 소셜 로그인(Google/Kakao) 표준 흐름, 액세스/리프레시 토큰 분리 |
+| **스토리지** | 로컬 파일 스토리지 (`UPLOAD_DIR`) | 백엔드에서 업로드 파일을 로컬 경로에 저장/조회 |
+| **인증** | Spring Security OAuth2 + JWT | Kakao 로그인과 액세스/리프레시 토큰 기반 세션 처리 |
 
 ---
 
@@ -264,10 +262,9 @@ sequenceDiagram
 | 변수 | 설명 |
 |------|------|
 | `JWT_SECRET` | JWT 서명 시크릿 |
-| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | S3 인증 |
-| `AWS_REGION` / `AWS_S3_BUCKET` | S3 버킷 설정 |
-| `LOCAL_STORAGE_ROOT` | S3 미설정 시 로컬 저장 경로 |
 | `OPENAI_API_KEY` | OpenAI API 키 |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth |
 | `KAKAO_CLIENT_ID` / `KAKAO_CLIENT_SECRET` | Kakao OAuth |
-| `SPRING_DATASOURCE_URL` | PostgreSQL 연결 URL |
+| `KAKAO_ADMIN_KEY` | 카카오 로그아웃/회원 탈퇴 연동용 키 |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | PostgreSQL 연결 정보 |
+| `FRONTEND_BASE_URL` | 프론트 도메인(CORS, OAuth redirect 기준) |
+| `UPLOAD_DIR` | 업로드 파일 저장 경로 |

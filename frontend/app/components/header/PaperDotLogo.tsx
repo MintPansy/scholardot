@@ -8,7 +8,7 @@ type PaperDotLogoProps = {
 
 /**
  * 학술 테마 로고: "P." 아이콘 + "PaperDot" 텍스트
- * Notion / Google Scholar 느낌의 간결한 브랜딩
+ * Notion / arXiv 느낌의 간결한 브랜딩
  */
 export default function PaperDotLogo({
   href = "/",
