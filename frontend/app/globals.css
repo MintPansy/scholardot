@@ -20,6 +20,11 @@
 
 /* ===== ScholarDot 학술 테마 (Navy + Cream + Gray) ===== */
 :root {
+  --shell-max-width: 1240px;
+  --shell-padding-x: 24px;
+  --legal-layout-max: 1000px;
+  --legal-read-max: 740px;
+
   --pd-navy: #1e3a8a;
   --pd-navy-light: #2563eb;
   --pd-cream: #fefce8;

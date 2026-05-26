@@ -3,11 +3,41 @@ import type { LegalDocumentConfig } from "./legalTypes";
 /**
  * ScholarDot 개인정보 처리방침
  */
+const LEGAL_CONTACT = "contact.scholardot@gmail.com";
+
 export const privacyDocument: LegalDocumentConfig = {
   documentTitle: "개인정보 처리방침 | ScholarDot",
   pageTitle: "ScholarDot 개인정보 처리방침",
   lead: [
     "ScholarDot(이하 “서비스”)는 이용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」 등 관련 법령을 준수합니다. 본 개인정보 처리방침은 서비스에서 어떤 정보를 수집하고, 어떻게 이용·보관하는지를 설명합니다.",
+  ],
+  meta: {
+    updatedAt: "2026년 4월 2일",
+    effectiveDate: "2026년 4월 3일",
+    contactEmail: LEGAL_CONTACT,
+    relatedLinks: [{ label: "이용약관", href: "/terms" }],
+  },
+  summary: [
+    {
+      label: "회원가입·로그인",
+      value:
+        "별도 회원가입 양식 없음. 카카오 OAuth 로그인 시 제공받는 식별 정보 및 서비스 이용에 필요한 최소 정보",
+    },
+    {
+      label: "저장·처리 데이터",
+      value:
+        "업로드 PDF, 추출·번역 텍스트, 하이라이트·메모 등 이용 기록, 접속·기기 정보",
+    },
+    {
+      label: "보유 기간",
+      value:
+        "이용 기록 최대 6개월 · 업로드·번역 데이터 최대 30일 또는 삭제 시 · 문의 내역 최대 1년",
+    },
+    {
+      label: "삭제·파기",
+      value:
+        "보유 기간 경과 또는 처리 목적 달성 시 지체 없이 파기(전자 파일 복구 불가 삭제)",
+    },
   ],
   blocks: [
     { type: "h2", text: "제1조 (개인정보의 처리 목적)" },

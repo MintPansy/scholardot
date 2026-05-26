@@ -4,12 +4,20 @@ import type { LegalDocumentConfig } from "./legalTypes";
  * ScholarDot 이용 약관
  * 원문 출처(Notion): https://www.notion.so/ScholarDot-32d844e3f94680faa215c1bcae9c889b
  */
+const LEGAL_CONTACT = "contact.scholardot@gmail.com";
+
 export const termsDocument: LegalDocumentConfig = {
   documentTitle: "이용약관 | ScholarDot",
   pageTitle: "ScholarDot 이용 약관",
   lead: [
     "본 약관은 ScholarDot 서비스를 이용하는 모든 이용자에게 적용됩니다. 서비스를 이용하기 전에 내용을 확인해 주세요.",
   ],
+  meta: {
+    updatedAt: "2026년 4월 2일",
+    effectiveDate: "2026년 4월 3일",
+    contactEmail: LEGAL_CONTACT,
+    relatedLinks: [{ label: "개인정보처리방침", href: "/privacy" }],
+  },
   blocks: [
     { type: "h2", text: "제1조(목적)" },
     {

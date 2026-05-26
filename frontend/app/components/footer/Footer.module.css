@@ -1,13 +1,15 @@
 /* 전체 footer */
 .footer {
   background-color: white;
-  padding: 32px 24px;
+  padding: 32px var(--shell-padding-x);
+  box-sizing: border-box;
 }
 
 /* 컨테이너 */
 .container {
-  max-width: 80rem;
+  max-width: var(--shell-max-width);
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* 모든 텍스트 공통 스타일 (상속) */
