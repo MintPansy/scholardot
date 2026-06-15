@@ -8,8 +8,9 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAccessTokenStore, useLoginStore } from "@/app/store/useLogin";
 import { logout } from "@/app/services/logout";
-import { clearDemoSession } from "@/lib/authSession";
+import { clearDemoSession, isDemoUserActive } from "@/lib/authSession";
 import { useClickOutSide } from "@/app/hooks/useClickOutSide";
+import { toast } from "react-toastify";
 
 export default function HeaderModal({
   isReadHeader,
@@ -29,7 +30,10 @@ export default function HeaderModal({
 
   const accessToken = useAccessTokenStore((state) => state.accessToken);
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
+  const setUserInfoState = useLoginStore((state) => state.setUserInfo);
+  const setLogin = useLoginStore((state) => state.setLogin);
   const router = useRouter();
+  const isDemo = isDemoUserActive(userInfo?.userId);
 
   // 경로 변경 시 모달 닫기
   useEffect(() => {
@@ -42,20 +46,40 @@ export default function HeaderModal({
   // 바깥 클릭 감지
   useClickOutSide(modalRef as React.RefObject<HTMLElement>, setIsOpen);
 
+  const handleMembersOnlyNav = () => {
+    setIsOpen(false);
+    toast.info("로그인 후에만 이용할 수 있습니다.");
+    router.push("/login");
+  };
+
+  const handleMembersOnlyClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    handleMembersOnlyNav();
+  };
+
   const handleLogoutClick = async () => {
+    if (isDemo) {
+      clearDemoSession();
+      setAccessToken(null);
+      setUserInfoState(null);
+      setLogin(false);
+      onLogout?.();
+      setIsOpen(false);
+      window.location.href = "/";
+      return;
+    }
+
     try {
-      if (userInfo?.userId === "demo-user") {
-        clearDemoSession();
-        setAccessToken(null);
-      } else if (accessToken) {
+      if (accessToken) {
         await logout(accessToken);
         clearDemoSession();
-        setAccessToken(null);
       } else {
         clearDemoSession();
-        setAccessToken(null);
       }
     } finally {
+      setAccessToken(null);
+      setUserInfoState(null);
+      setLogin(false);
       onLogout?.();
       setIsOpen(false);
       router.push("/login");
@@ -70,7 +94,13 @@ export default function HeaderModal({
         {!isReadHeader && (
           <Button
             className={styles.newDocumentButton}
-            onClick={() => router.push("/newdocument")}>
+            onClick={() => {
+              if (isDemo) {
+                handleMembersOnlyNav();
+                return;
+              }
+              router.push("/newdocument");
+            }}>
             새 문서 만들기
           </Button>
         )}
@@ -108,13 +138,25 @@ export default function HeaderModal({
             <Link
               href="/mypage/mydocument"
               className={styles.headerMiddleTitle}
-              onClick={() => setIsOpen(false)}>
+              onClick={
+                isDemo
+                  ? handleMembersOnlyClick
+                  : () => {
+                      setIsOpen(false);
+                    }
+              }>
               내 문서함
             </Link>
             <Link
               href="/mypage/account"
               className={styles.headerMiddleTitle}
-              onClick={() => setIsOpen(false)}>
+              onClick={
+                isDemo
+                  ? handleMembersOnlyClick
+                  : () => {
+                      setIsOpen(false);
+                    }
+              }>
               내 계정
             </Link>
           </div>

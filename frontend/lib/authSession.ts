@@ -26,6 +26,12 @@ export function isDemoSessionClient(): boolean {
   return localStorage.getItem(SESSION_MODE_KEY) === DEMO_MODE_VALUE;
 }
 
+/** 체험 모드(로그인 없이 체험) 여부 */
+export function isDemoUserActive(userId?: string | null): boolean {
+  if (userId === DEFAULT_DEMO_PROFILE.userId) return true;
+  return isDemoSessionClient();
+}
+
 export function readDemoProfileClient(): DemoProfile {
   if (typeof window === "undefined") return DEFAULT_DEMO_PROFILE;
   try {

@@ -8,6 +8,7 @@ import Sidebar from "@/app/mypage/sidebar/page";
 import mypageLayout from "@/app/mypage/mypageLayout.module.css";
 import { usePathname, useRouter } from "next/navigation";
 import { useLoginStore } from "@/app/store/useLogin";
+import { isDemoUserActive } from "@/lib/authSession";
 import { toast, ToastContainer } from "react-toastify";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -20,6 +21,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     pathname.includes("/mypage") || pathname.includes("/read");
 
   const hasShownAuthToast = useRef(false);
+  const hasShownDemoMembersOnlyToast = useRef(false);
+
+  const isDemoMembersOnlyRoute =
+    pathname.includes("/mypage") || pathname === "/newdocument";
+
+  useEffect(() => {
+    if (!authHydrated || !isDemoMembersOnlyRoute) {
+      hasShownDemoMembersOnlyToast.current = false;
+      return;
+    }
+    if (!isDemoUserActive(userInfo?.userId)) {
+      hasShownDemoMembersOnlyToast.current = false;
+      return;
+    }
+    if (!hasShownDemoMembersOnlyToast.current) {
+      toast.info("로그인 후에만 이용할 수 있습니다.");
+      hasShownDemoMembersOnlyToast.current = true;
+    }
+    router.replace("/login");
+  }, [isDemoMembersOnlyRoute, userInfo?.userId, authHydrated, router]);
+
   useEffect(() => {
     if (!authHydrated || !protectedRoutes || userInfo?.userId) {
       hasShownAuthToast.current = false;
