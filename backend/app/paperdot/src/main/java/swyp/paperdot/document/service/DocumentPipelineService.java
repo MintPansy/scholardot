@@ -12,6 +12,7 @@ import swyp.paperdot.doc_units.enums.UnitStatus;
 import swyp.paperdot.doc_units.enums.UnitType;
 import swyp.paperdot.doc_units.translation.DocUnitTranslation;
 import swyp.paperdot.doc_units.translation.DocUnitTranslationRepository;
+import swyp.paperdot.document.util.PdfExtractTextNormalizer;
 import swyp.paperdot.translator.OpenAiTranslator;
 import swyp.paperdot.translator.dto.OpenAiTranslationDto.TranslationPair;
 
@@ -185,7 +186,7 @@ public class DocumentPipelineService {
     for (String part : parts) {
       String s = part.trim();
       if (!s.isEmpty()) {
-        sentences.add(s);
+        sentences.add(PdfExtractTextNormalizer.normalize(s));
       }
     }
     return sentences;

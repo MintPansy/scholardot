@@ -1,7 +1,7 @@
 /**
  * Read 화면용 mock 데이터.
  * sessionStorage에 번역 데이터가 없을 때(직접 /read 진입 등) 사용합니다.
- * 4페이지+α (8문장/페이지 기준, 마지막에 수식 테스트 문장 1개 추가)
+ * 4페이지+α (8문장/페이지 기준, 마지막 페이지는 수식 렌더링 데모용 짧은 마무리)
  */
 
 export interface MockTranslationPair {
@@ -28,23 +28,23 @@ export const MOCK_TRANSLATION_PAIRS: MockTranslationPair[] = withMockSourcePages
   {
     docUnitId: 1,
     sourceText:
-      "An immediate consequence of this construction is that the many-body Hamiltonian in the Krylov basis takes the tridiagonal form $H = \\sum_{n=0}^{N_H-1} a_n |k_n\\rangle \\langle k_n| + \\sum_{n=1}^{N_H-1} \\left( b_n |k_{n-1}\\rangle \\langle k_n| + \\text{h.c.} \\right)$.",
+      "Reading long English PDFs often breaks context when users switch between the original text and a separate translation window.",
     translatedText:
-      "이 구성의 직접적인 결과로, Krylov 기에서 다체 Hamiltonian은 삼중대각 형태 $H = \\sum_{n=0}^{N_H-1} a_n |k_n\\rangle \\langle k_n| + \\sum_{n=1}^{N_H-1} \\left( b_n |k_{n-1}\\rangle \\langle k_n| + \\text{h.c.} \\right)$를 갖습니다.",
+      "긴 영어 PDF를 읽을 때 원문과 별도 번역 창을 오가면 읽기 맥락이 자주 끊깁니다.",
   },
   {
     docUnitId: 2,
     sourceText:
-      "The overlap coefficients satisfy $c_n(t) = \\langle k_n | \\psi_t \\rangle = \\sum_E e^{-iEt} \\langle k_n | E \\rangle \\langle E | k_0 \\rangle$.",
+      "ScholarDot keeps each sentence pair aligned so readers can follow the argument without losing their place in the document.",
     translatedText:
-      "중첩 계수는 $c_n(t) = \\langle k_n | \\psi_t \\rangle = \\sum_E e^{-iEt} \\langle k_n | E \\rangle \\langle E | k_0 \\rangle$를 만족합니다.",
+      "ScholarDot은 문장 쌍을 한 줄씩 맞춰 두어, 문서 안에서 논지를 따라가며 읽을 수 있게 합니다.",
   },
   {
     docUnitId: 3,
     sourceText:
-      "For the steady-state observable we use the long-time average $$S_{K,\\infty} = \\lim_{t \\to \\infty} \\frac{1}{t} \\int_0^t dt' \\, S_K(t').$$",
+      "For retrieval, each document unit is embedded and ranked by cosine similarity against the query before the top units appear in the parallel reading view.",
     translatedText:
-      "정상 상태 관측량으로는 장시간 평균 $$S_{K,\\infty} = \\lim_{t \\to \\infty} \\frac{1}{t} \\int_0^t dt' \\, S_K(t')$$ 를 사용합니다.",
+      "검색에서는 각 문서 단위를 임베딩한 뒤 쿼리와의 코사인 유사도로 순위를 매기고, 상위 단위가 병렬 읽기 화면에 표시됩니다.",
   },
   {
     docUnitId: 4,
@@ -135,25 +135,23 @@ export const MOCK_TRANSLATION_PAIRS: MockTranslationPair[] = withMockSourcePages
   {
     docUnitId: 16,
     sourceText:
-      "Each DU is encoded with a domain-adapted Sentence-BERT model and stored in a FAISS index for sub-millisecond lookup.",
+      "Candidate document units are ranked by cosine similarity between the query embedding and document embeddings.",
     translatedText:
-      "각 DU는 도메인 적응된 Sentence-BERT 모델로 인코딩되어 밀리초 미만의 조회를 위한 FAISS 인덱스에 저장됩니다.",
+      "후보 문서 단위는 쿼리 임베딩과 문서 임베딩 간의 코사인 유사도로 순위가 결정됩니다.",
   },
-
-  // ── PAGE 3: Experiments ──────────────────────────────────────────────
   {
     docUnitId: 17,
     sourceText:
-      "We conduct experiments on four benchmarks: SciQA, BioASQ, QASPER, and LegalBench, covering diverse scientific and professional domains.",
+      "$$\\text{score}(q,d_i)=\\frac{e_q\\cdot e_i}{\\|e_q\\|\\|e_i\\|}$$",
     translatedText:
-      "우리는 다양한 과학 및 전문 분야를 포괄하는 SciQA, BioASQ, QASPER, LegalBench 네 가지 벤치마크에서 실험을 수행합니다.",
+      "$$\\text{score}(q,d_i)=\\frac{e_q\\cdot e_i}{\\|e_q\\|\\|e_i\\|}$$",
   },
   {
     docUnitId: 18,
     sourceText:
-      "For all experiments, we use GPT-4o as the reader model and compare against BM25, DPR, and LongFormer baselines.",
+      "The highest-scoring units are passed to the re-ranking stage.",
     translatedText:
-      "모든 실험에서 GPT-4o를 리더 모델로 사용하며, BM25, DPR, LongFormer 기준 모델과 비교합니다.",
+      "가장 높은 점수를 받은 문서 단위가 재순위화 단계로 전달됩니다.",
   },
   {
     docUnitId: 19,
@@ -255,33 +253,33 @@ export const MOCK_TRANSLATION_PAIRS: MockTranslationPair[] = withMockSourcePages
     translatedText:
       "우리는 이 연구가 인간 전문가만큼 효과적으로 과학 문헌에서 지식을 읽고, 추론하고, 종합할 수 있는 AI 시스템을 향한 유망한 길을 열어준다고 믿습니다.",
   },
-  // ── PAGE 5: Additional equations (demo) ─────────────────────────────
+  // ── PAGE 5: Closing (prose + one display equation for KaTeX demo) ─────
   {
     docUnitId: 33,
     sourceText:
-      "The quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ and the normalisation condition $\\langle \\psi | \\psi \\rangle = 1$ serve as elementary benchmarks for the KaTeX rendering pipeline.",
+      "Throughout this sample, the symbols q, d_i, and e_i denote the query, document unit, and embedding introduced in Section 2.",
     translatedText:
-      "이차방정식 근의 공식 $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$와 정규화 조건 $\\langle \\psi | \\psi \\rangle = 1$은 KaTeX 렌더링 파이프라인의 기본 검증 기준으로 사용됩니다.",
+      "이 샘플 전반에서 기호 q, d_i, e_i는 2절에서 소개한 쿼리, 문서 단위, 임베딩을 가리킵니다.",
   },
   {
     docUnitId: 34,
     sourceText:
-      "The spectral form factor $K(\\beta, t) = \\left| \\int dE\\, \\rho(E)\\, e^{(\\beta + it)E} \\right|^2$ exhibits a characteristic dip–ramp–plateau structure that distinguishes chaotic from integrable spectra.",
+      "Table 1 in Section 3 reports Exact Match and F1 against BM25 and DPR; the definitions used in those scores are summarized below.",
     translatedText:
-      "스펙트럼 형태 인자 $K(\\beta, t) = \\left| \\int dE\\, \\rho(E)\\, e^{(\\beta + it)E} \\right|^2$는 혼돈 스펙트럼과 적분 가능 스펙트럼을 구분하는 특징적인 딥–램프–고원 구조를 보입니다.",
+      "3절의 표 1은 BM25·DPR 대비 Exact Match와 F1을 보고하며, 아래에 해당 지표 정의를 정리합니다.",
   },
   {
     docUnitId: 35,
     sourceText:
-      "The time-evolved expectation value $$\\langle O(t) \\rangle = \\operatorname{Tr}\\!\\left[ \\rho_0\\, e^{iHt}\\, O\\, e^{-iHt} \\right]$$ captures thermalization dynamics in isolated quantum systems via the Heisenberg equation of motion.",
+      "Readers checking the KaTeX pipeline can compare the rendered block with the prose discussion of SciQA results on the previous page.",
     translatedText:
-      "시간 전개된 기댓값 $$\\langle O(t) \\rangle = \\operatorname{Tr}\\!\\left[ \\rho_0\\, e^{iHt}\\, O\\, e^{-iHt} \\right]$$은 하이젠베르크 운동 방정식을 통해 고립된 양자계의 열화 동역학을 포착합니다.",
+      "KaTeX 렌더링을 확인하는 독자는, 아래 블록 수식과 앞 페이지의 SciQA 결과 설명을 함께 보면 됩니다.",
   },
   {
     docUnitId: 36,
     sourceText:
-      "The eigenstate thermalization hypothesis asserts that $\\langle m | O | n \\rangle = \\mathcal{O}(\\bar{E})\\,\\delta_{mn} + e^{-S(\\bar{E})/2}\\, f(\\bar{E}, \\omega)\\, R_{mn}$ for energy eigenstates $|m\\rangle$ and $|n\\rangle$, where $\\bar{E} = (E_m + E_n)/2$ and $\\omega = E_m - E_n$.",
+      "$$\\mathrm{EM} = \\frac{1}{N}\\sum_{i=1}^{N} \\mathbf{1}[\\hat{y}_i = y_i], \\qquad F_1 = \\frac{2pr}{p+r}$$",
     translatedText:
-      "고유상태 열화 가설은 에너지 고유상태 $|m\\rangle$과 $|n\\rangle$에 대해 $\\langle m | O | n \\rangle = \\mathcal{O}(\\bar{E})\\,\\delta_{mn} + e^{-S(\\bar{E})/2}\\, f(\\bar{E}, \\omega)\\, R_{mn}$이 성립하며, 여기서 $\\bar{E} = (E_m + E_n)/2$이고 $\\omega = E_m - E_n$입니다.",
+      "$$\\mathrm{EM} = \\frac{1}{N}\\sum_{i=1}^{N} \\mathbf{1}[\\hat{y}_i = y_i], \\qquad F_1 = \\frac{2pr}{p+r}$$",
   },
 ]);

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { normalizePdfExtractText } from "@/app/lib/pdfTextNormalize";
 import { useMemo } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -442,7 +442,13 @@ function restoreWordSpacing(text: string): string {
   // 줄 단위로 분리 → 수식 줄은 그대로, 텍스트 줄만 보정
   return text
     .split("\n")
-    .map((line) => (isMathLine(line) ? line : fixLineText(line)))
+    .map((line) => {
+      if (isMathLine(line)) return line;
+      let s = normalizePdfExtractText(line);
+      s = fixLineText(s);
+      // fixLineText가 ScholarDot → Scholar Dot 등으로 다시 깨뜨릴 수 있어 한 번 더 보정
+      return normalizePdfExtractText(s);
+    })
     .join("\n");
 }
 
