@@ -32,6 +32,11 @@ const features = [
     title: "문장 복습 큐",
     desc: "밑줄·하이라이트한 문장만 모아 빠르게 복습하고 핵심 문장에 재집중합니다.",
   },
+  {
+    icon: "📋",
+    title: "논문 한눈에 보기",
+    desc: "업로드한 PDF 앞부분을 바탕으로 주제·방법·결과·한계를 요약해, 본문을 읽기 전 전체 그림을 잡을 수 있습니다.",
+  },
 ];
 
 export default function Home() {

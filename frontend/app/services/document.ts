@@ -141,14 +141,19 @@ export const getTranslatedDocument = async (
       .map((item) => normalizeTranslatedUnit(item))
       .filter((item): item is TranslatedDocumentUnit => item != null);
   } catch (error) {
-    // 네트워크 오류나 기타 에러는 그대로 throw
-    // 404는 빈 배열로 처리하기 위해 에러를 다시 throw하지 않음
     if ((error as Error).message.includes("404")) {
       return [];
     }
-    throw new Error(
-      (error as Error).message || "번역된 문서를 가져오는데 실패했습니다!"
-    );
+    const msg = (error as Error).message || "";
+    if (
+      msg === "Failed to fetch" ||
+      (error instanceof TypeError && msg.includes("fetch"))
+    ) {
+      throw new Error(
+        `서버에 연결할 수 없습니다. 백엔드가 실행 중인지, NEXT_PUBLIC_API_URL(${getApiUrl()}) 설정을 확인해 주세요.`
+      );
+    }
+    throw new Error(msg || "번역된 문서를 가져오는데 실패했습니다!");
   }
 };
 

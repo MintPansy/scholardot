@@ -160,6 +160,12 @@ export default function MyDocument() {
     try {
       const ok = await prepareReadSession(doc, accessToken);
       if (ok) router.push("/read");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "문서를 열지 못했습니다.";
+      toast.error(message);
     } finally {
       setOpeningRead(false);
     }
