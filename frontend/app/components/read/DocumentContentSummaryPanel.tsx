@@ -104,3 +104,16 @@ export default function DocumentContentSummaryPanel({ data, loading, error }: Pr
     </section>
   );
 }
+
+/** 체험 모드: 실제 요약 API 없이 기능 안내만 표시 */
+export function DemoContentSummaryHint() {
+  return (
+    <section className={styles.demoHint} aria-label="논문 개요 안내">
+      <p className={styles.demoHintTitle}>이 논문 한눈에</p>
+      <p className={styles.demoHintText}>
+        로그인 후 업로드한 논문에서 AI가 주제·방법·결과·한계를 자동으로 정리해
+        줍니다. 체험 모드에서는 미리보기를 제공하지 않습니다.
+      </p>
+    </section>
+  );
+}

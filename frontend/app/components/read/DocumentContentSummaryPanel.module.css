@@ -117,6 +117,28 @@
   color: #b45309;
 }
 
+.demoHint {
+  margin: 28px 0 48px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.demoHintTitle {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.demoHintText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #64748b;
+}
+
 @media (max-width: 560px) {
   .row {
     grid-template-columns: 1fr;

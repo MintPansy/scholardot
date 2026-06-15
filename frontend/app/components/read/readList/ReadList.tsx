@@ -33,7 +33,9 @@ import {
   type TranslatedDocumentUnit,
   type DocumentContentSummary,
 } from "@/app/services/document";
-import DocumentContentSummaryPanel from "@/app/components/read/DocumentContentSummaryPanel";
+import DocumentContentSummaryPanel, {
+  DemoContentSummaryHint,
+} from "@/app/components/read/DocumentContentSummaryPanel";
 import PdfPageThumbnail from "@/app/components/read/pdf/PdfPageThumbnail";
 import MixedTextWithMath from "@/app/components/read/MixedTextWithMath";
 import { LatexViewer } from "@/app/components/math";
@@ -170,6 +172,9 @@ export default function ReadList({
   const documentId = documentIdRef.current;
 
   const accessToken = useAccessTokenStore((s) => s.accessToken);
+  const userInfo = useLoginStore((s) => s.userInfo);
+  const isDemoSession =
+    isDemoSessionClient() || userInfo?.userId === "demo-user";
   const [notes, setNotes] = useState<UserDocNoteItem[]>([]);
   const [notesLoading, setNotesLoading] = useState(false);
   const [contentSummary, setContentSummary] = useState<DocumentContentSummary | null>(null);
@@ -1525,6 +1530,7 @@ export default function ReadList({
             </div>
           );
           })}
+          {isDemoSession && <DemoContentSummaryHint />}
         </div>
       </div>
 
