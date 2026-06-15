@@ -18,7 +18,7 @@ const ROWS: { key: keyof Pick<DocumentContentSummary, "topic" | "method" | "find
 ];
 
 export default function DocumentContentSummaryPanel({ data, loading, error }: Props) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   if (loading && !data) {
     return (
