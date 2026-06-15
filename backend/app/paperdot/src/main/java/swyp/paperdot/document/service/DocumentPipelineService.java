@@ -30,6 +30,7 @@ public class DocumentPipelineService {
   private final docUnitsRepository docUnitsRepository;
   private final OpenAiTranslator openAiTranslator;
   private final DocUnitTranslationRepository docUnitTranslationRepository;
+  private final DocumentContentSummaryService documentContentSummaryService;
 
   private static final String DEFAULT_SOURCE_LANG = "en";
   private static final String DEFAULT_TARGET_LANG = "ko";
@@ -71,6 +72,10 @@ public class DocumentPipelineService {
           overwrite);
       processTranslationInBatches(documentId, sentences, sourcePages, DEFAULT_TARGET_LANG, overwrite, batchSize);
       log.info("[Step 3/3] documentId {} - pre-save doc_units and batch translation done", documentId);
+
+      log.info("[Step 4/4] documentId {} - content summary generation start", documentId);
+      documentContentSummaryService.generateAfterTranslation(documentId, overwrite);
+      log.info("[Step 4/4] documentId {} - content summary generation finished", documentId);
 
     } catch (Exception e) {
       log.error("===== Document Pipeline FAILED for documentId: {} =====", documentId, e);

@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import swyp.paperdot.common.JwtAuthFilter;
 import swyp.paperdot.document.dto.DocumentStructureAnalysisResponse;
+import swyp.paperdot.document.service.DocumentContentSummaryService;
 import swyp.paperdot.document.service.DocumentHistoryService;
 import swyp.paperdot.document.service.DocumentPipelineService;
 import swyp.paperdot.document.service.DocumentService;
@@ -31,6 +32,7 @@ public class DocumentPipelineController {
     private final DocumentHistoryService documentHistoryService;
     private final DocumentService documentService;
     private final DocumentStructureAnalysisService documentStructureAnalysisService;
+    private final DocumentContentSummaryService documentContentSummaryService;
 
     @Operation(summary = "문서 처리 파이프라인 실행", description = "특정 문서 ID에 대해 텍스트 추출, 번역, 저장 파이프라인을 비동기로 실행합니다.")
     @ApiResponses(value = {
@@ -85,6 +87,17 @@ public class DocumentPipelineController {
             @Parameter(description = "문서 ID", required = true) @PathVariable Long documentId
     ) {
         return ResponseEntity.ok(documentStructureAnalysisService.analyze(documentId));
+    }
+
+    @Operation(
+            summary = "논문 내용 요약",
+            description = "번역 파이프라인 완료 후 생성된 논문 개요(주제·방법·결과·한계)를 반환합니다."
+    )
+    @GetMapping("/{documentId}/content-summary")
+    public ResponseEntity<swyp.paperdot.document.dto.DocumentContentSummaryResponse> getContentSummary(
+            @Parameter(description = "문서 ID", required = true) @PathVariable Long documentId
+    ) {
+        return ResponseEntity.ok(documentContentSummaryService.getSummary(documentId));
     }
 
     @Operation(summary = "문서 삭제", description = "문서와 관련된 모든 데이터(번역, 메모, 파일)를 삭제합니다.")

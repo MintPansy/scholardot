@@ -80,6 +80,11 @@ translation:
     max-pool-size: 8
     queue-capacity: 200
 
+document-summary:
+  max-sentences: 45
+  max-chars: 12000
+  min-sentences: 5
+
 paperdot:
   frontend:
     base-url: ${FRONTEND_BASE_URL}

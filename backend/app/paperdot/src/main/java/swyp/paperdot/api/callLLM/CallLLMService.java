@@ -51,24 +51,25 @@ public class CallLLMService {
      * @return LLM의 응답 메시지 내용.
      */
     public String getChatResponse(String prompt) {
-        // 시스템 메시지와 사용자 프롬프트를 포함하는 메시지 목록을 생성합니다.
+        return getChatResponseWithSystem(systemMessage, prompt);
+    }
+
+    /**
+     * 사용자 지정 system 프롬프트로 LLM 응답을 반환합니다.
+     */
+    public String getChatResponseWithSystem(String customSystemMessage, String userPrompt) {
         List<Message> messages = List.of(
-                new Message("system", systemMessage),
-                new Message("user", prompt)
+                new Message("system", customSystemMessage),
+                new Message("user", userPrompt)
         );
 
-        // 구성된 모델과 메시지 목록을 사용하여 채팅 요청 객체를 생성합니다.
         ChatRequest request = new ChatRequest(model, messages);
-        // OpenAI API에 POST 요청을 보내고 응답을 받습니다.
         ChatResponse response = restTemplate.postForObject(apiUrl, request, ChatResponse.class);
 
-        // LLM 응답이 유효한지 확인합니다.
         if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-            // 운영 환경에서는 로깅을 추가하거나 더 구체적인 예외 처리를 고려해야 합니다.
             throw new IllegalStateException("LLM으로부터 유효한 응답을 받지 못했습니다.");
         }
 
-        // 첫 번째 선택지 메시지의 내용을 추출하여 반환합니다.
         return response.getChoices().get(0).getMessage().getContent();
     }
 

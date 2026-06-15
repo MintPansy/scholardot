@@ -29,8 +29,11 @@ import {
 import {
   getTranslation,
   getTranslationProgress,
+  getDocumentContentSummary,
   type TranslatedDocumentUnit,
+  type DocumentContentSummary,
 } from "@/app/services/document";
+import DocumentContentSummaryPanel from "@/app/components/read/DocumentContentSummaryPanel";
 import PdfPageThumbnail from "@/app/components/read/pdf/PdfPageThumbnail";
 import MixedTextWithMath from "@/app/components/read/MixedTextWithMath";
 import { LatexViewer } from "@/app/components/math";
@@ -169,6 +172,9 @@ export default function ReadList({
   const accessToken = useAccessTokenStore((s) => s.accessToken);
   const [notes, setNotes] = useState<UserDocNoteItem[]>([]);
   const [notesLoading, setNotesLoading] = useState(false);
+  const [contentSummary, setContentSummary] = useState<DocumentContentSummary | null>(null);
+  const [contentSummaryLoading, setContentSummaryLoading] = useState(false);
+  const [contentSummaryError, setContentSummaryError] = useState<string | null>(null);
   const [highlightColor, setHighlightColor] = useState<HighlightColor>("yellow");
   const [highlightMap, setHighlightMap] = useState<HighlightMap>(() =>
     getJSON<HighlightMap>(`${storageNamespace}:${documentId ?? 'local'}:highlights`, {})
@@ -215,6 +221,56 @@ export default function ReadList({
       .then(setNotes)
       .catch(() => setNotes([]))
       .finally(() => setNotesLoading(false));
+  }, [documentId, accessToken]);
+
+  useEffect(() => {
+    if (!documentId || !accessToken) return;
+    const isDemo =
+      isDemoSessionClient() ||
+      useLoginStore.getState().userInfo?.userId === "demo-user";
+    if (isDemo) return;
+
+    let cancelled = false;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+    const loadSummary = (isPoll = false) => {
+      if (!isPoll) {
+        setContentSummaryLoading(true);
+        setContentSummaryError(null);
+      }
+      getDocumentContentSummary(documentId, accessToken)
+        .then((summary) => {
+          if (cancelled) return;
+          setContentSummary(summary);
+          if (summary.status === "GENERATING") {
+            if (!pollTimer) {
+              pollTimer = setInterval(() => loadSummary(true), 4000);
+            }
+          } else if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+          }
+        })
+        .catch((e: Error) => {
+          if (!cancelled) {
+            setContentSummaryError(e.message || "논문 개요를 불러오지 못했습니다.");
+            if (pollTimer) {
+              clearInterval(pollTimer);
+              pollTimer = null;
+            }
+          }
+        })
+        .finally(() => {
+          if (!cancelled && !isPoll) setContentSummaryLoading(false);
+        });
+    };
+
+    loadSummary();
+
+    return () => {
+      cancelled = true;
+      if (pollTimer) clearInterval(pollTimer);
+    };
   }, [documentId, accessToken]);
 
   useEffect(() => {
@@ -1093,6 +1149,11 @@ export default function ReadList({
             ? `문장 ${readingViewport.topSentenceOneBased} / ${readingViewport.totalSentences}`
             : undefined
         }
+      />
+      <DocumentContentSummaryPanel
+        data={contentSummary}
+        loading={contentSummaryLoading}
+        error={contentSummaryError}
       />
       <div className={styles.content}>
         {showSidebar && (

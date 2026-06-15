@@ -11,6 +11,7 @@ import swyp.paperdot.document.dto.DocumentResponse;
 import swyp.paperdot.document.dto.DocumentUploadRequest;
 import swyp.paperdot.document.exception.DocumentNotFoundException;
 import swyp.paperdot.document.note.UserDocNoteRepository;
+import swyp.paperdot.document.repository.DocumentContentSummaryRepository;
 import swyp.paperdot.document.repository.DocumentRepository;
 import swyp.paperdot.document.storage.ObjectStorageClient;
 import swyp.paperdot.document.storage.StoragePathParser;
@@ -23,6 +24,7 @@ public class DocumentService {
     private final docUnitsRepository docUnitsRepository;
     private final DocUnitTranslationRepository docUnitTranslationRepository;
     private final UserDocNoteRepository userDocNoteRepository;
+    private final DocumentContentSummaryRepository documentContentSummaryRepository;
     private final ObjectStorageClient objectStorageClient;
     private final StoragePathParser storagePathParser;
 
@@ -32,6 +34,7 @@ public class DocumentService {
             docUnitsRepository docUnitsRepository,
             DocUnitTranslationRepository docUnitTranslationRepository,
             UserDocNoteRepository userDocNoteRepository,
+            DocumentContentSummaryRepository documentContentSummaryRepository,
             ObjectStorageClient objectStorageClient,
             StoragePathParser storagePathParser
     ) {
@@ -40,6 +43,7 @@ public class DocumentService {
         this.docUnitsRepository = docUnitsRepository;
         this.docUnitTranslationRepository = docUnitTranslationRepository;
         this.userDocNoteRepository = userDocNoteRepository;
+        this.documentContentSummaryRepository = documentContentSummaryRepository;
         this.objectStorageClient = objectStorageClient;
         this.storagePathParser = storagePathParser;
     }
@@ -91,6 +95,7 @@ public class DocumentService {
         docUnitTranslationRepository.deleteByDocUnitDocumentId(documentId);
         docUnitsRepository.deleteByDocumentId(documentId);
         userDocNoteRepository.deleteByDocumentId(documentId);
+        documentContentSummaryRepository.deleteByDocumentId(documentId);
 
         for (DocumentFile file : document.getFiles()) {
             try {

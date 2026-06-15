@@ -373,6 +373,61 @@ export const getDocumentStructureAnalysis = async (
   return response.json() as Promise<DocumentStructureAnalysis>;
 };
 
+export type DocumentContentSummaryStatus =
+  | "GENERATING"
+  | "READY"
+  | "FAILED"
+  | "NONE";
+
+export interface DocumentContentSummary {
+  status: DocumentContentSummaryStatus;
+  topic?: string;
+  method?: string;
+  findings?: string;
+  limitations?: string;
+  errorMessage?: string | null;
+  generatedAt?: string | null;
+  disclaimer?: string;
+}
+
+/** GET /api/v1/documents/{id}/content-summary */
+export const getDocumentContentSummary = async (
+  documentId: string | number,
+  accessToken?: string
+): Promise<DocumentContentSummary> => {
+  const apiUrl = getApiUrl();
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(
+    `${apiUrl}/api/v1/documents/${documentId}/content-summary`,
+    { method: "GET", headers, credentials: "include" }
+  );
+
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("text/html")) {
+    throw new Error("인증이 필요합니다. 로그인해주세요.");
+  }
+
+  if (!response.ok) {
+    throw new Error("논문 개요를 불러오지 못했습니다.");
+  }
+
+  const data = (await response.json()) as Partial<DocumentContentSummary>;
+  return {
+    status: (data.status as DocumentContentSummaryStatus) ?? "NONE",
+    topic: data.topic,
+    method: data.method,
+    findings: data.findings,
+    limitations: data.limitations,
+    errorMessage: data.errorMessage,
+    generatedAt: data.generatedAt,
+    disclaimer: data.disclaimer,
+  };
+};
+
 export const getTranslationProgress = async (
   documentId: string | number,
   accessToken?: string
