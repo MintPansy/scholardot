@@ -30,6 +30,7 @@
 - **문서 구조 분석 (문단, 수식, 이미지)**: 페이지별 문단·이미지 집계, 문장·LaTeX 구간 기반 수식 카운트, 분포 테이블 등.
 - **복잡도 점수 계산**: 수식·이미지·문단 길이 가중치를 반영한 정량 지표(v1)로 문서 난이도·특성 요약.
 - **번역 및 렌더링**: OpenAI 기반 문장 단위 한·영 병렬 표시, KaTeX 수식 렌더링, 업로드·진행률·미리보기 UX.
+- **논문 내용 요약 (MVP)**: 번역 파이프라인 완료 후 앞부분 원문을 LLM으로 요약(주제·방법·결과·한계), 읽기 화면에서 접이식 패널로 제공.
 
 ---
 
@@ -998,3 +999,67 @@
 - **링크 정리**: `Footer.tsx`, `login/page.tsx`의 Notion URL을 `/terms`, `/privacy`로 교체.
 
 > 논문 「구현·운영」 보완: 서비스 정책 문서를 제품 UI 안에 통합해 외부 의존을 줄이고, 배포 환경에서도 동일한 경로로 안내 가능.
+
+---
+
+### 2026-05-26 (프론트 — 랜딩 페이지 톤 개편)
+
+- **배경**: 기존 AI/SaaS형 히어로(그라데이션·글로우·feature 카드 그리드)가 “템플릿 랜딩”처럼 보인다는 피드백. “실제 학생이 쓰는 서비스”·정보 탐색형 톤으로 전환.
+- **Hero**
+  - 그라데이션·`heroGlow`·블러 원 제거, 단색 `#0f172a` + 좌정렬 카피.
+  - 공감형 문구(과제·세미나·PDF·번역 탭 왕복)로 교체, 상단 로고 pill 라벨 제거.
+- **본문 구조**
+  - feature 카드 5열 그리드 제거 → **문서함·검색·문장 병렬** 목업(상태 뱃지·검색 히트) + ops strip(실제 기능 4칸).
+  - **「왜 만들었는지」** 짧은 스토리 블록 추가.
+  - Research/Demo/CTA: 좌정렬·플랫 border·shadow 최소화.
+- **관련 파일**: `frontend/app/page.tsx`, `frontend/app/page.module.css`.
+
+> 본 작업은 마케팅형 랜딩과 운영 중인 학술 읽기 도구의 인상을 분리하기 위한 것으로, 시연·포트폴리오에서 “제품 신뢰”를 높이는 효과를 목표로 한다.
+
+> 결과: AI SaaS 템플릿 느낌 축소, 실사용 웹서비스·정보 밀도 중심 랜딩으로 재구성.
+
+---
+
+### 2026-06-15 (프론트 — 약관·개인정보 정책 센터 UI)
+
+- **배경**: `/terms`, `/privacy`가 좁은 중앙 카드 + 긴 본문만 나열해 Notion 붙여넣기처럼 보임. 랜딩과 shell·톤을 맞춘 **정책 센터** 형태로 개편.
+- **레이아웃**
+  - `--shell-max-width`(1240px) / `--legal-read-max`(740px) CSS 변수 도입.
+  - 떠 있는 카드 shadow 제거, border 12px radius, 배경 `#f1f5f9`(랜딩과 동일).
+- **정보 계층**
+  - 상단 메타 바: 최종 수정·시행·문의·관련 문서(약관 ↔ 개인정보) 링크.
+  - **데스크톱 sticky TOC** + 스크롤 active, **모바일 접이식 목차**.
+  - `h2` 조항 단위 섹션 분리(`legalSections.ts`) + divider.
+- **개인정보 전용**: 본문 전 **핵심 요약** 박스(로그인·저장·보유·삭제).
+- **콘텐츠 메타**: `terms.ts` / `privacy.ts`에 `meta`, `privacy`에 `summary` 필드 추가 (`legalTypes.ts` 확장).
+- **관련 파일**: `LegalDocument.tsx`, `LegalDocument.module.css`, `globals.css`, `header.module.css`, `Footer.module.css`.
+
+> 논문 「구현·운영」: 법률 문서의 신뢰감을 유지하면서 제품 UI 일관성·탐색성(목차)을 확보한 사례로 기술 가능.
+
+> 결과: Notion형 단조 UI → ScholarDot shell과 맞는 정책 페이지, 조항 탐색·요약 가능.
+
+---
+
+### 2026-06-15 (풀스택 — 논문 내용 요약 MVP, 읽기 화면)
+
+- **목표**: 읽기 전·중에 “이 논문이 전반적으로 무엇을 말하는지”를 3~5줄 수준으로 제공. 구조 분석(페이지·복잡도)과 **의미 요약**을 분리.
+- **MVP 스펙**
+  - **생성 시점**: 번역 파이프라인 Step 4 — 배치 번역 완료 직후 1회 LLM 호출.
+  - **입력**: `doc_units` 앞부분 원문 최대 45문장 / 12,000자 (`document-summary.*` 설정).
+  - **출력**: JSON 4필드 — `topic`, `method`, `findings`, `limitations`(한국어) → DB 저장.
+  - **API**: `GET /api/v1/documents/{id}/content-summary` (`GENERATING` | `READY` | `FAILED`).
+  - **UI**: `ReadList` 헤더 아래 접이식 **「이 논문 한눈에」** (`DocumentContentSummaryPanel`), `GENERATING` 시 4초 폴링.
+  - **면책**: “AI 생성 요약 · 원문과 함께 확인” 문구 고정 노출.
+- **백엔드**
+  - `DocumentContentSummary` 엔티티 + `DocumentContentSummaryService`.
+  - `CallLLMService.getChatResponseWithSystem()` — 요약 전용 system prompt.
+  - `DocumentPipelineService` Step 4 연동, 문서 삭제 시 요약 함께 삭제.
+- **프론트**
+  - `getDocumentContentSummary()` in `services/document.ts`.
+- **한계 (v2 후보)**
+  - 기존 문서는 파이프라인 재실행 전까지 요약 없음.
+  - 근거 문장 ID 링크·Abstract/Conclusion 우선 추출·수동 재생성 버튼 미구현.
+
+> 본 작업은 「핵심 기능」의 정량 분석(구조·복잡도)에 **의미적 진입점**을 더해, 학술 PDF 읽기 UX의 “맥락 파악 → 문장 단위 읽기” 흐름을 완성하기 위한 것이다.
+
+> 결과: 읽기 화면에서 논문 개요(주제·방법·결과·한계) 확인 가능, 논문 「구현·기여」에 LLM 활용 읽기 보조 사례 추가.
