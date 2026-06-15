@@ -66,7 +66,7 @@ ScholarDot의 백엔드는 업로드된 학술 PDF를 문장 단위로 구조화
 
 ```text
 backend/
-├── app/paperdot/src/main/java/swyp/paperdot/
+├── app/scholardot/src/main/java/swyp/scholardot/
 │   ├── common/                    # Security, JWT, CORS
 │   ├── document/                  # 업로드/처리/조회/노트 API
 │   ├── doc_units/                 # 문장/번역 엔티티
@@ -115,7 +115,7 @@ docker compose -f compose/docker-compose.local.yml down
 ### Local Run (JDK 21)
 
 ```bash
-cd backend/app/paperdot
+cd backend/app/scholardot
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 

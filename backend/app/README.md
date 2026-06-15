@@ -2,12 +2,12 @@
 
 `backend/app/`은 백엔드 애플리케이션 소스 루트입니다.
 
-실제 Spring Boot 프로젝트는 `backend/app/paperdot`에 있습니다.
+실제 Spring Boot 프로젝트는 `backend/app/scholardot`에 있습니다.
 
 ## 실행
 
 ```bash
-cd backend/app/paperdot
+cd backend/app/scholardot
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 

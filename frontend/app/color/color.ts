@@ -1,5 +1,5 @@
 /**
- * PaperDot 학술 테마 — Navy + Cream + Gray
+ * ScholarDot 학술 테마 — Navy + Cream + Gray
  * Notion / arXiv 느낌의 전문적 분위기
  */
 export const colors = {

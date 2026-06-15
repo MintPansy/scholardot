@@ -1,4 +1,4 @@
-# PaperDot Frontend — 설정 정리
+# ScholarDot Frontend — 설정 정리
 
 ## 1. App Router 구조 (`app/`)
 

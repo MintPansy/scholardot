@@ -16,7 +16,7 @@ OPENAI_API_KEY=sk-...
 
 ### 3. 백엔드 실행 (터미널 2)
 ```bash
-cd backend/app/paperdot
+cd backend/app/scholardot
 # Windows
 set OPENAI_API_KEY=sk-...  && ./gradlew bootRun --args='--spring.profiles.active=local'
 

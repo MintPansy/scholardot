@@ -114,7 +114,7 @@ scholardot/
 │   │   └── page.tsx                    # 랜딩 페이지
 │   └── package.json
 ├── backend/                            # Spring Boot 백엔드 (Railway)
-│   ├── app/paperdot/                   # Gradle 프로젝트 루트
+│   ├── app/scholardot/                   # Gradle 프로젝트 루트
 │   ├── compose/                        # 로컬/운영 docker-compose 파일
 │   ├── docker/                         # Railway 빌드용 Dockerfile
 │   └── railway.json
@@ -141,7 +141,7 @@ cp .env.example .env
 docker compose -f compose/docker-compose.local.yml up -d
 
 # 애플리케이션 실행
-cd app/paperdot
+cd app/scholardot
 ./gradlew bootRun --args='--spring.profiles.active=local'
 # 백엔드: http://localhost:8080
 # Swagger: http://localhost:8080/swagger-ui/index.html

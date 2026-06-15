@@ -1,7 +1,7 @@
 FROM gradle:8.14-jdk21 AS builder
 WORKDIR /workspace
 
-COPY app/paperdot .
+COPY app/scholardot .
 RUN gradle build --no-daemon -x test
 
 FROM eclipse-temurin:21-jdk

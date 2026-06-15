@@ -79,7 +79,7 @@
 
 **방법 A – Spring Boot Actuator (권장)**
 
-1. `backend/app/paperdot/build.gradle`에 의존성 추가:
+1. `backend/app/scholardot/build.gradle`에 의존성 추가:
    ```gradle
    implementation 'org.springframework.boot:spring-boot-starter-actuator'
    ```
