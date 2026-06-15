@@ -6,23 +6,24 @@
  * 주의: 일반 영어 띄어쓰기(A model 등)는 건드리지 않습니다.
  */
 
-/** 긴 키부터 치환 (부분 매칭 방지) */
-const PHRASE_FIXES: readonly [string, string][] = [
-  ["Schol arDot", "ScholarDot"],
-  ["Scholar Dot", "ScholarDot"],
-  ["Sentence- BERT", "Sentence-BERT"],
-  ["FA ISS", "FAISS"],
-  ["BER T", "BERT"],
-  ["PD F", "PDF"],
-  ["GP T", "GPT"],
-  ["NL P", "NLP"],
-  ["Sci QA", "SciQA"],
-  ["Bio ASQ", "BioASQ"],
-  ["Long Former", "LongFormer"],
-  ["Open AI", "OpenAI"],
-  ["GPT- 4o", "GPT-4o"],
-  ["GPT- 4", "GPT-4"],
-].sort((a, b) => b[0].length - a[0].length);
+const PHRASE_FIXES = (
+  [
+    ["Schol arDot", "ScholarDot"],
+    ["Scholar Dot", "ScholarDot"],
+    ["Sentence- BERT", "Sentence-BERT"],
+    ["FA ISS", "FAISS"],
+    ["BER T", "BERT"],
+    ["PD F", "PDF"],
+    ["GP T", "GPT"],
+    ["NL P", "NLP"],
+    ["Sci QA", "SciQA"],
+    ["Bio ASQ", "BioASQ"],
+    ["Long Former", "LongFormer"],
+    ["Open AI", "OpenAI"],
+    ["GPT- 4o", "GPT-4o"],
+    ["GPT- 4", "GPT-4"],
+  ] as [string, string][]
+).sort((a, b) => b[0].length - a[0].length);
 
 /** 연속 대문자 약어: PD F → PDF (2회 이상 반복 적용) */
 const BROKEN_ACRONYM_RE = /\b([A-Z]{2,})\s+([A-Z])(?=\s|[,.;:!?)\]\-]|$)/g;

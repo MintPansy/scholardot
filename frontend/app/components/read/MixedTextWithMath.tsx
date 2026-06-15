@@ -1,7 +1,7 @@
 "use client";
 
 import { normalizePdfExtractText } from "@/app/lib/pdfTextNormalize";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { splitMathSegments, type MathSegment } from "./mathSegments";
