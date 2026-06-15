@@ -4,7 +4,7 @@
 
 1인 개발·풀스택 프로젝트를 컴퓨터공학 학사 졸업논문으로 완성하기 위한 진행 가이드입니다.
 
-**ScholarDot**은 팀 프로젝트로 진행한 **PaperDot**을 기반으로 발전시킨 개인 프로젝트이다. 서비스명·브랜딩·배포 체계는 ScholarDot으로 정리했지만, 초기 아이데이션·협업 경험·기술 시행착오는 PaperDot 시절에서 출발했다. 논문·일지를 읽을 때 “갑자기 등장한 신규 서비스”가 아니라 **팀 프로젝트 → 개인 재구축·고도화**의 연속선으로 보는 것이 맥락에 맞습니다.
+**ScholarDot**은 팀 프로젝트로 진행한 **PaperDot**을 기반으로 발전시킨 개인 프로젝트입니다. 서비스명·브랜딩·배포 체계는 ScholarDot으로 정리했지만, 초기 아이데이션·협업 경험·기술 시행착오는 PaperDot 시절에서 출발했습니다. 논문·일지를 읽을 때 “갑자기 등장한 신규 서비스”가 아니라 **팀 프로젝트 → 개인 재구축·고도화**의 연속선으로 보는 것이 맥락에 맞습니다.
 
 개발 일지 본문의 운영·배포 URL은 ScholarDot 기준(`https://scholardot.vercel.app`, `https://scholardot-production.up.railway.app`)으로 통일되어 있습니다. 초기 도메인(`be-paper-dot.store` 등)은 API URL 하드코딩 제거(2026-03-25) 같은 **변경 이력을 설명하는 맥락**에서만 남아 있으며, 동일 계열 과거 배포 맥락은 `docs/THESIS_LIMITATIONS.md`, `docs/archive/`, `backend/compose/nginx/` 등을 참고할 수 있습니다.
 
@@ -44,7 +44,7 @@
 | **실험·평가** | 성능 측정, 사용성 테스트, 번역 품질 비교 등 |
 | **결론** | 한계점, 향후 과제 |
 
-→ **개발하면서 위 항목별로 문서/스크린샷/수치를 모아두면** 논문 작성 시 그대로 활용할 수 있습니다.
+→ **개발하면서 위 항목별로 문서/스크린샷/수치를 모아두면** 논문 작성 시 그대로 활용할 수 있다.
 
 ---
 
@@ -76,9 +76,9 @@
 
 > **Phase 1 결과:** 논문 「시스템 설계」에 넣을 아키텍처·API·DB 근거 문서를 갖춤.
 
-> **Phase 2 결과:** 핵심 기능과 난제 해결 사례를 「구현·기여」 문단으로 바로 옮길 수 있음.
+> **Phase 2 결과:** 핵심 기능과 난제 해결 사례를 「구현·기여」 문단으로 바로 옮길 수 있다.
 
-> **Phase 3 결과:** (완료 시) 정량·정성 지표로 「실험·평가·결론」의 실증 근거를 완성함.
+> **Phase 3 결과:** (완료 시) 정량·정성 지표로 「실험·평가·결론」의 실증 근거를 완성한다.
 
 ---
 
@@ -100,13 +100,13 @@
 - `docs/THESIS_LIMITATIONS.md` — **기존 시스템 한계(ERR_CONNECTION_TIMED_OUT 등) + 가용성·배포 개선** 문단 및 실질 글감, 코드/API 가이드
 - `docs/ARCHITECTURE.md` — 시스템 구성도, API 요약, DB 개요
 
-필요 시 위 파일들을 만들어 두고 개발하면서 조금씩 채우면 논문 집필 시 바로 옮겨 쓸 수 있습니다.
+필요 시 위 파일들을 만들어 두고 개발하면서 조금씩 채우면 논문 집필 시 바로 옮겨 쓸 수 있다.
 
 ### 가용성·배포 개선 (논문 반영용)
 
 - **기존 한계**: 이전 배포 사이트 `ERR_CONNECTION_TIMED_OUT` → 도메인/서버 관리 부재로 서비스 중단.
 - **개선 방향**: 호스팅·배포 전략(Vercel + GitHub), 도메인/SSL, 헬스 체크·모니터링, 에러 처리 UX(안내 메시지·재시도).
-- **문단·구현 가이드**: `docs/THESIS_LIMITATIONS.md`에 논문용 문단 예시와, 헬스 API·모니터링·프론트 에러 UX를 위한 코드·API 가져오는 방법을 정리해 두었음.
+- **문단·구현 가이드**: `docs/THESIS_LIMITATIONS.md`에 논문용 문단 예시와, 헬스 API·모니터링·프론트 에러 UX를 위한 코드·API 가져오는 방법을 정리해 두었다.
 
 ---
 
@@ -129,13 +129,13 @@
 
 2. **「연구의 의의·기여」**  
    각 일지 끝의 `> 본 작업은 … 효과를 얻었다` 요약을 논문 말투로 다듬어, “사용자 경험·신뢰성·유지보수” 등 **한두 문장 기여**로 쓴다.  
-   바로 아래에 붙인 **`> 결과: …` 한 줄**은 과정보다 **임팩트(무엇이 좋아졌는지)**를 드러내는 용도로 두었으니, 초록·기여 요약·슬라이드에 우선 반영하면 지도교수 피드백에 유리하다.
+   바로 아래에 붙인 **`> 결과: …` 한 줄**은 과정보다 **임팩트(무엇이 좋아졌는지)**를 드러내는 용도로 두었으므로, 초록·기여 요약·슬라이드에 우선 반영하면 지도교수 피드백에 유리하다.
 
 3. **「실험·평가」**  
-   UX 개선(이어 읽기, 문서 라이브러리, 로그인 유지 등)은 **과제 수행 시간·클릭 수·오류율·설문** 같은 지표와 짝을 지어 표로 정리하면 평가 챕터의 근거가 된다. (일지에는 “무엇을 바꿨는지”만 있어도 됨.)
+   UX 개선(이어 읽기, 문서 라이브러리, 로그인 유지 등)은 **과제 수행 시간·클릭 수·오류율·설문** 같은 지표와 짝을 지어 표로 정리하면 평가 챕터의 근거가 된다. (일지에는 “무엇을 바꿨는지”만 있어도 된다.)
 
 4. **부록·이력**  
-   `THESIS_DEV.md` 전체 또는 발췌를 부록으로 두거나, Git 커밋 해시·날짜와 함께 “구현 이력”으로 제시하면 재현성·성실성을 보여 줄 수 있다.
+   `THESIS_DEV.md` 전체 또는 발췌를 부록으로 두거나, Git 커밋 해시·날짜와 함께 “구현 이력”으로 제시하면 재현성·성실성을 보여준다.
 
 5. **진행 관리**  
    상단 Phase 1~3 체크리스트와 일지 날짜를 맞춰 두면, 지도교수와 **논문 일정·남은 작업**을 공유하기 쉽다.
@@ -182,14 +182,14 @@
 ### 2026-03-20 (추가: 프론트 홈/사이드바 중앙정렬 + UI 데모/로컬 기동)
 
 - **홈 화면 UI 안정화 (프론트)**
-  - `app/page.tsx`에서 Tailwind 유틸 의존을 제거하고, 전면 CSS 모듈(`page.module.css`)로 재구성해 가운데 정렬(무게중심) 흔들림을 줄임.
+  - `app/page.tsx`에서 Tailwind 유틸 의존을 제거하고, 전면 CSS 모듈(`page.module.css`)로 재구성해 가운데 정렬(무게중심) 흔들림을 줄인다.
   - Hero(중앙 집중) + Preview(독립 카드) + Features/Demo/CTA의 정렬 축을 CSS에서 일관되게 고정.
 - **마이페이지 사이드바 아이콘 찌그러짐 방지 (프론트)**
   - 사이드바 폭(`%`) 기반 레이아웃 변동을 줄이기 위해 고정 폭으로 변경하고, 아이콘 이미지 비율 유지를 위해 `object-fit: contain` 적용.
 - **읽기 화면 CSS 가독성/대비 조정 (프론트)**
   - `readHeader.module.css`, `readList.module.css`에서 폰트 크기/색/호버/선택 UI를 조정해 읽기 경험을 개선.
 - **로그인 데모 우회(“UI만” 목적, 프론트 전용)**
-  - `app/login/page.tsx`의 체험 버튼을 OAuth 대신 “데모 유저처럼” 동작하도록 변경해 `/read` 진입을 UI 테스트 단계에서 가능하게 함.
+  - `app/login/page.tsx`의 체험 버튼을 OAuth 대신 “데모 유저처럼” 동작하도록 변경해 `/read` 진입을 UI 테스트 단계에서 가능하게 했다.
 - **백엔드 로컬 기동/빌드 오류 해결 (백엔드/DevOps)**
   - Docker 빌드 실패 원인(컴파일 에러) 수정: `ObjectStorageClientConfig`, `UserDocNoteService`의 문제를 최소 수정으로 해결.
   - 런타임/부팅 실패 원인인 필수 env 미설정(`JWT_SECRET`, OAuth 필수 값들)을 로컬용 더미 값으로 채워 서버가 기동되도록 처리.
@@ -211,8 +211,8 @@
 
 - **API URL 하드코딩 제거 (프론트 - `app/config/env.ts`)**
   - 기존 폴백: `"https://be-paper-dot.store"` (만료된 도메인) → `"http://localhost:8080"`으로 교체.
-  - 모든 서비스 파일(services/document.ts, logout.ts, withdraw.ts, app/api/document.ts)은 이미 `getApiUrl()`을 통해 통일되어 있었음. 폴백 값만 수정.
-  - 로컬 개발 시 `.env.local` 없이도 백엔드 기본 포트로 연결됨.
+  - 모든 서비스 파일(services/document.ts, logout.ts, withdraw.ts, app/api/document.ts)은 이미 `getApiUrl()`을 통해 통일되어 있었다. 폴백 값만 수정.
+  - 로컬 개발 시 `.env.local` 없이도 백엔드 기본 포트로 연결된다.
 
 > 본 작업은 논문 "시스템 설계" 챕터의 기반 문서를 확보하고 만료된 API 주소를 정비하기 위한 것으로, 실제 코드 기반의 아키텍처 다이어그램·API 표·DB 스키마를 완성함으로써 논문 집필에 바로 활용 가능한 구조 문서를 갖추는 효과를 얻었다.
 
@@ -283,7 +283,7 @@
 
 - **형광펜 색상 저장 버그 수정 (프론트 - ReadList.tsx)**
   - 텍스트 선택 후 팝오버 "하이라이트" 버튼 클릭 시 항상 노란색(`#fff59d`)으로 저장되던 버그 수정.
-  - 원인: `handleSaveHighlight` 내부 `color` 필드가 `highlightColor` state를 참조하지 않고 상수로 하드코딩되어 있었음.
+  - 원인: `handleSaveHighlight` 내부 `color` 필드가 `highlightColor` state를 참조하지 않고 상수로 하드코딩되어 있었다.
   - 조치: `highlightColorToHex(color: HighlightColor): string` 헬퍼 추가 (yellow→`#fff59d`, pink→`#f472b6`, blue→`#0ea5e9`), `handleSaveHighlight`의 color 필드를 `highlightColorToHex(highlightColor)`로 교체 및 dependency array에 반영.
 
 - **메모 입력/수정 모달 구현 (프론트 - ReadList.tsx)**
@@ -294,7 +294,7 @@
   - 모달 타이틀을 "메모 추가" / "메모 수정"으로 분기해 사용자에게 맥락 전달.
 
 - **메모 수정 API 연동 (프론트 + 백엔드)**
-  - 백엔드 `PUT /api/v1/documents/{documentId}/notes/{noteId}` 엔드포인트가 이미 구현되어 있었으나 프론트에서 미사용 상태였음.
+  - 백엔드 `PUT /api/v1/documents/{documentId}/notes/{noteId}` 엔드포인트가 이미 구현되어 있었으나 프론트에서 미사용 상태였다.
   - `app/api/document.ts`에 `updateNote()` 함수 추가 (PUT 요청).
   - `handleSubmitMemo`에서 `memoModal.noteId` 존재 여부에 따라 `updateNote` / `createNote` 자동 분기.
 
@@ -306,7 +306,7 @@
 - **에러 처리 UX 개선: alert → toast (프론트 - NewDocument.tsx)**
   - PDF 타입 미스매치 오류(`alert("PDF 파일만 업로드 가능합니다.")`) 2곳 → `toast.error()`로 교체.
   - 파일 업로드 실패 오류 `alert(message)` → `toast.error(message)`로 교체.
-  - `react-toastify`는 기존에 의존성 설치 및 `Layout.tsx`에 `<ToastContainer>` 배치가 완료된 상태였음.
+  - `react-toastify`는 기존에 의존성 설치 및 `Layout.tsx`에 `<ToastContainer>` 배치가 완료된 상태였다.
   - 디버그용 `console.log("translatedText", translatedText)` 제거.
 
 - **하이라이트 DB 영속화 (프론트 - ReadList.tsx)**
@@ -332,7 +332,7 @@
 
 - **실험 실행 전제 점검 (Experiment)**
   - `experiment/README.md`, `measure_pipeline.py`, `measure_latency.py` 기준으로 실험 절차와 필수 조건을 재확인.
-  - `01page.pdf` 자체는 입력 파일로 사용 가능하며, 핵심 전제는 `localhost:8080` 백엔드 정상 기동임.
+  - `01page.pdf` 자체는 입력 파일로 사용 가능하며, 핵심 전제는 `localhost:8080` 백엔드 정상 기동이다.
 
 - **DB 기동 이슈 (Docker)**
   - `docker compose -f compose/docker-compose.local.yml up -d` 실행 시 Docker 엔진 연결 실패.
@@ -361,11 +361,11 @@
 
 - **배포 아키텍처 정리 (논문·운영 메모)**
   - Vercel은 Next.js 프론트 전용. Spring Boot·PostgreSQL·장시간 프로세스는 Railway / Render / Fly.io / AWS 등 별도 호스팅.
-  - 시크릿(JWT, OAuth, OpenAI, S3)은 호스팅 환경 변수로만 주입, 저장소에 커밋하지 않음.
+  - 시크릿(JWT, OAuth, OpenAI, S3)은 호스팅 환경 변수로만 주입, 저장소에 커밋하지 않는다.
 
 - **환경 변수·문서 (`frontend`)**
   - `.env.local`: 개인/로컬용으로 유지, 커밋 대상 아님.
-  - `.env.example`: 플레이스홀더 중심으로 두고 팀·배포 참고용으로 쓰는 편이 좋음. `.gitignore`의 `.env*` 때문에 예시 파일이 무시되면 `!.env.example`로 예외 처리 검토.
+  - `.env.example`: 플레이스홀더 중심으로 두고 팀·배포 참고용으로 쓰는 편이 좋다. `.gitignore`의 `.env*` 때문에 예시 파일이 무시되면 `!.env.example`로 예외 처리 검토.
 
 - **카카오 로그인·CORS·OAuth (백엔드 분리 배포)**
   - 카카오 플로우는 브라우저가 백엔드 `oauth2/authorization/kakao`로 진입하고, 콜백은 백엔드 `login/oauth2/code/kakao` → 공개 HTTPS 백엔드가 필수.
@@ -374,14 +374,14 @@
 
 - **Railway·PostgreSQL 연동 메모**
   - Spring 표준: `SPRING_DATASOURCE_URL`(JDBC), `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`.
-  - Railway에서는 Postgres 서비스 변수를 참조하는 형태로 채움 (예: `jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}`, 사용자·비밀번호도 `${{Postgres.PGUSER}}` 등). `Postgres` 부분은 대시보드상 DB 서비스 이름과 일치해야 함.
+  - Railway에서는 Postgres 서비스 변수를 참조하는 형태로 채움 (예: `jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}`, 사용자·비밀번호도 `${{Postgres.PGUSER}}` 등). `Postgres` 부분은 대시보드상 DB 서비스 이름과 일치해야 한다.
 
 - **로컬 도구 (Windows)**
-  - `openssl rand -hex 32` 미설치 시: PowerShell에서 `[System.Security.Cryptography.RandomNumberGenerator]`로 32바이트 hex 생성해 `JWT_SECRET` 등에 사용 가능.
+  - `openssl rand -hex 32` 미설치 시: PowerShell에서 `[System.Security.Cryptography.RandomNumberGenerator]`로 32바이트 hex 생성해 `JWT_SECRET` 등에 사용할 수 있다.
 
 > 본 작업은 프론트와 백엔드를 각각 Vercel·Railway에 분리 배포하고 운영 환경 변수를 체계화하기 위한 것으로, 실제 서비스 URL 기준으로 OAuth·CORS·스토리지 설정을 완성함으로써 외부에서 접근 가능한 프로덕션 서비스 기반을 확보하는 효과를 얻었다.
 
-> 결과: 공개 URL 기준 프로덕션 서비스·OAuth·CORS 운영 규칙 확립으로 외부 시연·평가 가능.
+> 결과: 공개 URL 기준 프로덕션 서비스·OAuth·CORS 운영 규칙 확립으로 외부 시연·평가할 수 있다.
 
 ---
 
@@ -450,7 +450,7 @@
   - 메모 배지(`memoBadge`)에 `onMouseEnter/Leave` 핸들러 추가 → `tooltipDocUnitId` state로 hover 단락 추적.
   - 메모 내용이 있을 때만 배지 아래에 말풍선 툴팁(`memoTooltip`) 조건부 렌더링.
   - 툴팁: `position: absolute`, `pointer-events: none`, `max-width: 280px`, 화살표(CSS `::before`) 포함.
-  - 모바일은 `onMouseEnter`가 발생하지 않아 기존 tap→모달 방식과 충돌 없음.
+  - 모바일은 `onMouseEnter`가 발생하지 않아 기존 tap→모달 방식과 충돌이 없다.
   - `memoBadgeWrapper`(relative container) 신규 추가, `memoBadge` hover 상태(`background: #e5e7eb`) 개선.
 
 - **하이라이트 hover/active 상태 개선 (프론트 - readList.module.css)**
@@ -497,7 +497,7 @@
 
 - **PDF 업로드 Railway 환경 대응 (백엔드 - ObjectStorageClientConfig.java)**
   - 로컬 스토리지 fallback 경로 우선순위를 `UPLOAD_DIR` → `LOCAL_STORAGE_ROOT` → `./uploads` 순으로 변경.
-  - `UPLOAD_DIR` 환경변수로 Railway Volume 마운트 경로(예: `/app/uploads`) 지정 가능.
+  - `UPLOAD_DIR` 환경변수로 Railway Volume 마운트 경로(예: `/app/uploads`) 지정할 수 있다.
   - 기본값을 기존 `storage/local` → `./uploads`로 변경하여 로컬 개발 환경과 일치.
   - AWS 자격증명이 없을 때만 로컬 폴더 사용하는 기존 fallback 로직은 유지.
 
@@ -542,7 +542,7 @@
 
 > 본 작업은 Railway 배포 환경에서의 파일 저장 경로 문제와 원본 PDF 접근 불가 문제를 해소하기 위한 것으로, 스토리지 fallback 경로 재설계·PDF 스트리밍 API 추가·Security permitAll 확장을 통해 운영 환경에서 파일 업로드·다운로드가 안정적으로 동작하는 기반을 마련하는 효과를 얻었다.
 
-> 결과: 운영 환경에서 PDF 업·다운로드·빌드 안정화로 핵심 파이프라인 시연 가능.
+> 결과: 운영 환경에서 PDF 업·다운로드·빌드 안정화로 핵심 파이프라인 시연할 수 있다.
 
 ---
 
@@ -590,7 +590,7 @@
 
 - **문제 요약**
   - `POST /documents` 요청이 302 → 무한루프 → 500으로 순차적으로 변하며 업로드가 계속 실패.
-  - 총 8회의 수정 시도 끝에 3가지 독립적인 근본 원인을 모두 해소함.
+  - 총 8회의 수정 시도 끝에 3가지 독립적인 근본 원인을 모두 해소했다.
 
 - **원인 1: Spring Security form login 미비활성화 (302 리다이렉트 루프)**
   - 증상: `POST /documents` → 302 → `/login` → 302 → `/login` 무한루프.
@@ -623,7 +623,7 @@
 
 - **결과**
   - PDF 업로드 → 번역 파이프라인 정상 동작 확인 (201 Created → 번역 완료).
-  - 논문 구현 챕터 재료: Spring Security 필터 체인 구조, Hibernate `ddl-auto: update` 한계, JWT 기반 인증 흐름을 실제 트러블슈팅 사례로 정리 가능.
+  - 논문 구현 챕터 재료: Spring Security 필터 체인 구조, Hibernate `ddl-auto: update` 한계, JWT 기반 인증 흐름을 실제 트러블슈팅 사례로 정리할 수 있다.
 
 > 본 작업은 운영 배포 환경에서 PDF 업로드가 연속으로 실패하던 복합 원인을 진단하고 제거하기 위한 것으로, Spring Security 필터 체인 재설계·프론트 레이스 컨디션 수정·DB 컬럼 불일치 직접 수정을 통해 핵심 기능의 안정적 동작을 확보하는 효과를 얻었다. 각 원인의 계층(보안·프론트·DB)이 명확히 분리되어 논문 "구현" 챕터의 트러블슈팅 사례로 직접 활용 가능하다.
 
@@ -794,7 +794,7 @@
 - **내 문서함 → 읽기 화면 연동 (프론트 — `mypage/mydocument/page.tsx`, `components/button/Button.tsx`)**
   - `prepareReadSession`: 번역 쌍 API 로드, `sessionStorage`/`localStorage` 동기화, PDF `fetch` → Data URL로 `pdfFileData` 주입 후 `/read` 이동.
   - 「이어서 보기」·문서 **더블클릭**에 동일 경로 적용.
-  - `ReadList`에서 `pdfFileData`가 없을 때 `documentId`+토큰으로 PDF를 다시 받아 **사이드바 썸네일**이 이어 읽기 후에도 표시되도록 함.
+  - `ReadList`에서 `pdfFileData`가 없을 때 `documentId`+토큰으로 PDF를 다시 받아 **사이드바 썸네일**이 이어 읽기 후에도 표시되도록 했다.
   - 공용 `Button`에 `disabled` prop 타입 추가(빌드 오류 해소).
 
 - **문서 목록 정렬 (프론트 — `mydocument/page.tsx`)**
@@ -825,12 +825,12 @@
 ### 2026-04-09 (읽기 화면 수식 렌더링 — KaTeX + mock 테스트 문장)
 
 - **문제**
-  - 문장 단위 본문(`sourceText` / `translatedText`)이 `<p>{텍스트}</p>`로만 출력되어 LaTeX 구간이 일반 문자열처럼 보임.
+  - 문장 단위 본문(`sourceText` / `translatedText`)이 `<p>{텍스트}</p>`로만 출력되어 LaTeX 구간이 일반 문자열처럼 보인다.
   - PDF 추출 결과가 이미 유니코드·기호로만 남은 경우(백슬래시·구분자 손실)는 표시 계층만으로는 복구 불가.
 
 - **원인 정리**
-  - **프론트**: 수식 전용 렌더러 부재로 `$...$` 등이 브라우저에서 해석되지 않음.
-  - **백엔드**: `DocUnit.sourceText`는 문자열로 저장·JSON 직렬화되며, API가 LaTeX를 의도적으로 제거하는 계층은 없음(단, **추출 파이프라인**에서 수식이 깨지면 DB에도 깨진 문자열만 저장됨).
+  - **프론트**: 수식 전용 렌더러 부재로 `$...$` 등이 브라우저에서 해석되지 않는다.
+  - **백엔드**: `DocUnit.sourceText`는 문자열로 저장·JSON 직렬화되며, API가 LaTeX를 의도적으로 제거하는 계층은 없다(단, **추출 파이프라인**에서 수식이 깨지면 DB에도 깨진 문자열만 저장된다).
 
 - **구현 (최소 침습, 프론트 전용)**
   - 의존성: `katex` (`frontend/package.json`).
@@ -840,13 +840,13 @@
 
 - **mock 데이터로 로그인 전·로컬 테스트**
   - `frontend/app/data/mockTranslationData.ts`: 앞쪽 일부 문장을 Krylov 기·overlap·장시간 평균 등 **인라인·디스플레이 수식 예시**로 교체.
-  - **마지막에 `docUnitId: 33` 추가**: 이차방정식 근의 공식·정규화 브라켓(`\langle \psi \| \psi \rangle`) 등 `[Sample math]` / `[수식 샘플]` 라벨과 함께 한·영 병렬로 넣어, 로그인 없이 `/read` 진입 시 스크롤 끝에서 KaTeX 동작을 바로 확인 가능.
+  - **마지막에 `docUnitId: 33` 추가**: 이차방정식 근의 공식·정규화 브라켓(`\langle \psi \| \psi \rangle`) 등 `[Sample math]` / `[수식 샘플]` 라벨과 함께 한·영 병렬로 넣어, 로그인 없이 `/read` 진입 시 스크롤 끝에서 KaTeX 동작을 바로 확인할 수 있다.
   - 주석에 mock 분량 설명 보강(4페이지+α, 마지막 수식 테스트 문장 1개).
 
 - **한계(논문 「한계·향후 과제」 재료)**
-  - 구분자 없이 이미 깨진 텍스트(`NH−1∑` 형태)는 자동 복원하지 않음.
+  - 구분자 없이 이미 깨진 텍스트(`NH−1∑` 형태)는 자동 복원하지 않는다.
   - 통화 등 일반 `$`와 충돌 가능(드물면 수동 이스케이프·규칙 보강 필요).
-  - 복잡한 비표준 LaTeX는 KaTeX 미지원 시 일부만 표시될 수 있음.
+  - 복잡한 비표준 LaTeX는 KaTeX 미지원 시 일부만 표시될 수 있다.
 
 > 본 작업은 학술 병렬 읽기 UI에서 **수식 가독성**을 확보하기 위한 것으로, 기존 문장 단위 구조·API·스토리지를 유지한 채 표시 계층에 KaTeX를 끼워 넣고, mock 마지막 문장으로 로그인 전에도 재현 가능한 검증 경로를 제공하는 효과를 얻었다.
 
@@ -856,7 +856,7 @@
 
 - **문제**
   - 번역 대기 시간이 길어질 때 사용자가 "멈춘 것처럼" 느끼는 구간이 존재.
-  - `NewDocument`의 미리보기는 일반 텍스트 출력이라 번역문 내 수식이 문자열 그대로 노출됨.
+  - `NewDocument`의 미리보기는 일반 텍스트 출력이라 번역문 내 수식이 문자열 그대로 노출된다.
 
 - **구현 (프론트 — `frontend/app/components/document/ui/NewDocument.tsx`, `NewDocument.module.css`)**
   - **진행 상태 UX 고도화**
@@ -872,7 +872,7 @@
 
 - **효과**
   - 번역 대기 중 단계·속도·샘플 결과가 함께 보여 체감 대기 시간이 감소.
-  - 업로드 직후 중간 상태에서 `/read`로 조기 진입하는 빈도를 줄임.
+  - 업로드 직후 중간 상태에서 `/read`로 조기 진입하는 빈도를 줄인다.
   - 업로드 화면 미리보기에서도 수식이 정상 표현되어 읽기 화면과의 인지적 일관성 향상.
 
 - **작업 전환 및 개발 체크리스트 (우선순위 재정의)**
@@ -942,8 +942,8 @@
 
   - **복잡도 점수 v1 (백엔드)**: `ComplexityScoreCalculator` 순수 유틸리티 + `DocumentComplexityScore` DTO.  
     - 공식: `score = weightMath × mathCount + weightImage × imageCount + weightLength × avgParagraphLength`  
-    - 가중치(`4.0`, `2.0`, `0.015`)는 `application.yml`에서 `@Value`로 주입, 환경별 오버라이드 가능.  
-    - 항목별 기여도(`mathContribution`, `imageContribution`, `lengthContribution`) 분리 노출 → 점수 근거 추적 가능.
+    - 가중치(`4.0`, `2.0`, `0.015`)는 `application.yml`에서 `@Value`로 주입, 환경별 오버라이드할 수 있다.  
+    - 항목별 기여도(`mathContribution`, `imageContribution`, `lengthContribution`) 분리 노출 → 점수 근거 추적할 수 있다.
 
   - **문서 분석 요약 UI (프론트)**: `DocumentAnalysisSummary` 컴포넌트(카드형 지표 + 복잡도 카드 + 페이지별 분포 테이블).  
     - `translationReady` 완료 시점에 자동 호출, `cancelled` 플래그로 race condition 방지.  
@@ -957,8 +957,8 @@
 
   - **수식 렌더링 버그 수정** (`MixedTextWithMath.tsx`):  
     - `isolateMathAsBlocks` 내 `$...$` 치환 정규식 수정: `/\$(?!\$)([^$\n]+?)\$/g` → `/\$(?!\$)([^$\n]+?)\$(?!\$)/g`.  
-    - **원인**: 닫는 `$`에 lookahead가 없어, `$$...$$` 블록의 두 번째 `$`가 단일달러 시작으로 오인됨. docUnitId 3(`$$S_{K,\infty}...$$`)에서 KaTeX 출력 앞에 stray `$` 글자가 붙는 증상.  
-    - 수정 후: `$$...$$`는 step 1(단일달러 치환)을 완전히 건너뛰고 step 2(`$$...$$` 분리)에서만 처리됨.
+    - **원인**: 닫는 `$`에 lookahead가 없어, `$$...$$` 블록의 두 번째 `$`가 단일달러 시작으로 오인된다. docUnitId 3(`$$S_{K,\infty}...$$`)에서 KaTeX 출력 앞에 stray `$` 글자가 붙는 증상이다.  
+    - 수정 후: `$$...$$`는 step 1(단일달러 치환)을 완전히 건너뛰고 step 2(`$$...$$` 분리)에서만 처리된다.
 
   - **sample_test.pdf mock 데이터 정비** (`mockTranslationData.ts`):  
     - docUnitId 34-36의 `[03page regression]` 깨진 PDF 추출 텍스트를 제거.  
@@ -990,14 +990,14 @@
 
 ### 2026-04-11 (프론트 — 이용약관·개인정보 처리방침 내부 페이지)
 
-- **목적**: 외부 Notion 링크 대신 ScholarDot 사이트 내에서 약관·개인정보 문서를 읽을 수 있도록 함.
+- **목적**: 외부 Notion 링크 대신 ScholarDot 사이트 내에서 약관·개인정보 문서를 읽을 수 있도록 했다.
 - **라우트**: `frontend/app/terms/page.tsx` (`/terms`), `frontend/app/privacy/page.tsx` (`/privacy`).
 - **본문 데이터**: `frontend/app/content/terms.ts`, `frontend/app/content/privacy.ts` — `LegalBlock`(제목·문단·순서/비순서 목록) 배열로 유지보수. 타입은 `frontend/app/content/legalTypes.ts`.
 - **UI**: `frontend/app/components/legal/LegalDocument.tsx` + `LegalDocument.module.css` — 카드형·`max-width` 제한·랜딩 톤과 맞춘 타이포. `inlineBold.tsx`로 본문 `**강조**` 표기 지원.
 - **레이아웃**: `Layout.tsx`에서 `/terms`, `/privacy` 접근 시에도 헤더·푸터 표시.
 - **링크 정리**: `Footer.tsx`, `login/page.tsx`의 Notion URL을 `/terms`, `/privacy`로 교체.
 
-> 논문 「구현·운영」 보완: 서비스 정책 문서를 제품 UI 안에 통합해 외부 의존을 줄이고, 배포 환경에서도 동일한 경로로 안내 가능.
+> 논문 「구현·운영」 보완: 서비스 정책 문서를 제품 UI 안에 통합해 외부 의존을 줄이고, 배포 환경에서도 동일한 경로로 안내할 수 있다.
 
 ---
 
@@ -1021,7 +1021,7 @@
 
 ### 2026-06-15 (프론트 — 약관·개인정보 정책 센터 UI)
 
-- **배경**: `/terms`, `/privacy`가 좁은 중앙 카드 + 긴 본문만 나열해 Notion 붙여넣기처럼 보임. 랜딩과 shell·톤을 맞춘 **정책 센터** 형태로 개편.
+- **배경**: `/terms`, `/privacy`가 좁은 중앙 카드 + 긴 본문만 나열해 Notion 붙여넣기처럼 보인다. 랜딩과 shell·톤을 맞춘 **정책 센터** 형태로 개편.
 - **레이아웃**
   - `--shell-max-width`(1240px) / `--legal-read-max`(740px) CSS 변수 도입.
   - 떠 있는 카드 shadow 제거, border 12px radius, 배경 `#f1f5f9`(랜딩과 동일).
@@ -1033,9 +1033,9 @@
 - **콘텐츠 메타**: `terms.ts` / `privacy.ts`에 `meta`, `privacy`에 `summary` 필드 추가 (`legalTypes.ts` 확장).
 - **관련 파일**: `LegalDocument.tsx`, `LegalDocument.module.css`, `globals.css`, `header.module.css`, `Footer.module.css`.
 
-> 논문 「구현·운영」: 법률 문서의 신뢰감을 유지하면서 제품 UI 일관성·탐색성(목차)을 확보한 사례로 기술 가능.
+> 논문 「구현·운영」: 법률 문서의 신뢰감을 유지하면서 제품 UI 일관성·탐색성(목차)을 확보한 사례로 기술할 수 있다.
 
-> 결과: Notion형 단조 UI → ScholarDot shell과 맞는 정책 페이지, 조항 탐색·요약 가능.
+> 결과: Notion형 단조 UI → ScholarDot shell과 맞는 정책 페이지, 조항 탐색·요약할 수 있다.
 
 ---
 
@@ -1056,12 +1056,12 @@
 - **프론트**
   - `getDocumentContentSummary()` in `services/document.ts`.
 - **한계 (v2 후보)**
-  - 기존 문서는 파이프라인 재실행 전까지 요약 없음.
+  - 기존 문서는 파이프라인 재실행 전까지 요약이 없다.
   - 근거 문장 ID 링크·Abstract/Conclusion 우선 추출·수동 재생성 버튼 미구현.
 
 > 본 작업은 「핵심 기능」의 정량 분석(구조·복잡도)에 **의미적 진입점**을 더해, 학술 PDF 읽기 UX의 “맥락 파악 → 문장 단위 읽기” 흐름을 완성하기 위한 것이다.
 
-> 결과: 읽기 화면에서 논문 개요(주제·방법·결과·한계) 확인 가능, 논문 「구현·기여」에 LLM 활용 읽기 보조 사례 추가.
+> 결과: 읽기 화면에서 논문 개요(주제·방법·결과·한계) 확인할 수 있으며, 논문 「구현·기여」에 LLM 활용 읽기 보조 사례 추가.
 
 ---
 
@@ -1089,7 +1089,7 @@
 #### 논문 요약 — 체험 모드 안내 (옵션 1)
 
 - 실제 `GET .../content-summary` API는 체험 모드에서 호출하지 않음(의도적).
-- 문장 카드 목록 **맨 아래**에 `DemoContentSummaryHint` 노출: 로그인·업로드 후 AI 개요 제공, 체험에서는 미리보기 없음.
+- 문장 카드 목록 **맨 아래**에 `DemoContentSummaryHint` 노출: 로그인·업로드 후 AI 개요 제공, 체험에서는 미리보기가 없다.
 - 관련: `DocumentContentSummaryPanel.tsx` (`DemoContentSummaryHint` export), `ReadList.tsx` (`isDemoSession` 조건).
 
 #### 체험 모드 vs 로그인 기능 분리
