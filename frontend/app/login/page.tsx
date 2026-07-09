@@ -12,6 +12,8 @@ import {
   clearStoredDocumentSessionForDemo,
   persistDemoSession,
 } from "@/lib/authSession";
+import { track } from "@/lib/analytics";
+import { markReadEntrySource } from "@/lib/analyticsSession";
 
 export default function LoginPage() {
   const [redirecting, setRedirecting] = useState<"demo" | "kakao" | null>(null);
@@ -34,6 +36,8 @@ export default function LoginPage() {
       persistDemoSession(demoProfile);
       clearStoredDocumentSessionForDemo();
     }
+    track({ name: "login", provider: "demo" });
+    markReadEntrySource("demo");
     router.push("/read");
   };
 

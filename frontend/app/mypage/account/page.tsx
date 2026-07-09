@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useAccessTokenStore, useLoginStore } from "@/app/store/useLogin";
 import { logout } from "@/app/services/logout";
 import { clearDemoSession } from "@/lib/authSession";
+import { track } from "@/lib/analytics";
 import { useHttps } from "@/app/utils/useHttps";
 import DeleteUserModal from "@/app/components/modal/DeleteUserModal";
 
@@ -29,6 +30,7 @@ export default function MyAccount() {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
+      track({ name: "logout" });
       clearDemoSession();
       setAccessToken(null);
       setUserInfoState(null);

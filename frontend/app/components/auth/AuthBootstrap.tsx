@@ -8,6 +8,7 @@ import {
   isDemoSessionClient,
   readDemoProfileClient,
 } from "@/lib/authSession";
+import { track } from "@/lib/analytics";
 
 /**
  * Header가 없는 라우트(/read 등)에서도 쿠키·데모 세션을 복원합니다.
@@ -30,6 +31,7 @@ export default function AuthBootstrap() {
     }
 
     let cancelled = false;
+    const wasLoggedIn = useLoginStore.getState().login;
 
     if (isDemoSessionClient()) {
       setAccessToken(null);
@@ -60,6 +62,9 @@ export default function AuthBootstrap() {
             const u = await me.json();
             setUserInfo(u);
             setLogin(true);
+            if (!wasLoggedIn && u?.userId && u.userId !== "demo-user") {
+              track({ name: "login", provider: "kakao" });
+            }
           } else {
             setAccessToken(null);
             setUserInfo(null);

@@ -19,6 +19,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { markReadEntrySource } from "@/lib/analyticsSession";
 
 const API_BASE_URL = getApiUrl();
 
@@ -159,7 +160,10 @@ export default function MyDocument() {
     setOpeningRead(true);
     try {
       const ok = await prepareReadSession(doc, accessToken);
-      if (ok) router.push("/read");
+      if (ok) {
+        markReadEntrySource("library");
+        router.push("/read");
+      }
     } catch (error) {
       const message =
         error instanceof Error

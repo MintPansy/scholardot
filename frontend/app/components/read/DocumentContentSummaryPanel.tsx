@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "./DocumentContentSummaryPanel.module.css";
 import type { DocumentContentSummary } from "@/app/services/document";
+import { track } from "@/lib/analytics";
 
 type Props = {
   data: DocumentContentSummary | null;
@@ -57,7 +58,13 @@ export default function DocumentContentSummaryPanel({ data, loading, error }: Pr
           type="button"
           className={styles.toggleBtn}
           aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            setOpen((prev) => {
+              const next = !prev;
+              track({ name: "content_summary_toggle", open: next });
+              return next;
+            });
+          }}
         >
           <span className={styles.toggleTitle}>이 논문 한눈에</span>
           <span className={styles.toggleHint}>

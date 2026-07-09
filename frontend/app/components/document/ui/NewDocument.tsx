@@ -17,6 +17,8 @@ import DocumentAnalysisSummary from "@/app/components/document/ui/DocumentAnalys
 import { useAccessTokenStore, useLoginStore } from "@/app/store/useLogin";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { track } from "@/lib/analytics";
+import { markReadEntrySource } from "@/lib/analyticsSession";
 
 interface UploadingFile {
   id: string;
@@ -229,6 +231,11 @@ export default function NewDocumentPage() {
           const documentIdStr = String(doc.documentId);
           setDocument({ ...doc, documentId: documentIdStr });
           sessionStorage.setItem("documentId", documentIdStr);
+          track({
+            name: "document_upload",
+            fileName: currentFile.file.name,
+            fileSizeBytes: currentFile.file.size,
+          });
         }
 
         // PDF 파일 데이터를 sessionStorage에 저장 (읽기 페이지에서 사용)
@@ -301,6 +308,11 @@ export default function NewDocumentPage() {
       if (document?.documentId) {
         localStorage.setItem("documentId", document.documentId);
       }
+      track({
+        name: "document_translate_complete",
+        documentId: document?.documentId ?? "",
+        totalSentences: normalized.length,
+      });
     };
 
     const run = async () => {
@@ -310,6 +322,10 @@ export default function NewDocumentPage() {
         setTranslationProgress(null);
         setProgressHistory([]);
         setPreviewCursor(0);
+        track({
+          name: "document_translate_request",
+          documentId: document.documentId,
+        });
         await postTranslation(document.documentId, accessToken);
         if (cancelledRef.current) return;
 
@@ -677,7 +693,14 @@ export default function NewDocumentPage() {
               <button
                 type="button"
                 className={styles.viewResultButton}
-                onClick={() => router.push(`/read`)}>
+                onClick={() => {
+                  track({
+                    name: "read_results_view",
+                    documentId: document?.documentId,
+                  });
+                  markReadEntrySource("newdocument");
+                  router.push("/read");
+                }}>
                 번역 결과 보기
               </button>
             </>

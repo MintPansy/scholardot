@@ -40,6 +40,8 @@ import PdfPageThumbnail from "@/app/components/read/pdf/PdfPageThumbnail";
 import MixedTextWithMath from "@/app/components/read/MixedTextWithMath";
 import { LatexViewer } from "@/app/components/math";
 import { isDemoSessionClient } from "@/lib/authSession";
+import { track } from "@/lib/analytics";
+import { consumeReadEntrySource } from "@/lib/analyticsSession";
 
 type TranslationPair = {
   docUnitId: number;
@@ -218,6 +220,10 @@ export default function ReadList({
     typeof window !== "undefined" ? sessionStorage.getItem("pdfFileData") : null
   );
   const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    track({ name: "read_open", source: consumeReadEntrySource() });
+  }, []);
 
   useEffect(() => {
     if (!documentId || !accessToken) return;
@@ -542,6 +548,7 @@ export default function ReadList({
     // 로컬 저장 (auth 무관하게 즉시 반영)
     setHighlightMap((prev) => ({ ...prev, [key]: { color: highlightColor, text } }));
     setSelectionModal(null);
+    track({ name: "read_highlight_save", docUnitId });
 
     // API 저장 (auth 있을 때만)
     if (documentId && accessToken) {
@@ -592,6 +599,8 @@ export default function ReadList({
       // 신규 메모 작성에서 내용 없음 → 생성 API 호출 없음
       return;
     }
+
+    track({ name: "read_memo_save", docUnitId: memoModal.docUnitId });
 
     const action =
       memoModal.noteId != null
@@ -846,6 +855,7 @@ export default function ReadList({
 
   const handlePageChange = useCallback(
     (page: number) => {
+      track({ name: "read_page_change", page, totalPages });
       const pageIndex = Math.max(0, Math.min(page - 1, totalPages - 1));
       scrollToPage(pageIndex);
     },
@@ -853,8 +863,10 @@ export default function ReadList({
   );
 
   const handleToggleSidebar = () => setShowSidebar((prev) => !prev);
-  const handleFilterChange = (mode: "all" | "korean" | "english") =>
+  const handleFilterChange = (mode: "all" | "korean" | "english") => {
+    track({ name: "read_filter_change", filterMode: mode });
     setFilterMode(mode);
+  };
 
   const notesByDocUnitId = useMemo(() => {
     const m = new Map<number, UserDocNoteItem[]>();
@@ -878,9 +890,10 @@ export default function ReadList({
 
   const applyHighlight = useCallback(
     (key: string, text: string, color: HighlightColor) => {
+      const docUnitId = parseInt(key.split(":")[0], 10);
       setHighlightMap((prev) => ({ ...prev, [key]: { color, text } }));
+      track({ name: "read_highlight_save", docUnitId });
       if (documentId && accessToken) {
-        const docUnitId = parseInt(key.split(":")[0], 10);
         createNote(
           documentId,
           { docUnitId, noteType: "HIGHLIGHT", content: text, color: highlightColorToHex(color) },
@@ -1067,6 +1080,15 @@ export default function ReadList({
   /** 검색어 바뀌면 위치 초기화 (Enter 전까지 스크롤 안 함) */
   useEffect(() => {
     setSearchMatchIdx(-1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (!query) return;
+    const timer = setTimeout(() => {
+      track({ name: "read_search", queryLength: query.length });
+    }, 800);
+    return () => clearTimeout(timer);
   }, [searchQuery]);
 
   /** searchMatchIdx 변경 시 해당 항목으로 스크롤 */

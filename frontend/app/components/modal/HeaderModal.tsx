@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useAccessTokenStore, useLoginStore } from "@/app/store/useLogin";
 import { logout } from "@/app/services/logout";
 import { clearDemoSession, isDemoUserActive } from "@/lib/authSession";
+import { track } from "@/lib/analytics";
 import { useClickOutSide } from "@/app/hooks/useClickOutSide";
 import { toast } from "react-toastify";
 
@@ -59,6 +60,7 @@ export default function HeaderModal({
 
   const handleLogoutClick = async () => {
     if (isDemo) {
+      track({ name: "logout" });
       clearDemoSession();
       setAccessToken(null);
       setUserInfoState(null);
@@ -77,6 +79,7 @@ export default function HeaderModal({
         clearDemoSession();
       }
     } finally {
+      track({ name: "logout" });
       setAccessToken(null);
       setUserInfoState(null);
       setLogin(false);

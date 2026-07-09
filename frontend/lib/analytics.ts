@@ -6,6 +6,8 @@
 
 import { gaEvent, isGaEnabled } from "./gtag";
 
+export type ReadEntrySource = "newdocument" | "library" | "demo" | "session";
+
 export type AnalyticsEvent =
   | { name: "read_filter_change"; filterMode: "all" | "korean" | "english" }
   | { name: "read_page_change"; page: number; totalPages: number }
@@ -14,6 +16,11 @@ export type AnalyticsEvent =
   | { name: "read_memo_save"; docUnitId: number }
   | { name: "document_upload"; fileName: string; fileSizeBytes?: number }
   | { name: "document_translate_request"; documentId: string | number }
+  | { name: "document_translate_complete"; documentId: string | number; totalSentences: number }
+  | { name: "read_open"; source: ReadEntrySource }
+  | { name: "read_results_view"; documentId?: string | number }
+  | { name: "content_summary_toggle"; open: boolean }
+  | { name: "screen_view"; screen: string }
   | { name: "page_view"; path: string; referrer?: string }
   | { name: "login"; provider?: "demo" | "kakao" }
   | { name: "logout" };

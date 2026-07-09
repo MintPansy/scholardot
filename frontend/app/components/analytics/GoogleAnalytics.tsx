@@ -2,6 +2,7 @@ import Script from "next/script";
 import { Suspense } from "react";
 import { getGaMeasurementId, isGaEnabled } from "@/lib/gtag";
 import GoogleAnalyticsPageView from "./GoogleAnalyticsPageView";
+import AnalyticsScreenTracker from "./AnalyticsScreenTracker";
 
 export default function GoogleAnalytics() {
   if (!isGaEnabled()) return null;
@@ -24,6 +25,7 @@ export default function GoogleAnalytics() {
       </Script>
       <Suspense fallback={null}>
         <GoogleAnalyticsPageView measurementId={measurementId} />
+        <AnalyticsScreenTracker />
       </Suspense>
     </>
   );

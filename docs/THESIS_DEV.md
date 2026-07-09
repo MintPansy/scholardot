@@ -1123,3 +1123,43 @@
 - `JwtAuthFilter.ScholardotPrincipal`, Docker `COPY app/scholardot`, README·DEPLOY 경로 문서 반영.
 - Railway 호환: `FRONTEND_BASE_URL` 우선, 구 `PAPERDOT_FRONTEND_BASE_URL` fallback 유지.
 - 프론트 npm 패키지명: `paper-dot` → `scholardot`, `PaperDotLogo` → `ScholarDotLogo`, 잔여 UI alt·주석 정리.
+
+---
+
+### 2026-07-09 (프론트 — GA4 연동, 주요 화면·행동 이벤트, 논문 개요 초기 접힘)
+
+- **배경**: 서비스 운영 지표(유입·전환·핵심 기능 사용)를 GA4로 수집하고, 기존 `track()` 초안을 실제 전송 경로에 연결한다. 읽기 화면 「이 논문 한눈에」 패널은 첫 진입 시 접힌 상태가 자연스럽다는 피드백을 반영한다.
+
+#### Google Analytics 4 (GA4) 기본 연동
+
+- 측정 ID: `G-6H3WMQ41XP`.
+- `app/components/analytics/GoogleAnalytics.tsx` — `next/script`로 gtag.js 로드, 루트 `layout.tsx`에 포함.
+- `lib/gtag.ts` — `pageview`, `gaEvent`, `isGaEnabled()` (운영 환경만 전송).
+- `GoogleAnalyticsPageView` — App Router 클라이언트 네비게이션마다 `page_path` 전송 (`send_page_view: false`로 초기 중복 방지).
+- `DEPLOY.md`에 선택 env `NEXT_PUBLIC_GA_MEASUREMENT_ID` 안내 추가.
+
+#### 주요 화면·행동 이벤트 (`lib/analytics.ts` → GA4)
+
+- **화면**: `AnalyticsScreenTracker` — `/`, `/login`, `/read`, `/newdocument`, `/mypage/*`, 약관 페이지 등 `screen_view` 자동 전송.
+- **인증**: 체험 로그인(`login` demo), 카카오 세션 복원 성공(`AuthBootstrap`), 로그아웃(`HeaderModal`, 내 계정).
+- **문서·번역**: PDF 업로드 완료, 번역 요청·완료(`NewDocument`), 「번역 결과 보기」(`read_results_view`).
+- **읽기**: 진입 경로 `read_open` (`newdocument` / `library` / `demo` / `session`) — `lib/analyticsSession.ts`로 이동 직전 `markReadEntrySource` 설정.
+- **읽기 상호작용**: 필터·페이지·검색(800ms 디바운스)·하이라이트·메모 저장.
+- **논문 개요**: `content_summary_toggle` — 사용자가 「이 논문 한눈에」를 펼치거나 접을 때만 기록.
+
+#### UX — 논문 개요 패널 초기 상태
+
+- `DocumentContentSummaryPanel`: `useState(false)` — 번역 완료 후 결과보기 진입 시 **접힌 상태**로 시작. 헤더(「이 논문 한눈에」)는 보이고 클릭 시 펼침.
+
+#### 관련 파일
+
+| 구분 | 경로 |
+|------|------|
+| GA4 스크립트 | `GoogleAnalytics.tsx`, `GoogleAnalyticsPageView.tsx`, `lib/gtag.ts` |
+| 이벤트·세션 | `lib/analytics.ts`, `lib/analyticsSession.ts`, `AnalyticsScreenTracker.tsx` |
+| 화면별 호출 | `login/page.tsx`, `AuthBootstrap.tsx`, `NewDocument.tsx`, `ReadList.tsx`, `HeaderModal.tsx`, `mydocument/page.tsx`, `DocumentContentSummaryPanel.tsx` |
+| 문서 | `frontend/docs/ANALYTICS.md`, `DEPLOY.md` |
+
+> 논문 「구현·운영」: Next.js App Router에서 **제3자 분석(GA4)** 을 `track()` 단일 진입점으로 묶고, 페이지뷰(URL)·화면(screen)·핵심 퍼널(업로드→번역→읽기)을 분리 수집한 사례.
+
+> 결과: 운영 배포 시 GA4 실시간·이벤트 보고서로 주요 화면·기능 사용을 추적할 수 있으며, 로컬 개발 트래픽은 제외된다. 읽기 첫 진입 시 논문 개요가 자동으로 펼쳐지지 않아 본문 읽기에 집중할 수 있다.
