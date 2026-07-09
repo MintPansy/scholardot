@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
+import GoogleAnalytics from "./components/analytics/GoogleAnalytics";
 import Layout from "./components/layout/Layout";
 
 export const viewport: Viewport = {
@@ -26,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className="font-body">
       <body className="min-h-screen bg-[#F8FAFC] antialiased">
+        <GoogleAnalytics />
         <Layout>{children}</Layout>
       </body>
     </html>
