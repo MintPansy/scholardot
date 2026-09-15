@@ -197,13 +197,15 @@ npm run dev
 
 ## Reference
 
-- [docs/README.md](docs/README.md) — 문서 전체 인덱스 (읽기 순서 안내)
+- [docs/README.md](docs/README.md) — 문서 인덱스 (제품·논문·아키텍처 읽기 순서)
 - [frontend/README.md](frontend/README.md) — 프론트엔드 상세 구조 및 구현 설명
 - [backend/README.md](backend/README.md) — 백엔드 실행 방법 및 API 구조
 - [DEPLOY.md](DEPLOY.md) — Vercel 배포 체크리스트
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — 시스템 아키텍처, API 목록, DB 스키마
-- [docs/THESIS_DEV.md](docs/THESIS_DEV.md) — 개발 일지 (졸업 논문 재료)
-- [docs/THESIS_LIMITATIONS.md](docs/THESIS_LIMITATIONS.md) — 한계점 및 개선 방향 정리
+- [docs/THESIS_DEV.md](docs/THESIS_DEV.md) — 날짜별 개발 일지 (구현·장애·UX)
+- [docs/THESIS_LIMITATIONS.md](docs/THESIS_LIMITATIONS.md) — 배포·가용성 한계, PDF 학습 UX 및 향후 기능 설계
+
+운영·기술 구조는 `docs/ARCHITECTURE.md`를, 문제 발견·개선 과정은 `docs/THESIS_DEV.md`와 `docs/THESIS_LIMITATIONS.md`를 우선 참고합니다.
 
 ## License
 
