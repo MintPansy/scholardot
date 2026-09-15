@@ -32,6 +32,7 @@ public class DocumentPipelineService {
   private final OpenAiTranslator openAiTranslator;
   private final DocUnitTranslationRepository docUnitTranslationRepository;
   private final DocumentContentSummaryService documentContentSummaryService;
+  private final DocumentAssetService documentAssetService;
 
   private static final String DEFAULT_SOURCE_LANG = "en";
   private static final String DEFAULT_TARGET_LANG = "ko";
@@ -66,13 +67,18 @@ public class DocumentPipelineService {
           sourcePages.add(pageNum);
         }
       }
-      log.info("[Step 2/3] documentId {} - 문장 수={} (페이지 매핑 포함)", documentId, sentences.size());
+      log.info("[Step 2/4] documentId {} - 문장 수={} (페이지 매핑 포함)", documentId, sentences.size());
+
+      // Step 2.5: Figure/Table 캡션·페이지 추출 (번역과 독립 — 대기 중에도 조회 가능)
+      log.info("[Step 2.5/4] documentId {} - Figure/Table asset extract start", documentId);
+      documentAssetService.extractAndSave(documentId, pageTexts, overwrite);
+      log.info("[Step 2.5/4] documentId {} - Figure/Table asset extract done", documentId);
 
       // Step 3: doc_units 저장 및 배치 번역
-      log.info("[Step 3/3] documentId {} - pre-save doc_units and batch translation start. Overwrite={}", documentId,
+      log.info("[Step 3/4] documentId {} - pre-save doc_units and batch translation start. Overwrite={}", documentId,
           overwrite);
       processTranslationInBatches(documentId, sentences, sourcePages, DEFAULT_TARGET_LANG, overwrite, batchSize);
-      log.info("[Step 3/3] documentId {} - pre-save doc_units and batch translation done", documentId);
+      log.info("[Step 3/4] documentId {} - pre-save doc_units and batch translation done", documentId);
 
       log.info("[Step 4/4] documentId {} - content summary generation start", documentId);
       documentContentSummaryService.generateAfterTranslation(documentId, overwrite);

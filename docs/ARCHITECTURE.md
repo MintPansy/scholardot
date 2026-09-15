@@ -127,6 +127,7 @@ sequenceDiagram
 | POST | `/api/v1/documents/{id}/process` | 번역 파이프라인 비동기 실행 |
 | GET | `/api/v1/documents/{id}/translation-pairs` | 원문·번역 문장 쌍 전체 조회 |
 | GET | `/api/v1/documents/{id}/translation-progress` | 번역 진행률 (상태별 unit 수) |
+| GET | `/api/v1/documents/{id}/assets` | Figure/Table 캡션·페이지 + 본문 참조 연결 |
 | GET | `/api/v1/documents/translation-histories` | 내 번역 완료 문서 목록 (`?ownerId={id}`) |
 
 ### 메모 / 하이라이트
@@ -207,6 +208,21 @@ sequenceDiagram
 | source_text | TEXT | 원문 텍스트 |
 | status | VARCHAR | PENDING \| TRANSLATED \| FAILED |
 | created_at | TIMESTAMPTZ | 생성 시각 |
+
+### document_assets
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | BIGINT PK | 시각 자료 ID |
+| document_id | BIGINT | 소속 문서 |
+| kind | VARCHAR(16) | FIGURE \| TABLE |
+| number | VARCHAR(32) | 정규화된 번호 (예: `1`, `2a`) |
+| caption | TEXT | 캡션 텍스트 (추출 가능한 경우) |
+| source_page | INT | 원본 PDF 1-based 페이지 |
+| order_in_doc | INT | 문서 내 출현 순서 |
+| created_at | TIMESTAMPTZ | 생성 시각 |
+
+> 유니크: `(document_id, kind, number)`. v1은 캡션·페이지 메타만 저장하며 영역 크롭은 하지 않는다. 본문 참조(`Figure 1` 등)는 조회 시 `doc_units.source_text`와 매칭한다.
 
 ### doc_unit_translations
 
@@ -306,6 +322,6 @@ sequenceDiagram
 ## 9. Limitations & Future Work
 
 - 표/수식/다단 편집이 많은 PDF에서 파싱 정밀도 개선 필요
-- 본문 내 Figure/Table 참조와 캡션·원문 페이지를 연결하는 시각 자료 즉시 탐색 기능 검토
+- Figure/Table 캡션 추출·본문 참조 연결(v1) 도입 — 클릭 시 페이지 미리보기/원문 이동 UX는 후속
 - 번역 큐 처리 정책(우선순위, 배치, 재시도) 고도화 필요
 - 복잡도 지표 v2 설계 및 시각화 강화 예정

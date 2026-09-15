@@ -433,6 +433,65 @@ export const getDocumentContentSummary = async (
   };
 };
 
+/** GET /api/v1/documents/{id}/assets — Figure/Table 캡션·본문 참조 연결 */
+export type DocumentAssetKind = "FIGURE" | "TABLE";
+
+export interface DocumentAssetItem {
+  id: number;
+  kind: DocumentAssetKind;
+  number: string;
+  caption?: string;
+  sourcePage: number;
+  orderInDoc: number;
+}
+
+export interface DocumentAssetReference {
+  docUnitId: number;
+  matchText: string;
+  kind: DocumentAssetKind;
+  number: string;
+  assetId: number | null;
+  sourcePage: number | null;
+  /** MATCHED | UNMATCHED */
+  confidence: "MATCHED" | "UNMATCHED" | string;
+}
+
+export interface DocumentAssetsBundle {
+  assets: DocumentAssetItem[];
+  references: DocumentAssetReference[];
+}
+
+export const getDocumentAssets = async (
+  documentId: string | number,
+  accessToken?: string
+): Promise<DocumentAssetsBundle> => {
+  const apiUrl = getApiUrl();
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(
+    `${apiUrl}/api/v1/documents/${documentId}/assets`,
+    { method: "GET", headers, credentials: "include" }
+  );
+
+  const contentType = response.headers.get("content-type") || "";
+  if (contentType.includes("text/html")) {
+    throw new Error("인증이 필요합니다. 로그인해주세요.");
+  }
+
+  if (!response.ok) {
+    throw new Error("Figure/Table 자산을 불러오지 못했습니다.");
+  }
+
+  const data = (await response.json()) as Partial<DocumentAssetsBundle>;
+  return {
+    assets: Array.isArray(data.assets) ? data.assets : [],
+    references: Array.isArray(data.references) ? data.references : [],
+  };
+};
+
 export const getTranslationProgress = async (
   documentId: string | number,
   accessToken?: string

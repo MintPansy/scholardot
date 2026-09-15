@@ -33,6 +33,7 @@ public class DocumentPipelineController {
     private final DocumentService documentService;
     private final DocumentStructureAnalysisService documentStructureAnalysisService;
     private final DocumentContentSummaryService documentContentSummaryService;
+    private final DocumentAssetService documentAssetService;
 
     @Operation(summary = "문서 처리 파이프라인 실행", description = "특정 문서 ID에 대해 텍스트 추출, 번역, 저장 파이프라인을 비동기로 실행합니다.")
     @ApiResponses(value = {
@@ -98,6 +99,17 @@ public class DocumentPipelineController {
             @Parameter(description = "문서 ID", required = true) @PathVariable Long documentId
     ) {
         return ResponseEntity.ok(documentContentSummaryService.getSummary(documentId));
+    }
+
+    @Operation(
+            summary = "Figure/Table 자산 및 본문 참조",
+            description = "PDF에서 추출한 Figure/Table 캡션·페이지와, doc_units 본문의 참조 표현을 자산에 연결한 결과를 반환합니다."
+    )
+    @GetMapping("/{documentId}/assets")
+    public ResponseEntity<swyp.scholardot.document.dto.DocumentAssetsBundleResponse> getDocumentAssets(
+            @Parameter(description = "문서 ID", required = true) @PathVariable Long documentId
+    ) {
+        return ResponseEntity.ok(documentAssetService.getAssetsWithReferences(documentId));
     }
 
     @Operation(summary = "문서 삭제", description = "문서와 관련된 모든 데이터(번역, 메모, 파일)를 삭제합니다.")

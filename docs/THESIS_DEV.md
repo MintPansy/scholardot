@@ -1163,3 +1163,37 @@
 > 논문 「구현·운영」: Next.js App Router에서 **제3자 분석(GA4)** 을 `track()` 단일 진입점으로 묶고, 페이지뷰(URL)·화면(screen)·핵심 퍼널(업로드→번역→읽기)을 분리 수집한 사례.
 
 > 결과: 운영 배포 시 GA4 실시간·이벤트 보고서로 주요 화면·기능 사용을 추적할 수 있으며, 로컬 개발 트래픽은 제외된다. 읽기 첫 진입 시 논문 개요가 자동으로 펼쳐지지 않아 본문 읽기에 집중할 수 있다.
+
+---
+
+### 2026-09-15 (백엔드·프론트 — Figure/Table 캡션 추출·본문 참조 연결 v1)
+
+- **배경**: `THESIS_LIMITATIONS.md` §6.3의 개선 설계 중 다음 3항에 집중한다. (1) 캡션·번호·페이지 추출 (2) 본문 참조 식별 (3) 참조↔자산 연결. 클릭·미리보기 UX는 후속.
+
+#### 추출·식별 (`FigureTableExtractor`)
+
+- PDF 페이지 텍스트에서 `Figure`/`Fig.`/`Table` + 번호 + 캡션 후보를 정규식으로 추출. 동일 `(kind, number)`는 첫 등장 페이지를 유지.
+- 본문 `doc_units.source_text`에서 `Figure 1`, `Fig. 2`, `Table 3` 등 참조를 식별.
+
+#### 저장·연결
+
+- `document_assets` 엔티티 (`kind`, `number`, `caption`, `source_page`, `order_in_doc`).
+- 파이프라인 Step 2.5에서 페이지 추출 직후 자산 저장(번역과 독립 → 대기 중에도 조회 가능).
+- `GET /api/v1/documents/{id}/assets` — `assets` + `references`(MATCHED/UNMATCHED). 캡션이 없는 참조는 `assetId=null`(보수적).
+- 문서 삭제 시 assets cascade 삭제.
+
+#### 프론트·문서
+
+- `getDocumentAssets()` (`services/document.ts`).
+- `ARCHITECTURE.md`: API·`document_assets` 테이블 반영, Future Work를 v1 도입/UX 후속으로 갱신.
+
+> 결과: 개선 설계의 데이터·연결 계층(추출·식별·매칭)을 먼저 확보. 다음 단계는 MATCHED 참조 클릭 → 원문 페이지 이동/미리보기 UI.
+
+#### 관련 파일
+
+| 구분 | 경로 |
+|------|------|
+| 추출 | `FigureTableExtractor.java`, `FigureTableExtractorTest` |
+| 도메인·API | `DocumentAsset.java`, `DocumentAssetService`, `DocumentPipelineController` |
+| 파이프라인 | `DocumentPipelineService` Step 2.5 |
+| FE | `frontend/app/services/document.ts` |
